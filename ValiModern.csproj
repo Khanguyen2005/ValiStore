@@ -285,6 +285,7 @@
     <Content Include="Areas\Admin\Views\Order\Details.cshtml" />
     <Content Include="PAYMENT_GUIDE.md" />
     <Content Include="QUICK_START.md" />
+    <Content Include="FIX_VNPAY_TIMEOUT.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
