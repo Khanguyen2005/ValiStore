@@ -266,6 +266,11 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Uploads\banners\" />
+    <Folder Include="Uploads\products\balo\" />
+    <Folder Include="Uploads\products\phukien\" />
+    <Folder Include="Uploads\products\tuixach\" />
+    <Folder Include="Uploads\products\vali\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />

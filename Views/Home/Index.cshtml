@@ -1,33 +1,103 @@
 ﻿@{
-    ViewBag.Title = "Home Page";
+    ViewBag.Title = "Home";
+    var banners = ViewBag.Banners as IEnumerable<dynamic>;
+    var vali = ViewBag.ValiProducts as IEnumerable<dynamic>;
+    var tuiXach = ViewBag.TuiXachProducts as IEnumerable<dynamic>;
+    var balo = ViewBag.BaloProducts as IEnumerable<dynamic>;
+    var phuKien = ViewBag.PhuKienProducts as IEnumerable<dynamic>;
 }
 
-<main>
-    <section class="row" aria-labelledby="aspnetTitle">
-        <h1 id="title">ASP.NET</h1>
-        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
-    </section>
-
-    <div class="row">
-        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle">Getting started</h2>
-            <p>
-                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-                enables a clean separation of concerns and gives you full control over markup
-                for enjoyable, agile development.
-            </p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web Hosting</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </section>
+<div class="container py-3">
+    <!-- Banners carousel -->
+    <div id="homeCarousel" class="carousel slide mb-4" data-bs-ride="carousel">
+        <div class="carousel-inner rounded-3 shadow-sm">
+            @if (banners != null && banners.Any())
+            {
+                var index =0;
+                foreach (var b in banners)
+                {
+                    <div class="carousel-item @(index==0?"active":null)">
+                        <img class="d-block w-100" src="@b.image_url" alt="@b.name" style="max-height:380px;object-fit:cover;">
+                    </div>
+                    index++;
+                }
+            }
+            else
+            {
+                <div class="carousel-item active">
+                    <div class="bg-light d-flex align-items-center justify-content-center" style="height:280px;">No banners</div>
+                </div>
+            }
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#homeCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#homeCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
     </div>
-</main>
+
+    @helper ProductGridRow(string title, string link, IEnumerable<dynamic> items)
+    {
+    <section class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h2 class="h5 fw-bold mb-0">@title</h2>
+            <a href="@link" class="btn btn-sm btn-outline-primary">See all</a>
+        </div>
+        <div class="row g-3">
+            @if (items != null)
+            {
+                foreach (var p in items)
+                {
+                    <div class="col-6 col-md-3">
+                        <div class="card h-100 shadow-sm">
+                            <img class="card-img-top" src="@p.image_url" alt="@p.name" style="height:160px;object-fit:cover;">
+                            <div class="card-body p-3">
+                                <h6 class="card-title text-truncate" title="@p.name">@p.name</h6>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-semibold text-primary">@String.Format("{0:n0}", p.price) ₫</span>
+                                    <a href="@Url.Action("Details","Product", new { id = p.id })" class="btn btn-sm btn-outline-secondary"><i class="bi bi-plus-lg"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            else
+            {
+                <div class="col-12"><div class="text-muted small">No products</div></div>
+            }
+        </div>
+    </section>
+    }
+
+    @ProductGridRow("Vali", Url.Action("Index","Product", new { category = "vali" }), vali)
+    @ProductGridRow("Túi xách", Url.Action("Index","Product", new { category = "túi xách" }), tuiXach)
+    @ProductGridRow("Balo", Url.Action("Index","Product", new { category = "balo" }), balo)
+    @ProductGridRow("Phụ kiện", Url.Action("Index","Product", new { category = "phụ kiện" }), phuKien)
+
+    <!-- Guide section -->
+    <section class="mt-5">
+        <h2 class="h5 fw-bold mb-3">Hướng dẫn sử dụng & chọn sản phẩm</h2>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <img class="w-100 rounded-3 shadow-sm" src="https://images.unsplash.com/photo-1516762689617-e1cffcef479d?q=80&w=1200&auto=format&fit=crop" alt="Guide1"/>
+                <small class="text-muted d-block mt-2">Chọn kích thước vali phù hợp chuyến đi</small>
+            </div>
+            <div class="col-md-4">
+                <img class="w-100 rounded-3 shadow-sm" src="https://images.unsplash.com/photo-1512548438457-4c9584d3766c?q=80&w=1200&auto=format&fit=crop" alt="Guide2"/>
+                <small class="text-muted d-block mt-2">Bí quyết sắp xếp đồ thông minh</small>
+            </div>
+            <div class="col-md-4">
+                <img class="w-100 rounded-3 shadow-sm" src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=1200&auto=format&fit=crop" alt="Guide3"/>
+                <small class="text-muted d-block mt-2">Chăm sóc và vệ sinh balo, túi xách</small>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    .card-img-top{background:#f8f9fa}
+</style>
