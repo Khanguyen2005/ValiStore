@@ -66,8 +66,8 @@
                             { <span class="text-muted small">No image</span>}
                         </td>
                         <td>@p.name</td>
-                        <td>@p.Category?.name</td>
-                        <td>@p.Brand?.name</td>
+                        <td>@(p.Category != null ? p.Category.name : "")</td>
+                        <td>@(p.Brand != null ? p.Brand.name : "")</td>
                         <td class="text-end">@String.Format("{0:n0}", p.price)</td>
                         <td class="text-end">@p.stock</td>
                         <td class="text-end">@p.sold</td>

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
+using ValiModern.Models.EF;
 using ValiModern.Services;
 
 namespace ValiModern.Models.ViewModels
@@ -11,18 +12,19 @@ namespace ValiModern.Models.ViewModels
         [Required]
         public string Name { get; set; }
         public string Description { get; set; }
-        [Display(Name = "Original Price")]
+        [Display(Name = "Original Price"), Required(ErrorMessage = "Original price required")]
         public decimal OriginalPrice { get; set; }
-        [Display(Name = "Price")]
+        [Display(Name = "Price"), Required(ErrorMessage = "Price required")]
         public decimal Price { get; set; }
+        [Range(0, int.MaxValue)]
         public int Stock { get; set; }
-        [Display(Name = "Sold")]
+        [Display(Name = "Sold"), Range(0, int.MaxValue)]
         public int Sold { get; set; }
         [Display(Name = "Active")]
         public bool IsActive { get; set; }
-        [Display(Name = "Category")]
+        [Display(Name = "Category"), Required]
         public int CategoryId { get; set; }
-        [Display(Name = "Brand")]
+        [Display(Name = "Brand"), Required]
         public int BrandId { get; set; }
         public string ImageUrl { get; set; }
 

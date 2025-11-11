@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -18,6 +20,18 @@ namespace ValiModern.Areas.Admin.Controllers
         private readonly ValiModernDBEntities _db = new ValiModernDBEntities();
         private const string UploadRootVirtual = "/Uploads/products"; // main image
         private static readonly string[] AllowedExt = new[] { ".jpg", ".jpeg", ".png", ".gif", ".webp" };
+
+        private bool TryParseDecimal(string key, out decimal value)
+        {
+            value = 0m;
+            var str = Request[key];
+            if (string.IsNullOrWhiteSpace(str)) return false;
+            // Try current culture, then invariant, then swap separators
+            if (decimal.TryParse(str, NumberStyles.Any, CultureInfo.CurrentCulture, out value)) return true;
+            if (decimal.TryParse(str, NumberStyles.Any, CultureInfo.InvariantCulture, out value)) return true;
+            var swapped = str.Replace(".", "_").Replace(",", ".").Replace("_", ",");
+            return decimal.TryParse(swapped, NumberStyles.Any, CultureInfo.InvariantCulture, out value);
+        }
 
         // GET: Admin/Product
         public ActionResult Index(string q, string sort)
@@ -56,6 +70,10 @@ namespace ValiModern.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(ProductFormVM vm, HttpPostedFileBase imageFile)
         {
+            // Normalize decimal inputs to avoid culture issues
+            if (TryParseDecimal("Price", out var parsedPrice)) { vm.Price = parsedPrice; }
+            if (TryParseDecimal("OriginalPrice", out var parsedOriginal)) { vm.OriginalPrice = parsedOriginal; }
+
             if (!ModelState.IsValid)
             {
                 vm = BuildFormVM(null, vm);
@@ -84,6 +102,33 @@ namespace ValiModern.Areas.Admin.Controllers
             };
             _db.Products.Add(product);
             _db.SaveChanges();
+
+            // main image record
+            if (!string.IsNullOrEmpty(relImage))
+            {
+                _db.Product_Images.Add(new Product_Images { product_id = product.id, image_url = relImage, is_main = true, sort_order = 1 });
+            }
+
+            // colors
+            if (vm.SelectedColorIds != null && vm.SelectedColorIds.Length > 0)
+            {
+                var paletteColors = PaletteService.GetColors().Where(c => vm.SelectedColorIds.Contains(c.Id)).ToList();
+                foreach (var c in paletteColors)
+                {
+                    _db.Colors.Add(new Color { product_id = product.id, name = c.Name, color_code = c.ColorCode });
+                }
+            }
+            // sizes
+            if (vm.SelectedSizeIds != null && vm.SelectedSizeIds.Length > 0)
+            {
+                var paletteSizes = PaletteService.GetSizes().Where(s => vm.SelectedSizeIds.Contains(s.Id)).ToList();
+                foreach (var s in paletteSizes)
+                {
+                    _db.Sizes.Add(new Size { product_id = product.id, name = s.Name });
+                }
+            }
+            _db.SaveChanges();
+
             TempData["Success"] = "Product created.";
             return RedirectToAction("Index");
         }
@@ -92,7 +137,7 @@ namespace ValiModern.Areas.Admin.Controllers
         public ActionResult Edit(int? id)
         {
             if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            var product = _db.Products.Find(id);
+            var product = _db.Products.Include(p => p.Colors).Include(p => p.Sizes).FirstOrDefault(p => p.id == id);
             if (product == null) return HttpNotFound();
             var vm = BuildFormVM(product);
             return View(vm);
@@ -103,7 +148,11 @@ namespace ValiModern.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, ProductFormVM vm, HttpPostedFileBase imageFile)
         {
-            var product = _db.Products.Find(id);
+            // Normalize decimal inputs again
+            if (TryParseDecimal("Price", out var parsedPrice)) { vm.Price = parsedPrice; }
+            if (TryParseDecimal("OriginalPrice", out var parsedOriginal)) { vm.OriginalPrice = parsedOriginal; }
+
+            var product = _db.Products.Include(p => p.Colors).Include(p => p.Sizes).FirstOrDefault(p => p.id == id);
             if (product == null) return HttpNotFound();
             if (!ModelState.IsValid)
             {
@@ -119,7 +168,10 @@ namespace ValiModern.Areas.Admin.Controllers
                     vm = BuildFormVM(product, vm);
                     return View(vm);
                 }
-                DeletePhysical(product.image_url);
+                // shift existing images
+                var images = _db.Product_Images.Where(x => x.product_id == product.id).ToList();
+                foreach (var img in images) { img.sort_order += 1; img.is_main = false; }
+                _db.Product_Images.Add(new Product_Images { product_id = product.id, image_url = relImage, is_main = true, sort_order = 1 });
                 product.image_url = relImage;
             }
             product.name = vm.Name.Trim();
@@ -131,6 +183,27 @@ namespace ValiModern.Areas.Admin.Controllers
             product.category_id = vm.CategoryId;
             product.brandId = vm.BrandId;
             product.is_active = vm.IsActive;
+
+            // Replace colors
+            foreach (var c in product.Colors.ToList()) _db.Colors.Remove(c);
+            if (vm.SelectedColorIds != null && vm.SelectedColorIds.Length > 0)
+            {
+                var paletteColors = PaletteService.GetColors().Where(c => vm.SelectedColorIds.Contains(c.Id)).ToList();
+                foreach (var c in paletteColors)
+                {
+                    _db.Colors.Add(new Color { product_id = product.id, name = c.Name, color_code = c.ColorCode });
+                }
+            }
+            // Replace sizes
+            foreach (var s in product.Sizes.ToList()) _db.Sizes.Remove(s);
+            if (vm.SelectedSizeIds != null && vm.SelectedSizeIds.Length > 0)
+            {
+                var paletteSizes = PaletteService.GetSizes().Where(s => vm.SelectedSizeIds.Contains(s.Id)).ToList();
+                foreach (var s in paletteSizes)
+                {
+                    _db.Sizes.Add(new Size { product_id = product.id, name = s.Name });
+                }
+            }
             _db.SaveChanges();
             TempData["Success"] = "Product updated.";
             return RedirectToAction("Index");
@@ -143,7 +216,18 @@ namespace ValiModern.Areas.Admin.Controllers
         {
             var product = _db.Products.Find(id);
             if (product == null) return HttpNotFound();
+            var imgs = _db.Product_Images.Where(pi => pi.product_id == id).ToList();
+            foreach (var i in imgs)
+            {
+                DeletePhysical(i.image_url);
+                _db.Product_Images.Remove(i);
+            }
             DeletePhysical(product.image_url);
+            // remove colors & sizes
+            var colors = _db.Colors.Where(c => c.product_id == id).ToList();
+            foreach (var c in colors) _db.Colors.Remove(c);
+            var sizes = _db.Sizes.Where(s => s.product_id == id).ToList();
+            foreach (var s in sizes) _db.Sizes.Remove(s);
             _db.Products.Remove(product);
             _db.SaveChanges();
             TempData["Success"] = "Product deleted.";
@@ -170,6 +254,11 @@ namespace ValiModern.Areas.Admin.Controllers
                 vm.BrandId = product.brandId;
                 vm.IsActive = product.is_active;
                 vm.ImageUrl = product.image_url;
+                // map existing product colors/sizes back to palette by name match
+                var paletteColors = vm.AllColors;
+                vm.SelectedColorIds = product.Colors.Select(pc => paletteColors.FirstOrDefault(ac => ac.Name.Equals(pc.name, StringComparison.OrdinalIgnoreCase))?.Id ?? -1).Where(i => i > 0).ToArray();
+                var paletteSizes = vm.AllSizes;
+                vm.SelectedSizeIds = product.Sizes.Select(ps => paletteSizes.FirstOrDefault(asz => asz.Name.Equals(ps.name, StringComparison.OrdinalIgnoreCase))?.Id ?? -1).Where(i => i > 0).ToArray();
             }
             return vm;
         }

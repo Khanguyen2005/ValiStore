@@ -1,4 +1,5 @@
 @model ValiModern.Models.ViewModels.ProductFormVM
+@using System.Globalization
 @{
     ViewBag.Title = "Edit Product";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
@@ -39,20 +40,49 @@
                 @Html.LabelFor(m => m.Sold)
                 @Html.TextBoxFor(m => m.Sold, new { @class = "form-control", type = "number" })
             </div>
+            <div class="col-md-6">
+                <label class="form-label">Colors</label>
+                <select name="SelectedColorIds" multiple class="form-select"
+                    size="@Math.Max(4, Model.AllColors.Count)">
+                    @foreach (var c in Model.AllColors)
+                    {
+                        var selected = Model.SelectedColorIds != null && Model.SelectedColorIds.Contains(c.Id) ? "selected"
+                            : null;
+                        <option value="@c.Id" @selected>@c.Name (@c.ColorCode)</option>
+                    }
+                </select>
+                <small class="text-muted">Hold Ctrl or Cmd to select multiple colors.</small>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Sizes</label>
+                <select name="SelectedSizeIds" multiple class="form-select" size="@Math.Max(4, Model.AllSizes.Count)">
+                    @foreach (var s in Model.AllSizes)
+                    {
+                        var selectedS = Model.SelectedSizeIds != null && Model.SelectedSizeIds.Contains(s.Id) ? "selected"
+                            : null;
+                        <option value="@s.Id" @selectedS>@s.Name</option>
+                    }
+                </select>
+                <small class="text-muted">Hold Ctrl or Cmd to select multiple sizes.</small>
+            </div>
             <div class="col-md-12">
                 @Html.LabelFor(m => m.Description)
                 @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 4 })
             </div>
             <div class="col-md-6">
                 <label class="form-label">Main image</label>
-                <div class="img-dropzone border rounded-3 p-4 text-center bg-light position-relative" style="cursor:pointer;">
-                    <input type="file" name="imageFile" accept="image/*" class="position-absolute top-0 start-0 w-100 h-100 opacity-0" />
+                <div class="img-dropzone border rounded-3 p-4 text-center bg-light position-relative"
+                    style="cursor:pointer;">
+                    <input type="file" name="imageFile" accept="image/*"
+                        class="position-absolute top-0 start-0 w-100 h-100 opacity-0" />
                     <div class="dz-text @(string.IsNullOrEmpty(Model.ImageUrl)?"":"d-none")">
                         <i class="bi bi-cloud-upload fs-1 text-primary"></i>
                         <p class="mb-1">Drag & drop image here or click to choose</p>
                         <small class="text-muted">Allowed: jpg, jpeg, png, gif, webp</small>
                     </div>
-                    <img data-preview src="@(string.IsNullOrEmpty(Model.ImageUrl)?"": Url.Content("~"+Model.ImageUrl))" alt="preview" class="img-fluid rounded @(string.IsNullOrEmpty(Model.ImageUrl)?"d-none":"")" />
+                    <img data-preview
+                        src="@(string.IsNullOrEmpty(Model.ImageUrl)?"": Url.Content("~"+Model.ImageUrl))"
+                        alt="preview" class="img-fluid rounded @(string.IsNullOrEmpty(Model.ImageUrl)?"d-none":"")" />
                 </div>
                 <span class="text-danger">@Html.ValidationMessage("ImageUrl")</span>
             </div>

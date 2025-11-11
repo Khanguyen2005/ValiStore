@@ -38,6 +38,26 @@
                 @Html.LabelFor(m => m.Sold)
                 @Html.TextBoxFor(m => m.Sold, new { @class = "form-control", type = "number" })
             </div>
+            <div class="col-md-6">
+                <label class="form-label">Colors</label>
+                <select name="SelectedColorIds" multiple class="form-select" size="@Math.Max(4, Model.AllColors.Count)">
+                    @foreach (var c in Model.AllColors)
+                    {
+                        <option value="@c.Id">@c.Name (@c.ColorCode)</option>
+                    }
+                </select>
+                <small class="text-muted">Hold Ctrl or Cmd to select multiple colors.</small>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Sizes</label>
+                <select name="SelectedSizeIds" multiple class="form-select" size="@Math.Max(4, Model.AllSizes.Count)">
+                    @foreach (var s in Model.AllSizes)
+                    {
+                        <option value="@s.Id">@s.Name</option>
+                    }
+                </select>
+                <small class="text-muted">Hold Ctrl or Cmd to select multiple sizes.</small>
+            </div>
             <div class="col-md-12">
                 @Html.LabelFor(m => m.Description)
                 @Html.TextAreaFor(m => m.Description, new { @class = "form-control", rows = 4 })
