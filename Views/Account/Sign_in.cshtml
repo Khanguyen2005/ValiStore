@@ -1,0 +1,96 @@
+﻿@Model ValiHub.Models.User
+@{
+    ViewBag.Title = "Sign_in";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/Account/Sign_in.css" rel="stylesheet" />
+<div class="container">
+    <div class="row">
+        <div class="col-md-7 d-flex justify-content-center align-items-center">
+            <div class="form-container sign-in-container">
+                <form action="#" method="post">
+                    <h6>Đăng nhập</h6>
+                    <label for="user">Email</label>
+                    <input type="email" placeholder="KhoaCho@123gmail.com" name="user" id="user" required />
+                    <label for="password">Password</label>
+                    <input type="password" placeholder="Password" name="password" id="password" required />
+                    @if (!ViewData.ModelState.IsValid)
+                    {
+                        <div style="color: red; font-size: 0.8rem;">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <p>@error.ErrorMessage</p>
+                            }
+                        </div>
+                    }
+                    <div class="container-btn">
+                        @Html.ActionLink("Quên mật khẩu?", "ForgetPassword")
+                        <button class="btn-sign-in"><i class="fa-solid fa-unlock-keyhole"></i> Đăng nhập</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-5 d-flex justify-content-center align-items-center">
+            <div id="container-flag">
+                <div id="pole"></div>
+                <div id="flag"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    const flagEl = document.getElementById("flag");
+    const rows = 30;
+    const columns = 50;
+    const generateUnit = (columnNum, rowNum) => {
+        const flagUnit = document.createElement("div");
+        flagUnit.classList.add("flag-unit");
+        const centerRow = Math.floor(rows / 2);
+        const centerColumn = Math.floor(columns / 2);
+        const starOutlinePoints = [
+            [0, -8],  // giảm khoảng cách theo trục y
+            [3, -2],  // giảm khoảng cách theo trục y và x
+            [8, -2],  // giảm khoảng cách theo trục y và x
+            [3, 1],   // giảm khoảng cách theo trục y
+            [5, 7],   // giảm khoảng cách theo trục y
+            [0, 4],   // giảm khoảng cách theo trục y
+            [-5, 7],  // giảm khoảng cách theo trục y
+            [-3, 1],  // giảm khoảng cách theo trục y và x
+            [-8, -2], // giảm khoảng cách theo trục y và x
+            [-3, -2]  // giảm khoảng cách theo trục y
+        ];
+        const isInsideStar = (columnNum, rowNum) => {
+            const points = starOutlinePoints.map(([dx, dy]) => [
+                centerColumn + dx,
+                centerRow + dy
+            ]);
+            const [x, y] = [columnNum, rowNum];
+            let inside = false;
+            for (let i = 0, j = points.length - 1; i < points.length; j = i++) {
+                const [xi, yi] = points[i];
+                const [xj, yj] = points[j];
+                const intersect =
+                    yi > y !== yj > y && x < (xj - xi) * (y - yi) / (yj - yi) + xi;
+                if (intersect) inside = !inside;
+            }
+            return inside;
+        };
+        if (isInsideStar(columnNum, rowNum)) {
+            flagUnit.style.background = "yellow";
+        }
+
+        flagUnit.style.setProperty("animation-delay", `${columnNum * 10}ms`);
+        flagUnit.style.setProperty("--displacement", `${columnNum / 4}px`);
+
+        const column = document.getElementById(`column-${columnNum}`);
+        column.innerHTML += flagUnit.outerHTML;
+    };
+
+    for (let i = 0; i < columns; i++) {
+        flagEl.innerHTML += `<div class="column" id="column-${i}"></div>`;
+        for (let j = 0; j < rows; j++) {
+            generateUnit(i, j);
+        }
+    }
+</script>
+

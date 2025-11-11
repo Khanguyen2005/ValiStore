@@ -1,0 +1,139 @@
+﻿@Model ValiHub.Models.User
+@{
+    ViewBag.Title = "Register";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="~/Content/Account/Register.css" />
+<div class="container-register">
+    <form action="#" method="post">
+        <h6>Đăng ký</h6>
+        <p>Nếu đã có tài khoản vui lòng đăng nhập</p>
+        <span>Email</span>
+        <input type="email" placeholder="KhoaCho@123gmail.com" name="user" id="user" required />
+        <span>Mật khẩu</span>
+        <input type="password" placeholder="Password" name="password" id="password" required />
+        <span>Nhập lại mật khẩu</span>
+        <input type="password" placeholder="Confirmpassword" name="confirmpassword" id="confirmpassword" required />
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div style="color: red;">
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <p>@error.ErrorMessage</p>
+                }
+            </div>
+        }
+        <div class="container-btn">
+            <button class="btn-register"><i class="fa-solid fa-unlock-keyhole"></i> Đăng kí</button>
+        </div>
+    </form>
+    <div class="ear-l"></div>
+    <div class="ear-r"></div>
+    <div class="panda-face">
+        <div class="blush-l"></div>
+        <div class="blush-r"></div>
+        <div class="eye-l">
+            <div class="eyeball-l"></div>
+        </div>
+        <div class="eye-r">
+            <div class="eyeball-r"></div>
+        </div>
+        <div class="nose"></div>
+        <div class="mouth"></div>
+    </div>
+    <div class="hand-l"></div>
+    <div class="hand-r"></div>
+    <div class="paw-l"></div>
+    <div class="paw-r"></div>
+</div>
+<script>
+    const username = document.getElementById("user");
+    const password = document.getElementById("password");
+    const confirmPassword = document.getElementById("confirmpassword");
+    const eyeL = document.querySelector(".eyeball-l");
+    const eyeR = document.querySelector(".eyeball-r");
+    const handL = document.querySelector(".hand-l");
+    const handR = document.querySelector(".hand-r");
+
+    const normalEyeStyle = () => {
+        eyeL.style.cssText = `
+        left: 12px;
+        top: 38%;
+    `;
+        eyeR.style.cssText = `
+        right: 28px;
+        top: 38%;
+    `;
+    };
+
+    const normalHandStyle = () => {
+        handL.style.cssText = `
+        height: 50px;
+        top: 19%;
+        left: 20%;
+        transform: rotate(0deg);
+    `;
+        handR.style.cssText = `
+        height: 50px;
+        top: 19%;
+        right: 20%;
+        transform: rotate(0deg)
+    `;
+    };
+
+    // Sự kiện khi focus vào trường username
+    username.addEventListener("focus", () => {
+        eyeL.style.cssText = `
+        left: 0.75em;
+        top: 1.12em;
+    `;
+        eyeR.style.cssText = `
+        right: 0.75em;
+        top: 1.12em;
+    `;
+        normalHandStyle();
+    });
+    // Sự kiện khi focus vào trường password
+    password.addEventListener("focus", () => {
+        handL.style.cssText = `
+        height: 120px;
+        top: 6%;
+        left: 35%;
+        transform: rotate(-155deg);
+    `;
+        handR.style.cssText = `
+        height: 120px;
+        top: 6%;
+        right: 35%;
+        transform: rotate(155deg);
+    `;
+        normalEyeStyle();
+    });
+    // Sự kiện khi focus vào trường confirmPassword
+    confirmPassword.addEventListener("focus", () => {
+        handL.style.cssText = `
+        height: 120px;
+        top: 6%;
+        left: 35%;
+        transform: rotate(-155deg);
+    `;
+        handR.style.cssText = `
+        height: 120px;
+        top: 6%;
+        right: 35%;
+        transform: rotate(155deg);
+    `;
+        normalEyeStyle();
+    });
+    // Reset vị trí mắt và tay khi click ngoài các trường nhập liệu
+    document.addEventListener("click", (e) => {
+        let clickedElem = e.target;
+        if (clickedElem != username && clickedElem != password && clickedElem != confirmPassword) {
+            normalEyeStyle();
+            normalHandStyle();
+        }
+    });
+
+</script>
+
+
