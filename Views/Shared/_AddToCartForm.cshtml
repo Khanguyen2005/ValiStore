@@ -1,0 +1,115 @@
+@model ValiModern.Models.EF.Product
+
+<div class="add-to-cart-section">
+    @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post, new { @class = "add-to-cart-form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.Hidden("productId", Model.id)
+
+        @* Color Selection *@
+  if (Model.Colors != null && Model.Colors.Any())
+    {
+            <div class="mb-3">
+         <label class="form-label fw-bold">Color:</label>
+       <div class="color-options d-flex flex-wrap gap-2">
+          @foreach (var color in Model.Colors)
+       {
+<div class="form-check">
+   <input class="form-check-input" type="radio" name="colorId" value="@color.id" id="color_@color.id" />
+       <label class="form-check-label" for="color_@color.id" style="cursor:pointer;">
+                   <span class="color-swatch" style="display:inline-block;width:30px;height:30px;background-color:@color.color_code;border:2px solid #ddd;border-radius:50%;vertical-align:middle;"></span>
+     <span class="ms-1">@color.name</span>
+          </label>
+              </div>
+     }
+      </div>
+     </div>
+        }
+
+        @* Size Selection *@
+        if (Model.Sizes != null && Model.Sizes.Any())
+      {
+   <div class="mb-3">
+      <label class="form-label fw-bold">Size:</label>
+  <div class="size-options d-flex flex-wrap gap-2">
+         @foreach (var size in Model.Sizes)
+    {
+     <div class="form-check">
+                 <input class="form-check-input" type="radio" name="sizeId" value="@size.id" id="size_@size.id" />
+  <label class="form-check-label btn btn-outline-secondary btn-sm" for="size_@size.id" style="cursor:pointer;">
+       @size.name
+                 </label>
+            </div>
+                }
+         </div>
+  </div>
+        }
+
+    @* Quantity *@
+        <div class="mb-3">
+            <label class="form-label fw-bold">Quantity:</label>
+            <div class="input-group" style="max-width:150px;">
+     <button type="button" class="btn btn-outline-secondary" onclick="decreaseQty()">-</button>
+        <input type="number" name="quantity" id="quantity" value="1" min="1" max="@Model.stock" class="form-control text-center" />
+      <button type="button" class="btn btn-outline-secondary" onclick="increaseQty()">+</button>
+      </div>
+     <small class="text-muted">Stock: @Model.stock</small>
+ </div>
+
+        @* Add to Cart Button *@
+        <button type="submit" class="btn btn-primary btn-lg w-100">
+            <i class="bi bi-cart-plus me-2"></i>Add to Cart
+        </button>
+    }
+</div>
+
+<script>
+    function increaseQty() {
+        var qtyInput = document.getElementById('quantity');
+        var max = parseInt(qtyInput.getAttribute('max'));
+        var current = parseInt(qtyInput.value);
+    if (current < max) {
+ qtyInput.value = current + 1;
+        }
+    }
+
+    function decreaseQty() {
+        var qtyInput = document.getElementById('quantity');
+        var min = parseInt(qtyInput.getAttribute('min'));
+     var current = parseInt(qtyInput.value);
+        if (current > min) {
+      qtyInput.value = current - 1;
+  }
+    }
+
+    // Style selected color/size
+    $(document).ready(function() {
+        $('input[name="colorId"]').change(function() {
+$('.color-swatch').css('border-color', '#ddd');
+     if ($(this).is(':checked')) {
+     $(this).siblings('label').find('.color-swatch').css('border-color', '#0d6efd');
+            }
+    });
+
+        $('input[name="sizeId"]').change(function() {
+        $('input[name="sizeId"]').siblings('label').removeClass('btn-primary').addClass('btn-outline-secondary');
+        if ($(this).is(':checked')) {
+           $(this).siblings('label').removeClass('btn-outline-secondary').addClass('btn-primary');
+   }
+      });
+    });
+</script>
+
+<style>
+    .form-check-input[type="radio"] {
+  display: none;
+ }
+
+    .color-swatch {
+        transition: border-color 0.2s;
+    }
+
+    .size-options .btn {
+        transition: all 0.2s;
+    }
+</style>

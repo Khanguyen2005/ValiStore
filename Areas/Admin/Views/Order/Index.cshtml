@@ -1,0 +1,154 @@
+@model IEnumerable<ValiModern.Models.ViewModels.OrderListItemVM>
+@{
+    ViewBag.Title = "Manage Orders";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="container-xl py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 fw-bold mb-0">Orders</h2>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+      <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+     <div class="alert alert-danger alert-dismissible fade show">
+    @TempData["Error"]
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Filters -->
+    <form method="get" class="row g-2 mb-3">
+        <div class="col-md-3">
+     <select name="status" class="form-select form-select-sm">
+    <option value="">-- All Status --</option>
+         <option value="Pending" @(ViewBag.Status == "Pending" ? "selected" : "")>Pending</option>
+         <option value="Processing" @(ViewBag.Status == "Processing" ? "selected" : "")>Processing</option>
+      <option value="Shipped" @(ViewBag.Status == "Shipped" ? "selected" : "")>Shipped</option>
+      <option value="Delivered" @(ViewBag.Status == "Delivered" ? "selected" : "")>Delivered</option>
+  <option value="Cancelled" @(ViewBag.Status == "Cancelled" ? "selected" : "")>Cancelled</option>
+ </select>
+        </div>
+        <div class="col-md-4">
+            <input type="text" name="q" value="@ViewBag.Query" class="form-control form-control-sm" placeholder="Search by user, phone, address..." />
+        </div>
+        <div class="col-md-3">
+            <select name="sort" class="form-select form-select-sm">
+     <option value="id_desc" @(ViewBag.Sort == "id_desc" ? "selected" : "")>ID ?</option>
+    <option value="id_asc" @(ViewBag.Sort == "id_asc" ? "selected" : "")>ID ?</option>
+           <option value="date_desc" @(ViewBag.Sort == "date_desc" ? "selected" : "")>Date ?</option>
+     <option value="date_asc" @(ViewBag.Sort == "date_asc" ? "selected" : "")>Date ?</option>
+         <option value="total_desc" @(ViewBag.Sort == "total_desc" ? "selected" : "")>Total ?</option>
+     <option value="total_asc" @(ViewBag.Sort == "total_asc" ? "selected" : "")>Total ?</option>
+        </select>
+  </div>
+        <div class="col-md-2">
+        <button type="submit" class="btn btn-primary btn-sm w-100">Filter</button>
+        </div>
+    </form>
+
+    <!-- Orders Table -->
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+  <tr>
+               <th>ID</th>
+       <th>User</th>
+   <th>Order Date</th>
+           <th>Status</th>
+        <th>Items</th>
+        <th>Total</th>
+          <th>Phone</th>
+  <th>Actions</th>
+     </tr>
+        </thead>
+            <tbody>
+          @if (Model != null && Model.Any())
+     {
+       foreach (var order in Model)
+                 {
+     <tr>
+       <td><strong>#@order.Id</strong></td>
+       <td>
+        <div>@order.UserName</div>
+ <small class="text-muted">@order.UserEmail</small>
+        </td>
+        <td>
+    <div>@order.OrderDate.ToString("dd/MM/yyyy")</div>
+        <small class="text-muted">@order.OrderDate.ToString("HH:mm")</small>
+          </td>
+       <td>
+          @switch (order.Status)
+   {
+         case "Pending":
+    <span class="badge bg-warning text-dark">Pending</span>
+            break;
+       case "Processing":
+       <span class="badge bg-info">Processing</span>
+         break;
+            case "Shipped":
+       <span class="badge bg-primary">Shipped</span>
+   break;
+         case "Delivered":
+       <span class="badge bg-success">Delivered</span>
+          break;
+       case "Cancelled":
+        <span class="badge bg-danger">Cancelled</span>
+       break;
+      default:
+            <span class="badge bg-secondary">@order.Status</span>
+      break;
+    }
+              </td>
+          <td>@order.ItemCount</td>
+    <td><strong>@order.TotalAmount.ToString("N0") ?</strong></td>
+       <td>@order.Phone</td>
+         <td>
+        <a href="@Url.Action("Details", new { id = order.Id })" class="btn btn-sm btn-outline-primary" title="View Details">
+         <i class="bi bi-eye"></i>
+        </a>
+           <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal@(order.Id)" title="Delete">
+           <i class="bi bi-trash"></i>
+         </button>
+
+      <!-- Delete Modal -->
+                  <div class="modal fade" id="deleteModal@(order.Id)" tabindex="-1">
+     <div class="modal-dialog">
+        <div class="modal-content">
+  <div class="modal-header">
+       <h5 class="modal-title">Confirm Delete</h5>
+   <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+        <div class="modal-body">
+         Are you sure you want to delete Order #@order.Id?
+         </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <form method="post" action="@Url.Action("Delete", new { id = order.Id })" class="d-inline">
+        @Html.AntiForgeryToken()
+     <button type="submit" class="btn btn-danger">Delete</button>
+      </form>
+            </div>
+      </div>
+   </div>
+      </div>
+        </td>
+</tr>
+               }
+                }
+       else
+            {
+     <tr>
+         <td colspan="8" class="text-center text-muted py-4">No orders found.</td>
+            </tr>
+     }
+            </tbody>
+     </table>
+    </div>
+</div>

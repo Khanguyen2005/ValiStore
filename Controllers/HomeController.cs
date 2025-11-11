@@ -29,8 +29,10 @@ namespace ValiModern.Controllers
                             id = p.id,
                             name = p.name,
                             price = p.price,
+                            original_price = p.original_price,
                             image_url = p.image_url,
-                            description = p.description
+                            description = p.description,
+                            sold = p.sold
                         }).ToList();
                     vm.Blocks.Add(new CategoryBlockVM
                     {

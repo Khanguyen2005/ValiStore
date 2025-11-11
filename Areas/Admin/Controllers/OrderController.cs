@@ -1,0 +1,214 @@
+using System;
+using System.Data.Entity;
+using System.Linq;
+using System.Net;
+using System.Web.Mvc;
+using ValiModern.Filters;
+using ValiModern.Models.EF;
+using ValiModern.Models.ViewModels;
+
+namespace ValiModern.Areas.Admin.Controllers
+{
+  [AuthorizeAdmin]
+    public class OrderController : Controller
+    {
+        private readonly ValiModernDBEntities _db = new ValiModernDBEntities();
+
+        // GET: Admin/Order
+   public ActionResult Index(string status, string q, string sort)
+        {
+            var orders = _db.Orders
+           .Include(o => o.User)
+      .Include(o => o.Order_Details)
+            .AsQueryable();
+
+    // Filter by status
+     if (!string.IsNullOrWhiteSpace(status))
+      {
+           orders = orders.Where(o => o.status == status);
+          }
+
+  // Search by user name, email, phone, or address
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+       q = q.Trim().ToLower();
+                orders = orders.Where(o =>
+          o.User.username.ToLower().Contains(q) ||
+     o.User.email.ToLower().Contains(q) ||
+         o.phone.ToLower().Contains(q) ||
+ o.shipping_address.ToLower().Contains(q));
+            }
+
+            // Sort
+  switch (sort)
+  {
+  case "id_asc":
+          orders = orders.OrderBy(o => o.id);
+      break;
+             case "date_asc":
+                    orders = orders.OrderBy(o => o.order_date);
+                    break;
+     case "date_desc":
+              orders = orders.OrderByDescending(o => o.order_date);
+    break;
+  case "total_asc":
+            orders = orders.OrderBy(o => o.total_amount);
+              break;
+          case "total_desc":
+         orders = orders.OrderByDescending(o => o.total_amount);
+      break;
+        case "id_desc":
+           default:
+            orders = orders.OrderByDescending(o => o.id);
+         break;
+    }
+
+            ViewBag.Status = status;
+            ViewBag.Query = q;
+   ViewBag.Sort = string.IsNullOrEmpty(sort) ? "id_desc" : sort;
+
+  // Map to ViewModel
+ var list = orders.Take(300).ToList().Select(o => new OrderListItemVM
+        {
+    Id = o.id,
+    UserId = o.user_id,
+  UserName = o.User?.username ?? "N/A",
+         UserEmail = o.User?.email ?? "N/A",
+       OrderDate = o.order_date,
+            Status = o.status,
+      TotalAmount = o.total_amount,
+     Phone = o.phone,
+      ShippingAddress = o.shipping_address,
+       ItemCount = o.Order_Details.Count,
+         CreatedAt = o.created_at,
+              UpdatedAt = o.updated_at
+      }).ToList();
+
+   return View(list);
+        }
+
+        // GET: Admin/Order/Details/5
+        public ActionResult Details(int? id)
+      {
+   if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+  var order = _db.Orders
+       .Include(o => o.User)
+     .Include(o => o.Order_Details.Select(od => od.Product))
+    .Include(o => o.Order_Details.Select(od => od.Color))
+           .Include(o => o.Order_Details.Select(od => od.Size))
+     .Include(o => o.Payments)
+  .FirstOrDefault(o => o.id == id);
+
+   if (order == null) return HttpNotFound();
+
+ var vm = new OrderDetailsVM
+      {
+                Id = order.id,
+         UserId = order.user_id,
+      UserName = order.User?.username ?? "N/A",
+         UserEmail = order.User?.email ?? "N/A",
+  UserPhone = order.User?.phone ?? "N/A",
+         OrderDate = order.order_date,
+                Status = order.status,
+            TotalAmount = order.total_amount,
+      Phone = order.phone,
+     ShippingAddress = order.shipping_address,
+       CreatedAt = order.created_at,
+      UpdatedAt = order.updated_at,
+    Items = order.Order_Details.Select(od => new OrderDetailItemVM
+       {
+          Id = od.id,
+         ProductId = od.product_id,
+  ProductName = od.Product?.name ?? "N/A",
+    ProductImageUrl = od.Product?.image_url,
+           Quantity = od.quantity,
+  Price = od.price,
+         Subtotal = od.quantity * od.price,
+      ColorName = od.Color?.name,
+  ColorCode = od.Color?.color_code,
+       SizeName = od.Size?.name,
+        CreatedAt = od.created_at
+                }).ToList(),
+          Payments = order.Payments.Select(p => new PaymentVM
+        {
+      Id = p.id,
+        Amount = p.amount,
+      PaymentMethod = p.payment_method,
+  Status = p.status,
+           TransactionId = p.transaction_id,
+             PaymentDate = p.payment_date
+    }).ToList()
+          };
+
+     return View(vm);
+     }
+
+      // POST: Admin/Order/UpdateStatus
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+    public ActionResult UpdateStatus(int id, string status)
+        {
+        var order = _db.Orders.Find(id);
+            if (order == null) return HttpNotFound();
+
+      if (string.IsNullOrWhiteSpace(status))
+        {
+         TempData["Error"] = "Status is required.";
+       return RedirectToAction("Details", new { id });
+            }
+
+       var validStatuses = new[] { "Pending", "Processing", "Shipped", "Delivered", "Cancelled" };
+      if (!validStatuses.Contains(status))
+         {
+                TempData["Error"] = "Invalid status.";
+      return RedirectToAction("Details", new { id });
+  }
+
+ order.status = status;
+  order.updated_at = DateTime.Now;
+       _db.SaveChanges();
+
+  TempData["Success"] = $"Order status updated to '{status}'.";
+     return RedirectToAction("Details", new { id });
+    }
+
+  // POST: Admin/Order/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id)
+        {
+     var order = _db.Orders
+         .Include(o => o.Order_Details)
+   .Include(o => o.Payments)
+          .FirstOrDefault(o => o.id == id);
+
+            if (order == null) return HttpNotFound();
+
+            // Remove payments
+          foreach (var payment in order.Payments.ToList())
+      {
+           _db.Payments.Remove(payment);
+          }
+
+// Remove order details
+         foreach (var detail in order.Order_Details.ToList())
+     {
+      _db.Order_Details.Remove(detail);
+       }
+
+            // Remove order
+            _db.Orders.Remove(order);
+      _db.SaveChanges();
+
+    TempData["Success"] = "Order deleted.";
+            return RedirectToAction("Index");
+     }
+
+        protected override void Dispose(bool disposing)
+        {
+     if (disposing) _db.Dispose();
+         base.Dispose(disposing);
+        }
+    }
+}

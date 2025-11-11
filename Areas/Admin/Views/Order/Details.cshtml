@@ -1,0 +1,292 @@
+@model ValiModern.Models.ViewModels.OrderDetailsVM
+@{
+    ViewBag.Title = "Order Details";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="container-xl py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="h5 fw-bold mb-0">Order #@Model.Id Details</h2>
+    <a href="@Url.Action("Index")" class="btn btn-sm btn-outline-secondary">
+         <i class="bi bi-arrow-left"></i> Back to Orders
+   </a>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+    @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+      @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        <!-- Order Information -->
+        <div class="col-md-6">
+        <div class="card">
+     <div class="card-header">
+    <h6 class="mb-0">Order Information</h6>
+     </div>
+       <div class="card-body">
+    <table class="table table-sm table-borderless mb-0">
+           <tr>
+            <td class="text-muted" style="width: 40%">Order ID:</td>
+        <td><strong>#@Model.Id</strong></td>
+           </tr>
+      <tr>
+    <td class="text-muted">Order Date:</td>
+         <td>@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+        </tr>
+             <tr>
+         <td class="text-muted">Status:</td>
+      <td>
+   @switch (Model.Status)
+            {
+  case "Pending":
+       <span class="badge bg-warning text-dark">Pending</span>
+  break;
+  case "Processing":
+       <span class="badge bg-info">Processing</span>
+        break;
+ case "Shipped":
+     <span class="badge bg-primary">Shipped</span>
+         break;
+         case "Delivered":
+               <span class="badge bg-success">Delivered</span>
+                break;
+             case "Cancelled":
+            <span class="badge bg-danger">Cancelled</span>
+      break;
+           default:
+  <span class="badge bg-secondary">@Model.Status</span>
+     break;
+      }
+         </td>
+         </tr>
+   <tr>
+      <td class="text-muted">Total Amount:</td>
+   <td><strong class="text-success">@Model.TotalAmount.ToString("N0") ?</strong></td>
+        </tr>
+              <tr>
+       <td class="text-muted">Created At:</td>
+    <td>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+ </tr>
+              <tr>
+            <td class="text-muted">Updated At:</td>
+         <td>@Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+             </tr>
+              </table>
+        </div>
+ </div>
+        </div>
+
+        <!-- Customer Information -->
+        <div class="col-md-6">
+            <div class="card">
+     <div class="card-header">
+           <h6 class="mb-0">Customer Information</h6>
+        </div>
+            <div class="card-body">
+     <table class="table table-sm table-borderless mb-0">
+    <tr>
+   <td class="text-muted" style="width: 40%">Name:</td>
+      <td><strong>@Model.UserName</strong></td>
+      </tr>
+           <tr>
+        <td class="text-muted">Email:</td>
+              <td>@Model.UserEmail</td>
+        </tr>
+   <tr>
+        <td class="text-muted">Phone:</td>
+      <td>@Model.Phone</td>
+        </tr>
+       <tr>
+         <td class="text-muted">Shipping Address:</td>
+     <td>@Model.ShippingAddress</td>
+ </tr>
+         </table>
+     </div>
+   </div>
+    </div>
+
+<!-- Order Items -->
+        <div class="col-12">
+   <div class="card">
+                <div class="card-header">
+            <h6 class="mb-0">Order Items (@Model.Items.Count)</h6>
+     </div>
+    <div class="card-body">
+         <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+               <thead class="table-light">
+         <tr>
+           <th style="width: 80px">Image</th>
+   <th>Product</th>
+            <th>Color</th>
+    <th>Size</th>
+     <th>Price</th>
+ <th>Qty</th>
+    <th>Subtotal</th>
+         </tr>
+           </thead>
+      <tbody>
+         @foreach (var item in Model.Items)
+    {
+        <tr>
+            <td>
+            @if (!string.IsNullOrEmpty(item.ProductImageUrl))
+        {
+              <img src="@Url.Content("~" + item.ProductImageUrl)" alt="@item.ProductName" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;" />
+     }
+         else
+    {
+          <div class="bg-light d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+         <i class="bi bi-image text-muted"></i>
+    </div>
+      }
+   </td>
+ <td>
+      <div>@item.ProductName</div>
+   <small class="text-muted">ID: @item.ProductId</small>
+ </td>
+    <td>
+  @if (!string.IsNullOrEmpty(item.ColorName))
+   {
+         <div class="d-flex align-items-center">
+      @if (!string.IsNullOrEmpty(item.ColorCode))
+      {
+        <span class="d-inline-block me-2" style="width: 20px; height: 20px; border-radius: 50%; background-color: @item.ColorCode; border: 1px solid #ddd;"></span>
+         }
+ <span>@item.ColorName</span>
+ </div>
+         }
+          else
+  {
+          <span class="text-muted">N/A</span>
+           }
+      </td>
+          <td>
+@if (!string.IsNullOrEmpty(item.SizeName))
+           {
+    <span class="badge bg-secondary">@item.SizeName</span>
+          }
+       else
+           {
+  <span class="text-muted">N/A</span>
+           }
+     </td>
+ <td>@item.Price.ToString("N0") ?</td>
+     <td><strong>@item.Quantity</strong></td>
+        <td><strong>@item.Subtotal.ToString("N0") ?</strong></td>
+         </tr>
+        }
+   </tbody>
+              <tfoot>
+      <tr>
+    <td colspan="6" class="text-end"><strong>Total:</strong></td>
+   <td><strong class="text-success">@Model.TotalAmount.ToString("N0") ?</strong></td>
+    </tr>
+   </tfoot>
+         </table>
+           </div>
+      </div>
+            </div>
+        </div>
+
+        <!-- Payment Information -->
+        @if (Model.Payments != null && Model.Payments.Any())
+  {
+    <div class="col-12">
+                <div class="card">
+<div class="card-header">
+ <h6 class="mb-0">Payment Information</h6>
+      </div>
+         <div class="card-body">
+        <div class="table-responsive">
+           <table class="table table-sm table-hover align-middle mb-0">
+            <thead class="table-light">
+    <tr>
+            <th>Payment ID</th>
+   <th>Method</th>
+         <th>Amount</th>
+    <th>Status</th>
+               <th>Transaction ID</th>
+      <th>Payment Date</th>
+   </tr>
+      </thead>
+      <tbody>
+    @foreach (var payment in Model.Payments)
+ {
+           <tr>
+        <td>#@payment.Id</td>
+   <td>@payment.PaymentMethod</td>
+    <td>@payment.Amount.ToString("N0") ?</td>
+  <td>
+  @if (payment.Status == "Completed")
+                {
+       <span class="badge bg-success">Completed</span>
+         }
+           else if (payment.Status == "Pending")
+  {
+       <span class="badge bg-warning text-dark">Pending</span>
+      }
+     else if (payment.Status == "Failed")
+      {
+<span class="badge bg-danger">Failed</span>
+   }
+       else
+        {
+             <span class="badge bg-secondary">@payment.Status</span>
+     }
+</td>
+        <td>@(string.IsNullOrEmpty(payment.TransactionId) ? "N/A" : payment.TransactionId)</td>
+           <td>@payment.PaymentDate.ToString("dd/MM/yyyy HH:mm")</td>
+     </tr>
+      }
+ </tbody>
+         </table>
+           </div>
+          </div>
+           </div>
+          </div>
+        }
+
+      <!-- Update Status -->
+      <div class="col-12">
+            <div class="card">
+     <div class="card-header">
+            <h6 class="mb-0">Update Order Status</h6>
+                </div>
+      <div class="card-body">
+           <form method="post" action="@Url.Action("UpdateStatus", new { id = Model.Id })">
+         @Html.AntiForgeryToken()
+     <div class="row g-3 align-items-end">
+   <div class="col-md-4">
+               <label class="form-label">New Status</label>
+    <select name="status" class="form-select" required>
+  <option value="">-- Select Status --</option>
+     <option value="Pending" @(Model.Status == "Pending" ? "selected" : "")>Pending</option>
+<option value="Processing" @(Model.Status == "Processing" ? "selected" : "")>Processing</option>
+              <option value="Shipped" @(Model.Status == "Shipped" ? "selected" : "")>Shipped</option>
+ <option value="Delivered" @(Model.Status == "Delivered" ? "selected" : "")>Delivered</option>
+          <option value="Cancelled" @(Model.Status == "Cancelled" ? "selected" : "")>Cancelled</option>
+  </select>
+            </div>
+        <div class="col-md-3">
+  <button type="submit" class="btn btn-primary">
+         <i class="bi bi-check-circle"></i> Update Status
+       </button>
+          </div>
+          </div>
+       </form>
+    </div>
+ </div>
+        </div>
+    </div>
+</div>

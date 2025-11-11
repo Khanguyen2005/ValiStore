@@ -1,16 +1,29 @@
 ﻿@using System.Security.Claims
+@using ValiModern.Models.ViewModels
 @{
     Layout = null;
     bool isAdmin = User?.IsInRole("admin") ?? false;
     string displayName = null;
     bool isAuthenticated = User?.Identity?.IsAuthenticated ?? false;
 
+    // Get cart count from session
+    int cartCount = 0;
+    try
+    {
+      var cart = Session["ShoppingCart"] as List<CartItem>;
+   if (cart != null)
+     {
+            cartCount = cart.Sum(i => i.Quantity);
+        }
+    }
+    catch { }
+
     try
     {
         if (Session != null && Session["DisplayName"] != null)
         {
             displayName = Session["DisplayName"].ToString();
-        }
+     }
     }
     catch { }
 
@@ -20,12 +33,12 @@
         var claimsPrincipal = User as ClaimsPrincipal;
         if (claimsPrincipal != null)
         {
-            var emailClaim = claimsPrincipal.FindFirst(ClaimTypes.Email);
+          var emailClaim = claimsPrincipal.FindFirst(ClaimTypes.Email);
             if (emailClaim != null && !string.IsNullOrWhiteSpace(emailClaim.Value))
             {
-                identityName = emailClaim.Value;
+     identityName = emailClaim.Value;
             }
-        }
+   }
         displayName = identityName;
     }
 }
@@ -68,14 +81,17 @@
                 </ul>
 
                 <ul class="navbar-nav ms-auto align-items-center">
-                    <!-- Cart -->
-                    <li class="nav-item me-2">
-                        <a href="@Url.Action("Index", "Cart")" class="nav-link d-flex align-items-center" title="Cart">
-                            <i class="bi bi-cart3" aria-hidden="true"></i>
-                            <span class="visually-hidden">Cart</span>
-                            <span class="badge badge-cart ms-2">0</span>
-                        </a>
-                    </li>
+       <!-- Cart -->
+         <li class="nav-item me-2">
+       <a href="@Url.Action("Index", "Cart")" class="nav-link d-flex align-items-center" title="Cart">
+   <i class="bi bi-cart3" aria-hidden="true"></i>
+     <span class="visually-hidden">Cart</span>
+      @if (cartCount > 0)
+      {
+       <span class="badge badge-cart ms-2">@cartCount</span>
+   }
+    </a>
+      </li>
 
                     @* Not authenticated -> show Login / Register *@
                     @if (!isAuthenticated)
