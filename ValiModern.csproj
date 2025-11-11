@@ -135,6 +135,7 @@
     <Compile Include="Areas\Admin\Controllers\ColorController.cs" />
     <Compile Include="Areas\Admin\Controllers\DashboardController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductController.cs" />
+    <Compile Include="Areas\Admin\Controllers\ProductImagesController.cs" />
     <Compile Include="Areas\Admin\Controllers\SizeController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -264,6 +265,8 @@
     <Content Include="Areas\Admin\Views\Product\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Product\Create.cshtml" />
     <Content Include="Areas\Admin\Views\Product\Edit.cshtml" />
+    <Content Include="Areas\Admin\Views\ProductImages\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\ProductImages\Create.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />

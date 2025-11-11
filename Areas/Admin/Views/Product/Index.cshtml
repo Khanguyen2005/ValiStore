@@ -73,6 +73,7 @@
                         <td class="text-end">@p.sold</td>
                         <td>@(p.is_active?"Yes":"No")</td>
                         <td class="text-end">
+                            <a class="btn btn-sm btn-outline-secondary" href="@Url.Action("Index","ProductImages", new { productId = p.id })" title="Manage images"><i class="bi bi-images"></i></a>
                             <a class="btn btn-sm btn-outline-primary" href="@Url.Action("Edit", new { id = p.id })"><i class="bi bi-pencil"></i></a>
                             @using (Html.BeginForm("Delete", "Product", FormMethod.Post, new { onsubmit = "return confirm('Delete this product?')" }))
                             {
