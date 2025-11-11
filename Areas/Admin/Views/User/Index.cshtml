@@ -1,0 +1,66 @@
+@model IEnumerable<ValiModern.Models.EF.User>
+@{
+    ViewBag.Title = "Users";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="container-xl py-3">
+ <div class="d-flex justify-content-between align-items-center mb-3">
+ <h2 class="h5 fw-bold mb-0">Users</h2>
+ <a href="@Url.Action("Create")" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg"></i> New</a>
+ </div>
+ @using (Html.BeginForm("Index", "User", FormMethod.Get, new { @class = "row g-2 mb-3" }))
+ {
+ <div class="col-md-4">
+ <input type="text" name="q" value="@ViewBag.Query" class="form-control" placeholder="Search email, username, phone" />
+ </div>
+ <div class="col-md-2">
+ <button class="btn btn-outline-secondary w-100" type="submit">Search</button>
+ </div>
+ }
+ @if (TempData["Success"] != null)
+ {
+ <div class="alert alert-success">@TempData["Success"]</div>
+ }
+ <div class="table-responsive">
+ <table class="table table-sm align-middle">
+ <thead>
+ <tr>
+ <th>#</th>
+ <th>Email</th>
+ <th>Username</th>
+ <th>Phone</th>
+ <th>Admin</th>
+ <th>Created</th>
+ <th></th>
+ </tr>
+ </thead>
+ <tbody>
+ @foreach (var u in Model)
+ {
+ <tr>
+ <td>@u.id</td>
+ <td>@u.email</td>
+ <td>@u.username</td>
+ <td>@u.phone</td>
+ <td>
+ @if (u.is_admin)
+ {<span class="badge text-bg-primary">Admin</span>}
+ else
+ {<span class="badge text-bg-secondary">Member</span>}
+ </td>
+ <td>@u.created_at.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+ <td class="text-end">
+ <a class="btn btn-sm btn-outline-primary" href="@Url.Action("Edit", new { id = u.id })"><i class="bi bi-pencil"></i></a>
+ @using (Html.BeginForm("Delete", "User", FormMethod.Post, new { onsubmit = "return confirm('Delete this user?')" }))
+ {
+ @Html.AntiForgeryToken()
+ @Html.Hidden("id", u.id)
+ <button type="submit" class="btn btn-sm btn-outline-danger ms-1"><i class="bi bi-trash"></i></button>
+ }
+ </td>
+ </tr>
+ }
+ </tbody>
+ </table>
+ </div>
+</div>
