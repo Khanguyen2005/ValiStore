@@ -1,38 +1,19 @@
 ﻿@using System.Security.Claims
 @{
     Layout = null;
-    bool isAdmin = false;
+    bool isAdmin = User?.IsInRole("admin") ?? false;
     string displayName = null;
     bool isAuthenticated = User?.Identity?.IsAuthenticated ?? false;
 
-    // Nếu có session (được set khi login), ưu tiên dùng session
     try
     {
-        if (Session != null && Session["IsAdmin"] != null)
-        {
-            // Session["IsAdmin"] có thể là bool hoặc string "True"/"False"
-            if (Session["IsAdmin"] is bool b)
-            {
-                isAdmin = b;
-            }
-            else
-            {
-                // try convert
-                isAdmin = Convert.ToBoolean(Session["IsAdmin"]);
-            }
-        }
-
         if (Session != null && Session["DisplayName"] != null)
         {
             displayName = Session["DisplayName"].ToString();
         }
     }
-    catch
-    {
-        // swallow errors -- fallback to identity below
-    }
+    catch { }
 
-    // Nếu chưa có displayName từ session, fallback lấy từ identity (email/username claim)
     if (string.IsNullOrWhiteSpace(displayName) && isAuthenticated)
     {
         var identityName = User.Identity.Name ?? string.Empty;

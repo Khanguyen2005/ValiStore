@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using ValiModern.Models.EF;
@@ -14,10 +15,6 @@ namespace ValiModern.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            if (Session["Email"] != null)
-            {
-                return RedirectToAction("Home_Page", "HomePage");
-            }
             return View();
         }
 
@@ -29,9 +26,11 @@ namespace ValiModern.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
+            var email = (model.Email ?? string.Empty).Trim().ToLowerInvariant();
+
             using (var db = new ValiModernDBEntities())
             {
-                var existing = db.Users.FirstOrDefault(u => u.email == model.Email);
+                var existing = db.Users.FirstOrDefault(u => u.email == email);
                 if (existing != null)
                 {
                     ModelState.AddModelError("", "Email đã được sử dụng.");
@@ -41,12 +40,12 @@ namespace ValiModern.Controllers
                 // Create user with plain password (no hashing, as requested)
                 var user = new User
                 {
-                    username = model.Email.Split('@')[0],
-                    email = model.Email,
+                    username = email.Split('@')[0],
+                    email = email,
                     password = model.Password, // không hash
-                    phone = "",
+                    phone = string.Empty,
                     is_admin = false,
-                    address = "",
+                    address = string.Empty,
                     created_at = DateTime.UtcNow,
                     updated_at = DateTime.UtcNow
                 };
@@ -54,11 +53,27 @@ namespace ValiModern.Controllers
                 db.Users.Add(user);
                 db.SaveChanges();
 
-                // Auto-login after registration
-                FormsAuthentication.SetAuthCookie(user.email, false);
+                // Create auth ticket with role in UserData
+                var role = user.is_admin ? "admin" : "member";
+                var ticket = new FormsAuthenticationTicket(
+                    1,
+                    user.email,
+                    DateTime.Now,
+                    DateTime.Now.AddMinutes(60),
+                    false,
+                    role,
+                    FormsAuthentication.FormsCookiePath);
 
-                // Fill session for layout usage
-                Session["IsAdmin"] = user.is_admin;
+                var enc = FormsAuthentication.Encrypt(ticket);
+                var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, enc)
+                {
+                    HttpOnly = true,
+                    Secure = FormsAuthentication.RequireSSL,
+                    Path = FormsAuthentication.FormsCookiePath
+                };
+                Response.Cookies.Add(cookie);
+
+                // For UI only
                 Session["DisplayName"] = string.IsNullOrWhiteSpace(user.username) ? user.email : user.username;
 
                 return RedirectToAction("Index", "Home");
@@ -82,18 +97,40 @@ namespace ValiModern.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
+            var email = (model.Email ?? string.Empty).Trim().ToLowerInvariant();
+
             using (var db = new ValiModernDBEntities())
             {
-                var user = db.Users.FirstOrDefault(u => u.email == model.Email && u.password == model.Password);
+                var user = db.Users.FirstOrDefault(u => u.email == email && u.password == model.Password);
                 if (user == null)
                 {
                     ModelState.AddModelError("", "Email hoặc mật khẩu không đúng.");
                     return View(model);
                 }
 
-                FormsAuthentication.SetAuthCookie(user.email, model.RememberMe);
+                var role = user.is_admin ? "admin" : "member";
+                var ticket = new FormsAuthenticationTicket(
+                    1,
+                    user.email,
+                    DateTime.Now,
+                    DateTime.Now.AddDays(model.RememberMe ? 14 : 1),
+                    model.RememberMe,
+                    role,
+                    FormsAuthentication.FormsCookiePath);
 
-                Session["IsAdmin"] = user.is_admin;
+                var enc = FormsAuthentication.Encrypt(ticket);
+                var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, enc)
+                {
+                    HttpOnly = true,
+                    Secure = FormsAuthentication.RequireSSL,
+                    Path = FormsAuthentication.FormsCookiePath
+                };
+                if (model.RememberMe)
+                {
+                    cookie.Expires = ticket.Expiration;
+                }
+                Response.Cookies.Add(cookie);
+
                 Session["DisplayName"] = string.IsNullOrWhiteSpace(user.username) ? user.email : user.username;
 
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
@@ -109,13 +146,11 @@ namespace ValiModern.Controllers
         public ActionResult Logout()
         {
             FormsAuthentication.SignOut();
-            Session.Remove("IsAdmin");
             Session.Remove("DisplayName");
             Session.Clear();
             return RedirectToAction("Index", "Home");
         }
 
-        // Optional: simple unauthorized view used by filters
         [HttpGet]
         public ActionResult Unauthorized()
         {

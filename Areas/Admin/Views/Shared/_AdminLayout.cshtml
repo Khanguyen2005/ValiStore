@@ -3,29 +3,14 @@
     Layout = null;
 
     bool isAuthenticated = User?.Identity?.IsAuthenticated ?? false;
-    bool isAdmin = false;
+    bool isAdmin = User?.IsInRole("admin") ?? false;
     string displayName = "Admin";
 
     if (isAuthenticated)
     {
         try
         {
-            // ưu tiên lấy từ Session (lưu trong Login action)
-            var isAdminObj = Session["IsAdmin"];
             var displayNameObj = Session["DisplayName"];
-
-            if (isAdminObj != null)
-            {
-                // Session có thể lưu dưới dạng bool, int, string... nên convert an toàn
-                bool parsed;
-                if (isAdminObj is bool b) { parsed = b; }
-                else if (isAdminObj is int i) { parsed = (i != 0); }
-                else if (bool.TryParse(isAdminObj.ToString(), out parsed)) { }
-                else {parsed = false; }
-
-                isAdmin = parsed;
-            }
-
             if (displayNameObj != null)
             {
                 var dn = displayNameObj as string ?? displayNameObj.ToString();
