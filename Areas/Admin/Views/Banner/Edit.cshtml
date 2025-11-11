@@ -1,0 +1,27 @@
+@model ValiModern.Models.EF.Banner
+@{
+    ViewBag.Title = "Edit Banner";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="container-xl py-3">
+    <h2 class="h5 fw-bold mb-3">Edit banner</h2>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.id)
+        <div class="mb-3">
+            @Html.LabelFor(m => m.name)
+            @Html.TextBoxFor(m => m.name, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.name)
+        </div>
+        <div class="mb-3">
+            @Html.LabelFor(m => m.image_url, "Image URL")
+            @Html.TextBoxFor(m => m.image_url, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.image_url)
+        </div>
+        <div>
+            <a class="btn btn-outline-secondary" href="@Url.Action("Index")">Cancel</a>
+            <button class="btn btn-primary" type="submit">Save</button>
+        </div>
+    }
+</div>
