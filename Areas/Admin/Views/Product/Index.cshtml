@@ -1,0 +1,89 @@
+@model IEnumerable<ValiModern.Models.EF.Product>
+@{
+    ViewBag.Title = "Products";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var currentSort = ViewBag.Sort as string ?? "id_asc";
+}
+<div class="container-xl py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 fw-bold mb-0">Products</h2>
+        <div class="d-flex align-items-center gap-2">
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" id="sortProdBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="bi bi-sort-down me-1"></i> Sort
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="sortProdBtn">
+                    <li><a class="dropdown-item @(currentSort=="id_asc"?"active":null)" href="@Url.Action("Index", new { sort = "id_asc", q=ViewBag.Query })">ID Asc</a></li>
+                    <li><a class="dropdown-item @(currentSort=="id_desc"?"active":null)" href="@Url.Action("Index", new { sort = "id_desc", q=ViewBag.Query })">ID Desc</a></li>
+                    <li><hr class="dropdown-divider" /></li>
+                    <li><a class="dropdown-item @(currentSort=="price_asc"?"active":null)" href="@Url.Action("Index", new { sort = "price_asc", q=ViewBag.Query })">Price Asc</a></li>
+                    <li><a class="dropdown-item @(currentSort=="price_desc"?"active":null)" href="@Url.Action("Index", new { sort = "price_desc", q=ViewBag.Query })">Price Desc</a></li>
+                    <li><a class="dropdown-item @(currentSort=="sold_desc"?"active":null)" href="@Url.Action("Index", new { sort = "sold_desc", q=ViewBag.Query })">Sold Desc</a></li>
+                    <li><a class="dropdown-item @(currentSort=="sold_asc"?"active":null)" href="@Url.Action("Index", new { sort = "sold_asc", q=ViewBag.Query })">Sold Asc</a></li>
+                </ul>
+            </div>
+            <a href="@Url.Action("Create")" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg"></i> New</a>
+        </div>
+    </div>
+    @using (Html.BeginForm("Index", "Product", FormMethod.Get, new { @class = "row g-2 mb-3" }))
+    {
+        <div class="col-md-4">
+            <input type="text" name="q" value="@ViewBag.Query" class="form-control" placeholder="Search name, category, brand" />
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-outline-secondary w-100" type="submit">Search</button>
+        </div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
+    <div class="table-responsive">
+        <table class="table table-sm align-middle">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Brand</th>
+                    <th class="text-end">Price</th>
+                    <th class="text-end">Stock</th>
+                    <th class="text-end">Sold</th>
+                    <th>Active</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td>@p.id</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(p.image_url))
+                            {<img src="@p.image_url" style="height:42px;width:auto;border-radius:6px;" /> }
+                            else
+                            { <span class="text-muted small">No image</span>}
+                        </td>
+                        <td>@p.name</td>
+                        <td>@p.Category?.name</td>
+                        <td>@p.Brand?.name</td>
+                        <td class="text-end">@String.Format("{0:n0}", p.price)</td>
+                        <td class="text-end">@p.stock</td>
+                        <td class="text-end">@p.sold</td>
+                        <td>@(p.is_active?"Yes":"No")</td>
+                        <td class="text-end">
+                            <a class="btn btn-sm btn-outline-primary" href="@Url.Action("Edit", new { id = p.id })"><i class="bi bi-pencil"></i></a>
+                            @using (Html.BeginForm("Delete", "Product", FormMethod.Post, new { onsubmit = "return confirm('Delete this product?')" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                @Html.Hidden("id", p.id)
+                                <button type="submit" class="btn btn-sm btn-outline-danger ms-1"><i class="bi bi-trash"></i></button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

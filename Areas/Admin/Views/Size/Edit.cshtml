@@ -1,0 +1,22 @@
+@model ValiModern.Services.SizeOption
+@{
+    ViewBag.Title = "Edit Size";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+<div class="container-xl py-3">
+    <h2 class="h5 fw-bold mb-3">Edit size</h2>
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+        @Html.HiddenFor(m => m.Id)
+        <div class="mb-3">
+            @Html.LabelFor(m => m.Name)
+            @Html.TextBoxFor(m => m.Name, new { @class = "form-control" })
+            @Html.ValidationMessageFor(m => m.Name)
+        </div>
+        <div>
+            <a class="btn btn-outline-secondary" href="@Url.Action("Index")">Cancel</a>
+            <button class="btn btn-primary" type="submit">Save</button>
+        </div>
+    }
+</div>

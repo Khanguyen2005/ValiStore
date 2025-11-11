@@ -15,16 +15,16 @@
         </div>
         <div class="mb-3">
             <label class="form-label">Image</label>
-            <div id="dropZone" class="border rounded-3 p-4 text-center bg-light position-relative"
+            <div class="img-dropzone border rounded-3 p-4 text-center bg-light position-relative"
                 style="cursor:pointer;">
-                <input type="file" name="imageFile" id="imageFile" accept="image/*"
+                <input type="file" name="imageFile" accept="image/*"
                     class="position-absolute top-0 start-0 w-100 h-100 opacity-0" />
                 <div class="dz-text">
                     <i class="bi bi-cloud-upload fs-1 text-primary"></i>
                     <p class="mb-1">Drag & drop image here or click to choose</p>
                     <small class="text-muted">Allowed: jpg, jpeg, png, gif, webp</small>
                 </div>
-                <img id="preview" src="" alt="preview" class="d-none img-fluid rounded" />
+                <img data-preview src="" alt="preview" class="d-none img-fluid rounded" />
             </div>
             <span class="text-danger">@Html.ValidationMessage("imageFile")</span>
         </div>
@@ -35,41 +35,5 @@
     }
 </div>
 @section scripts {
-<script>
-    (function () {
-        const input = document.getElementById('imageFile');
-        const dz = document.getElementById('dropZone');
-        const preview = document.getElementById('preview');
-        function showPreview(file) {
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = e => {
-                preview.src = e.target.result;
-                preview.classList.remove('d-none');
-                dz.querySelector('.dz-text').classList.add('d-none');
-            };
-            reader.readAsDataURL(file);
-        }
-        input.addEventListener('change', () => {
-            if (input.files && input.files[0])
-                showPreview(input.files[0]);
-        });
-        ['dragenter', 'dragover'].forEach(ev => dz.addEventListener(ev, e => {
-            e.preventDefault();
-            e.stopPropagation();
-            dz.classList.add('border-primary');
-        }));
-        ['dragleave', 'drop'].forEach(ev => dz.addEventListener(ev, e => {
-            e.preventDefault();
-            e.stopPropagation();
-            dz.classList.remove('border-primary');
-        }));
-        dz.addEventListener('drop', e => {
-            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                input.files = e.dataTransfer.files;
-                showPreview(input.files[0]);
-            }
-        });
-    })();
-</script>
+    <script src="~/Scripts/Admin/image-dropzone.js"></script>
 }

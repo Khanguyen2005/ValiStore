@@ -1,0 +1,35 @@
+{
+  "LastId": 6,
+  "Items": [
+    {
+      "Id": 1,
+      "Name": "Red",
+      "ColorCode": "#FF0000"
+    },
+    {
+      "Id": 2,
+      "Name": "Aqua",
+      "ColorCode": "#00FFFF"
+    },
+    {
+      "Id": 3,
+      "Name": "Yellow",
+      "ColorCode": "#FFFF00"
+    },
+    {
+      "Id": 4,
+      "Name": "Black",
+      "ColorCode": "#000000"
+    },
+    {
+      "Id": 5,
+      "Name": "White",
+      "ColorCode": "#ffffff"
+    },
+    {
+      "Id": 6,
+      "Name": "Pink",
+      "ColorCode": "#FF99FF"
+    }
+  ]
+}
