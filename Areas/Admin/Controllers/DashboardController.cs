@@ -24,15 +24,15 @@ namespace ValiModern.Areas.Admin.Controllers
                 // Orders statistics
                 TotalOrders = _db.Orders.Count(),
                 PendingOrders = _db.Orders.Count(o => o.status == "Pending"),
-                ProcessingOrders = _db.Orders.Count(o => o.status == "Processing"),
+                ConfirmedOrders = _db.Orders.Count(o => o.status == "Confirmed"),
                 ShippedOrders = _db.Orders.Count(o => o.status == "Shipped"),
-                DeliveredOrders = _db.Orders.Count(o => o.status == "Delivered"),
+                CompletedOrders = _db.Orders.Count(o => o.status == "Completed"),
                 CancelledOrders = _db.Orders.Count(o => o.status == "Cancelled"),
 
-                // Revenue statistics
-                TotalRevenue = _db.Orders.Where(o => o.status == "Delivered").Sum(o => (decimal?)o.total_amount) ?? 0,
-                TodayRevenue = _db.Orders.Where(o => o.status == "Delivered" && DbFunctions.TruncateTime(o.order_date) == today).Sum(o => (decimal?)o.total_amount) ?? 0,
-                MonthRevenue = _db.Orders.Where(o => o.status == "Delivered" && o.order_date >= firstDayOfMonth).Sum(o => (decimal?)o.total_amount) ?? 0,
+                // Revenue statistics (count only Completed orders)
+                TotalRevenue = _db.Orders.Where(o => o.status == "Completed").Sum(o => (decimal?)o.total_amount) ?? 0,
+                TodayRevenue = _db.Orders.Where(o => o.status == "Completed" && DbFunctions.TruncateTime(o.order_date) == today).Sum(o => (decimal?)o.total_amount) ?? 0,
+                MonthRevenue = _db.Orders.Where(o => o.status == "Completed" && o.order_date >= firstDayOfMonth).Sum(o => (decimal?)o.total_amount) ?? 0,
 
                 // Products statistics
                 TotalProducts = _db.Products.Count(),

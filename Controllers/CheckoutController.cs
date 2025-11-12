@@ -96,6 +96,24 @@ namespace ValiModern.Controllers
                 return RedirectToAction("Index");
             }
 
+            // Validate stock availability before creating order
+            foreach (var item in cart)
+            {
+                var product = _db.Products.Find(item.ProductId);
+                if (product == null)
+                {
+                    TempData["Error"] = $"Product {item.ProductName} not found.";
+                    model.Items = cart;
+                    return View("Index", model);
+                }
+                if (product.stock < item.Quantity)
+                {
+                    TempData["Error"] = $"Insufficient stock for {product.name}. Available: {product.stock}, Requested: {item.Quantity}";
+                    model.Items = cart;
+                    return View("Index", model);
+                }
+            }
+
             // Calculate total amount
             decimal totalAmount = cart.Sum(i => i.Subtotal);
 
@@ -122,7 +140,7 @@ namespace ValiModern.Controllers
             _db.Orders.Add(order);
             _db.SaveChanges();
 
-            // Create order details
+            // Create order details AND update product stock/sold
             foreach (var item in cart)
             {
                 var orderDetail = new Order_Details
@@ -136,6 +154,14 @@ namespace ValiModern.Controllers
                     created_at = DateTime.Now
                 };
                 _db.Order_Details.Add(orderDetail);
+
+                // Update product stock and sold count
+                var product = _db.Products.Find(item.ProductId);
+                if (product != null)
+                {
+                    product.stock -= item.Quantity;  // Decrease stock
+                    product.sold += item.Quantity;   // Increase sold count
+                }
             }
 
             // Create payment record
@@ -157,9 +183,9 @@ namespace ValiModern.Controllers
             catch (Exception ex)
             {
                 // Log the error
-                System.Diagnostics.Debug.WriteLine($"Error saving payment: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error saving order: {ex.Message}");
                 System.Diagnostics.Debug.WriteLine($"Order Amount: {totalAmount}");
-                TempData["Error"] = "Error processing payment. Please try again.";
+                TempData["Error"] = "Error processing order. Please try again.";
                 return RedirectToAction("Index");
             }
 

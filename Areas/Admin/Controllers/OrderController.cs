@@ -147,63 +147,102 @@ namespace ValiModern.Areas.Admin.Controllers
       // POST: Admin/Order/UpdateStatus
         [HttpPost]
         [ValidateAntiForgeryToken]
-    public ActionResult UpdateStatus(int id, string status)
+   public ActionResult UpdateStatus(int id, string status)
         {
-        var order = _db.Orders.Find(id);
-            if (order == null) return HttpNotFound();
+var order = _db.Orders
+      .Include(o => o.Order_Details)
+   .FirstOrDefault(o => o.id == id);
+            
+    if (order == null) return HttpNotFound();
 
-      if (string.IsNullOrWhiteSpace(status))
-        {
-         TempData["Error"] = "Status is required.";
-       return RedirectToAction("Details", new { id });
-            }
+   if (string.IsNullOrWhiteSpace(status))
+   {
+      TempData["Error"] = "Status is required.";
+        return RedirectToAction("Details", new { id });
+   }
 
-       var validStatuses = new[] { "Pending", "Processing", "Shipped", "Delivered", "Cancelled" };
-      if (!validStatuses.Contains(status))
-         {
-                TempData["Error"] = "Invalid status.";
-      return RedirectToAction("Details", new { id });
-  }
-
- order.status = status;
-  order.updated_at = DateTime.Now;
-       _db.SaveChanges();
-
-  TempData["Success"] = $"Order status updated to '{status}'.";
-     return RedirectToAction("Details", new { id });
-    }
-
-  // POST: Admin/Order/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id)
-        {
-     var order = _db.Orders
-         .Include(o => o.Order_Details)
-   .Include(o => o.Payments)
-          .FirstOrDefault(o => o.id == id);
-
-            if (order == null) return HttpNotFound();
-
-            // Remove payments
-          foreach (var payment in order.Payments.ToList())
-      {
-           _db.Payments.Remove(payment);
-          }
-
-// Remove order details
-         foreach (var detail in order.Order_Details.ToList())
-     {
-      _db.Order_Details.Remove(detail);
+  var validStatuses = new[] { "Pending", "Confirmed", "Shipped", "Completed", "Cancelled" };
+            if (!validStatuses.Contains(status))
+  {
+         TempData["Error"] = "Invalid status.";
+  return RedirectToAction("Details", new { id });
        }
 
-            // Remove order
-            _db.Orders.Remove(order);
-      _db.SaveChanges();
+       var oldStatus = order.status;
+            
+       // If changing to Cancelled, restore stock
+          if (status == "Cancelled" && oldStatus != "Cancelled")
+            {
+   foreach (var detail in order.Order_Details)
+           {
+     var product = _db.Products.Find(detail.product_id);
+            if (product != null)
+        {
+ product.stock += detail.quantity;  // Restore stock
+ product.sold -= detail.quantity;   // Decrease sold count
+       
+    // Prevent negative sold count
+            if (product.sold < 0) product.sold = 0;
+    }
+       }
+    }
 
-    TempData["Success"] = "Order deleted.";
-            return RedirectToAction("Index");
-     }
+      order.status = status;
+      order.updated_at = DateTime.Now;
+     _db.SaveChanges();
+
+    TempData["Success"] = $"Order status updated to '{status}'.";
+    return RedirectToAction("Details", new { id });
+        }
+
+        // POST: Admin/Order/Delete/5
+      [HttpPost]
+        [ValidateAntiForgeryToken]
+      public ActionResult Delete(int id)
+    {
+         var order = _db.Orders
+    .Include(o => o.Order_Details)
+       .Include(o => o.Payments)
+        .FirstOrDefault(o => o.id == id);
+
+          if (order == null) return HttpNotFound();
+
+   // Restore stock if order wasn't cancelled
+        if (order.status != "Cancelled")
+         {
+           foreach (var detail in order.Order_Details)
+    {
+  var product = _db.Products.Find(detail.product_id);
+              if (product != null)
+   {
+           product.stock += detail.quantity;  // Restore stock
+          product.sold -= detail.quantity;   // Decrease sold count
+             
+               // Prevent negative sold count
+    if (product.sold < 0) product.sold = 0;
+              }
+ }
+      }
+
+      // Remove payments
+ foreach (var payment in order.Payments.ToList())
+   {
+     _db.Payments.Remove(payment);
+            }
+
+       // Remove order details
+foreach (var detail in order.Order_Details.ToList())
+            {
+     _db.Order_Details.Remove(detail);
+            }
+
+ // Remove order
+   _db.Orders.Remove(order);
+         _db.SaveChanges();
+
+            TempData["Success"] = "Order deleted and stock restored.";
+     return RedirectToAction("Index");
+        }
 
         protected override void Dispose(bool disposing)
         {
