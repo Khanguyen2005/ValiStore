@@ -228,7 +228,6 @@
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\Layout.css" />
-    <Content Include="Database\Migration_ChangeMoneyColumnsToInt.sql" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -284,11 +283,6 @@
     <Content Include="Areas\Admin\Views\Brand\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\Order\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Order\Details.cshtml" />
-    <Content Include="PAYMENT_GUIDE.md" />
-    <Content Include="QUICK_START.md" />
-    <Content Include="FIX_VNPAY_TIMEOUT.md" />
-    <Content Include="MIGRATION_TO_INT_MONEY.md" />
-    <Content Include="FIX_EDMX_MAPPING_ERROR.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
@@ -332,7 +326,6 @@
     <Content Include="Views\Checkout\Confirmation.cshtml" />
     <Content Include="Views\Shared\_AddToCartForm.cshtml" />
     <Content Include="Views\Product\Index.cshtml" />
-    <Content Include="SHOPPING_FLOW_COMPLETE.md" />
     <Content Include="Views\Product\Details.cshtml" />
   </ItemGroup>
   <ItemGroup>
