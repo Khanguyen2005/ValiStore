@@ -26,11 +26,17 @@
             </div>
             <div class="col-md-3">
                 @Html.LabelFor(m => m.Price)
-                @Html.TextBoxFor(m => m.Price, new { @class = "form-control", type = "number", step = "0.01" })
+                <input type="number" step="0.01" class="form-control" 
+                       name="Price" id="Price" 
+                       value="@Model.Price.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)" />
+                @Html.ValidationMessageFor(m => m.Price)
             </div>
             <div class="col-md-3">
                 @Html.LabelFor(m => m.OriginalPrice)
-                @Html.TextBoxFor(m => m.OriginalPrice, new { @class = "form-control", type = "number", step = "0.01" })
+                <input type="number" step="0.01" class="form-control" 
+                       name="OriginalPrice" id="OriginalPrice" 
+                       value="@Model.OriginalPrice.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)" />
+                @Html.ValidationMessageFor(m => m.OriginalPrice)
             </div>
             <div class="col-md-3">
                 @Html.LabelFor(m => m.Stock)

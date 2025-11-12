@@ -297,6 +297,16 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
+    <Content Include="Uploads\brands\thuong-hieu-heys-1674809492-638984844049458671.jpg" />
+    <Content Include="Uploads\brands\thuong-hieu-hydro-flask-1674802224-638984844289079222.jpg" />
+    <Content Include="Uploads\brands\thuong-hieu-simplecarry-1576634849-638984844588185076.jpg" />
+    <Content Include="Uploads\products\-larita-lanca-ah0525-16-s-purple-16531-01758177884-638985180718732099.jpg" />
+    <Content Include="Uploads\products\-larita-lanca-ah0525-16-s-purple-16531-11758177884-638985181088054398.jpg" />
+    <Content Include="Uploads\products\-larita-lanca-ah0525-16-s-purple-16531-51758177884-638985181246891802.jpg" />
+    <Content Include="Uploads\products\-larita-rena-ah0624-20-s-green-15676-01762133379-638984861668076470.jpg" />
+    <Content Include="Uploads\products\simplecarry-issac-2-s-navy-2-638984845321575110.jpg" />
+    <Content Include="Uploads\products\vali-larita-rena-ah0624-20-s-green-15676-01750838850-638984862049741157.jpg" />
+    <Content Include="Uploads\products\vali-larita-rena-ah0624-20-s-green-15676-11750838850-638984862322746670.jpg" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>

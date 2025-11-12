@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Globalization;
 using System.IO;
@@ -259,25 +258,29 @@ namespace ValiModern.Areas.Admin.Controllers
             vm.AllSizes = PaletteService.GetSizes();
             vm.Categories = _db.Categories.OrderBy(c => c.name).Select(c => new SelectListItem { Value = c.id.ToString(), Text = c.name }).ToList();
             vm.Brands = _db.Brands.OrderBy(b => b.name).Select(b => new SelectListItem { Value = b.id.ToString(), Text = b.name }).ToList();
-            if (product != null && source == null)
+
+            if (product != null)
             {
+                // Always populate from product if available (whether source is null or not)
                 vm.Id = product.id;
-                vm.Name = product.name;
-                vm.Description = product.description;
-                vm.OriginalPrice = product.original_price;
-                vm.Price = product.price;
-                vm.Stock = product.stock;
-                vm.Sold = product.sold;
-                vm.CategoryId = product.category_id;
-                vm.BrandId = product.brandId;
-                vm.IsActive = product.is_active;
+                vm.Name = source?.Name ?? product.name;
+                vm.Description = source?.Description ?? product.description;
+                vm.OriginalPrice = source?.OriginalPrice ?? product.original_price;
+                vm.Price = source?.Price ?? product.price;
+                vm.Stock = source?.Stock ?? product.stock;
+                vm.Sold = source?.Sold ?? product.sold;
+                vm.CategoryId = source?.CategoryId ?? product.category_id;
+                vm.BrandId = source?.BrandId ?? product.brandId;
+                vm.IsActive = source?.IsActive ?? product.is_active;
                 vm.ImageUrl = product.image_url;
+
                 // map existing product colors/sizes back to palette by name match
                 var paletteColors = vm.AllColors;
-                vm.SelectedColorIds = product.Colors.Select(pc => paletteColors.FirstOrDefault(ac => ac.Name.Equals(pc.name, StringComparison.OrdinalIgnoreCase))?.Id ?? -1).Where(i => i > 0).ToArray();
+                vm.SelectedColorIds = source?.SelectedColorIds ?? product.Colors.Select(pc => paletteColors.FirstOrDefault(ac => ac.Name.Equals(pc.name, StringComparison.OrdinalIgnoreCase))?.Id ?? -1).Where(i => i > 0).ToArray();
                 var paletteSizes = vm.AllSizes;
-                vm.SelectedSizeIds = product.Sizes.Select(ps => paletteSizes.FirstOrDefault(asz => asz.Name.Equals(ps.name, StringComparison.OrdinalIgnoreCase))?.Id ?? -1).Where(i => i > 0).ToArray();
+                vm.SelectedSizeIds = source?.SelectedSizeIds ?? product.Sizes.Select(ps => paletteSizes.FirstOrDefault(asz => asz.Name.Equals(ps.name, StringComparison.OrdinalIgnoreCase))?.Id ?? -1).Where(i => i > 0).ToArray();
             }
+
             return vm;
         }
 

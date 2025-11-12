@@ -9,281 +9,281 @@
 
 <div class="container my-4">
     <nav aria-label="breadcrumb">
-   <ol class="breadcrumb">
-  <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-       <li class="breadcrumb-item"><a href="@Url.Action("Index")">Shop</a></li>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index")">Shop</a></li>
             @if (product.Category != null)
-    {
-     <li class="breadcrumb-item"><a href="@Url.Action("Index", new { category = product.Category.name })">@product.Category.name</a></li>
-    }
-        <li class="breadcrumb-item active">@product.name</li>
+            {
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", new { category = product.Category.name })">@product.Category.name</a></li>
+            }
+            <li class="breadcrumb-item active">@product.name</li>
         </ol>
     </nav>
 
     <div class="row">
         <!-- Product Images -->
         <div class="col-lg-6 mb-4">
-      <div class="product-images">
-  @if (mainImage != null)
-  {
-              <div class="main-image mb-3">
-                <img src="@mainImage.image_url" alt="@product.name" class="img-fluid rounded shadow-sm" id="mainImage" />
-       </div>
-      }
+            <div class="product-images">
+                @if (mainImage != null)
+                {
+                    <div class="main-image mb-3">
+                        <img src="@mainImage.image_url" alt="@product.name" class="img-fluid rounded shadow-sm" id="mainImage" />
+                    </div>
+                }
 
-     @if (images.Count > 1)
-       {
-             <div class="thumbnail-images d-flex gap-2">
-@foreach (var img in images)
-    {
-         <img src="@img.image_url" alt="Image" class="img-thumbnail thumbnail-img" 
-       style="width:80px;height:80px;object-fit:cover;cursor:pointer;" 
-  onclick="changeMainImage('@img.image_url')" />
-          }
-   </div>
-      }
-</div>
-     </div>
+                @if (images.Count > 1)
+                {
+                    <div class="thumbnail-images d-flex gap-2">
+                        @foreach (var img in images)
+                        {
+                            <img src="@img.image_url" alt="Image" class="img-thumbnail thumbnail-img"
+                                 style="width:80px;height:80px;object-fit:cover;cursor:pointer;"
+                                 onclick="changeMainImage('@img.image_url')" />
+                        }
+                    </div>
+                }
+            </div>
+        </div>
 
         <!-- Product Info & Add to Cart -->
-  <div class="col-lg-6">
+        <div class="col-lg-6">
             <div class="product-info">
-  <h1 class="h3 fw-bold mb-3">@product.name</h1>
+                <h1 class="h3 fw-bold mb-3">@product.name</h1>
 
-      <!-- Price -->
-          <div class="mb-3">
-       @if (product.original_price > product.price)
-           {
-      <span class="text-muted text-decoration-line-through fs-5 me-2">@String.Format("{0:n0}", product.original_price) ₫</span>
-       <span class="text-primary fw-bold fs-3">@String.Format("{0:n0}", product.price) ₫</span>
-    <span class="badge bg-danger ms-2">-@(((product.original_price - product.price) / product.original_price * 100).ToString("F0"))%</span>
-           }
-      else
-          {
- <span class="text-primary fw-bold fs-3">@String.Format("{0:n0}", product.price) ₫</span>
-      }
-  </div>
-
-       <!-- Rating & Sold -->
-           <div class="d-flex align-items-center mb-3">
-         <div class="me-4">
-        <i class="bi bi-star-fill text-warning"></i>
-   <i class="bi bi-star-fill text-warning"></i>
- <i class="bi bi-star-fill text-warning"></i>
- <i class="bi bi-star-fill text-warning"></i>
-         <i class="bi bi-star-half text-warning"></i>
-             <span class="ms-1">4.5</span>
-         </div>
-         <div class="text-muted">
-        <i class="bi bi-bag-check me-1"></i>
-      Sold: <strong>@product.sold</strong>
- </div>
-    </div>
-
-      <!-- Brand & Category -->
-     <div class="mb-3">
-     @if (product.Brand != null)
-       {
-              <span class="badge bg-secondary me-2">
-   <i class="bi bi-tag me-1"></i>@product.Brand.name
-   </span>
-}
-         @if (product.Category != null)
-      {
-               <span class="badge bg-info">
-   <i class="bi bi-grid me-1"></i>@product.Category.name
-       </span>
-     }
-     </div>
-
-    <!-- Description -->
-                <div class="mb-4">
-       <h6 class="fw-bold">Description:</h6>
-           <p class="text-muted">@(string.IsNullOrEmpty(product.description) ? "No description available." : product.description)</p>
+                <!-- Price -->
+                <div class="mb-3">
+                    @if (product.original_price > product.price)
+                    {
+                        <span class="text-muted text-decoration-line-through fs-5 me-2">@String.Format("{0:n0}", product.original_price) ₫</span>
+                        <span class="text-primary fw-bold fs-3">@String.Format("{0:n0}", product.price) ₫</span>
+                        <span class="badge bg-danger ms-2">-@(((product.original_price - product.price) / product.original_price * 100).ToString("F0"))%</span>
+                    }
+                    else
+                    {
+                        <span class="text-primary fw-bold fs-3">@String.Format("{0:n0}", product.price) ₫</span>
+                    }
                 </div>
 
-    <!-- Add to Cart Form -->
+                <!-- Rating & Sold -->
+                <div class="d-flex align-items-center mb-3">
+                    <div class="me-4">
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <i class="bi bi-star-half text-warning"></i>
+                        <span class="ms-1">4.5</span>
+                    </div>
+                    <div class="text-muted">
+                        <i class="bi bi-bag-check me-1"></i>
+                        Sold: <strong>@product.sold</strong>
+                    </div>
+                </div>
+
+                <!-- Brand & Category -->
+                <div class="mb-3">
+                    @if (product.Brand != null)
+                    {
+                        <span class="badge bg-secondary me-2">
+                            <i class="bi bi-tag me-1"></i>@product.Brand.name
+                        </span>
+                    }
+                    @if (product.Category != null)
+                    {
+                        <span class="badge bg-info">
+                            <i class="bi bi-grid me-1"></i>@product.Category.name
+                        </span>
+                    }
+                </div>
+
+                <!-- Description -->
+                <div class="mb-4">
+                    <h6 class="fw-bold">Description:</h6>
+                    <p class="text-muted">@(string.IsNullOrEmpty(product.description) ? "No description available." : product.description)</p>
+                </div>
+
+                <!-- Add to Cart Form -->
                 @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post, new { @class = "add-to-cart-form" }))
-       {
-    @Html.AntiForgeryToken()
-         @Html.Hidden("productId", product.id)
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Hidden("productId", product.id)
 
-     <!-- Color Selection -->
-    if (product.Colors != null && product.Colors.Any())
-    {
-        <div class="mb-3">
-            <label class="form-label fw-bold">Color: <span class="text-danger">*</span></label>
-            <div class="color-options d-flex flex-wrap gap-2">
-         @foreach (var color in product.Colors)
-      {
-        <div class="form-check">
-  <input class="form-check-input color-radio" type="radio" name="colorId" value="@color.id" id="color_@color.id" />
-         <label class="form-check-label color-label" for="color_@color.id">
-            <div class="d-flex align-items-center p-2 border rounded" style="cursor:pointer;">
-      <span class="color-swatch" style="display:inline-block;width:30px;height:30px;background-color:@color.color_code;border:2px solid #ddd;border-radius:50%;margin-right:8px;"></span>
-          <span>@color.name</span>
-          </div>
-          </label>
-       </div>
-         }
-       </div>
-        <div class="invalid-feedback d-none" id="colorError">Please select a color</div>
-        </div>
-    }
+                    <!-- Color Selection -->
+                    if (product.Colors != null && product.Colors.Any())
+                    {
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Color: <span class="text-danger">*</span></label>
+                            <div class="color-options d-flex flex-wrap gap-2">
+                                @foreach (var color in product.Colors)
+                                {
+                                    <div class="form-check">
+                                        <input class="form-check-input color-radio" type="radio" name="colorId" value="@color.id" id="color_@color.id" />
+                                        <label class="form-check-label color-label" for="color_@color.id">
+                                            <div class="d-flex align-items-center p-2 border rounded" style="cursor:pointer;">
+                                                <span class="color-swatch" style="display:inline-block;width:30px;height:30px;background-color:@color.color_code;border:2px solid #ddd;border-radius:50%;margin-right:8px;"></span>
+                                                <span>@color.name</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                            <div class="invalid-feedback d-none" id="colorError">Please select a color</div>
+                        </div>
+                    }
 
-    <!-- Size Selection -->
-    if (product.Sizes != null && product.Sizes.Any())
-    {
-        <div class="mb-3">
-      <label class="form-label fw-bold">Size: <span class="text-danger">*</span></label>
-            <div class="size-options d-flex flex-wrap gap-2">
-    @foreach (var size in product.Sizes)
-         {
-          <div class="form-check">
-             <input class="form-check-input size-radio" type="radio" name="sizeId" value="@size.id" id="size_@size.id" />
-   <label class="form-check-label size-label btn btn-outline-secondary" for="size_@size.id" style="cursor:pointer;">
-         @size.name
-</label>
-              </div>
-            }
-     </div>
-<div class="invalid-feedback d-none" id="sizeError">Please select a size</div>
-        </div>
-    }
+                    <!-- Size Selection -->
+                    if (product.Sizes != null && product.Sizes.Any())
+                    {
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Size: <span class="text-danger">*</span></label>
+                            <div class="size-options d-flex flex-wrap gap-2">
+                                @foreach (var size in product.Sizes)
+                                {
+                                    <div class="form-check">
+                                        <input class="form-check-input size-radio" type="radio" name="sizeId" value="@size.id" id="size_@size.id" />
+                                        <label class="form-check-label size-label btn btn-outline-secondary" for="size_@size.id" style="cursor:pointer;">
+                                            @size.name
+                                        </label>
+                                    </div>
+                                }
+                            </div>
+                            <div class="invalid-feedback d-none" id="sizeError">Please select a size</div>
+                        </div>
+                    }
 
-       <!-- Quantity -->
-<div class="mb-3">
-     <label class="form-label fw-bold">Quantity:</label>
-   <div class="input-group" style="max-width:150px;">
-        <button type="button" class="btn btn-outline-secondary" onclick="decreaseQty()">-</button>
-         <input type="number" name="quantity" id="quantity" value="1" min="1" max="@product.stock" class="form-control text-center" />
-      <button type="button" class="btn btn-outline-secondary" onclick="increaseQty()">+</button>
+                    <!-- Quantity -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Quantity:</label>
+                        <div class="input-group" style="max-width:150px;">
+                            <button type="button" class="btn btn-outline-secondary" onclick="decreaseQty()">-</button>
+                            <input type="number" name="quantity" id="quantity" value="1" min="1" max="@product.stock" class="form-control text-center" />
+                            <button type="button" class="btn btn-outline-secondary" onclick="increaseQty()">+</button>
+                        </div>
+                        <small class="text-muted">Available: <strong>@product.stock</strong> in stock</small>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg" @(product.stock <= 0 ? "disabled" : "")>
+                            <i class="bi bi-cart-plus me-2"></i>@(product.stock > 0 ? "Add to Cart" : "Out of Stock")
+                        </button>
+                        <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+                        </a>
+                    </div>
+                }
             </div>
-         <small class="text-muted">Available: <strong>@product.stock</strong> in stock</small>
- </div>
-
-         <!-- Action Buttons -->
- <div class="d-grid gap-2">
-       <button type="submit" class="btn btn-primary btn-lg" @(product.stock <= 0 ? "disabled" : "")>
-           <i class="bi bi-cart-plus me-2"></i>@(product.stock > 0 ? "Add to Cart" : "Out of Stock")
-           </button>
-         <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
-<i class="bi bi-arrow-left me-2"></i>Continue Shopping
-           </a>
-      </div>
-     }
-       </div>
         </div>
     </div>
 
     <!-- Related Products -->
     @if (Model.RelatedProducts != null && Model.RelatedProducts.Any())
     {
-  <section class="mt-5">
+        <section class="mt-5">
             <h3 class="h4 fw-bold mb-3">Related Products</h3>
             <div class="row g-3">
-        @foreach (var related in Model.RelatedProducts)
- {
-     <div class="col-md-3">
-       <div class="card h-100 shadow-sm">
-                  <a href="@Url.Action("Details", new { id = related.id })">
-   <img src="@related.image_url" class="card-img-top" alt="@related.name" style="height:180px;object-fit:cover;" />
-            </a>
-      <div class="card-body">
-            <h6 class="card-title text-truncate" title="@related.name">@related.name</h6>
-            <div class="d-flex justify-content-between align-items-center">
-         <span class="fw-bold text-primary">@String.Format("{0:n0}", related.price) ₫</span>
-         <a href="@Url.Action("Details", new { id = related.id })" class="btn btn-sm btn-outline-primary">View</a>
-        </div>
-      </div>
-    </div>
-     </div>
-    }
+                @foreach (var related in Model.RelatedProducts)
+                {
+                    <div class="col-md-3">
+                        <div class="card h-100 shadow-sm">
+                            <a href="@Url.Action("Details", new { id = related.id })">
+                                <img src="@related.image_url" class="card-img-top" alt="@related.name" style="height:180px;object-fit:cover;" />
+                            </a>
+                            <div class="card-body">
+                                <h6 class="card-title text-truncate" title="@related.name">@related.name</h6>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fw-bold text-primary">@String.Format("{0:n0}", related.price) ₫</span>
+                                    <a href="@Url.Action("Details", new { id = related.id })" class="btn btn-sm btn-outline-primary">View</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
-  </section>
+        </section>
     }
 </div>
 
 @section scripts {
-<script>
-    // Change main image
-    function changeMainImage(url) {
-        document.getElementById('mainImage').src = url;
-    }
-
-    // Quantity controls
-    function increaseQty() {
-   var qtyInput = document.getElementById('quantity');
-   var max = parseInt(qtyInput.getAttribute('max'));
-        var current = parseInt(qtyInput.value);
-        if (current < max) {
-            qtyInput.value = current + 1;
+    <script>
+        // Change main image
+        function changeMainImage(url) {
+            document.getElementById('mainImage').src = url;
         }
-    }
 
-    function decreaseQty() {
-        var qtyInput = document.getElementById('quantity');
-        var min = parseInt(qtyInput.getAttribute('min'));
-        var current = parseInt(qtyInput.value);
-        if (current > min) {
-       qtyInput.value = current - 1;
-        }
-    }
-
-    // Style selected options + Form validation
-  $(document).ready(function() {
-        // Hide radio buttons
-        $('.color-radio, .size-radio').hide();
-
-        // Color selection
-        $('.color-radio').change(function() {
-    $('.color-label .border').removeClass('border-primary').addClass('border-secondary');
-         if ($(this).is(':checked')) {
-        $(this).siblings('label').find('.border').removeClass('border-secondary').addClass('border-primary');
-        $('#colorError').addClass('d-none'); // Hide error
-         }
-        });
-
-    // Size selection
-    $('.size-radio').change(function() {
-            $('.size-label').removeClass('btn-primary').addClass('btn-outline-secondary');
-            if ($(this).is(':checked')) {
-      $(this).siblings('label').removeClass('btn-outline-secondary').addClass('btn-primary');
-      $('#sizeError').addClass('d-none'); // Hide error
-       }
-   });
-
-   // Form validation on submit
-  $('.add-to-cart-form').on('submit', function(e) {
-            var isValid = true;
-
-    // Check if colors exist and one is selected
-     if ($('.color-radio').length > 0) {
-      if (!$('input[name="colorId"]:checked').length) {
- $('#colorError').removeClass('d-none').addClass('d-block');
-      isValid = false;
-     }
-         }
-
-            // Check if sizes exist and one is selected
-  if ($('.size-radio').length > 0) {
-       if (!$('input[name="sizeId"]:checked').length) {
-          $('#sizeError').removeClass('d-none').addClass('d-block');
-    isValid = false;
-      }
+        // Quantity controls
+        function increaseQty() {
+            var qtyInput = document.getElementById('quantity');
+            var max = parseInt(qtyInput.getAttribute('max'));
+            var current = parseInt(qtyInput.value);
+            if (current < max) {
+                qtyInput.value = current + 1;
             }
+        }
 
-   if (!isValid) {
-           e.preventDefault(); // Stop form submission
-                // Scroll to first error
-    $('html, body').animate({
-scrollTop: $('.invalid-feedback:not(.d-none)').first().offset().top - 100
-       }, 300);
-       return false;
-    }
+        function decreaseQty() {
+            var qtyInput = document.getElementById('quantity');
+            var min = parseInt(qtyInput.getAttribute('min'));
+            var current = parseInt(qtyInput.value);
+            if (current > min) {
+                qtyInput.value = current - 1;
+            }
+        }
+
+        // Style selected options + Form validation
+        $(document).ready(function () {
+            // Hide radio buttons
+            $('.color-radio, .size-radio').hide();
+
+            // Color selection
+            $('.color-radio').change(function () {
+                $('.color-label .border').removeClass('border-primary').addClass('border-secondary');
+                if ($(this).is(':checked')) {
+                    $(this).siblings('label').find('.border').removeClass('border-secondary').addClass('border-primary');
+                    $('#colorError').addClass('d-none'); // Hide error
+                }
+            });
+
+            // Size selection
+            $('.size-radio').change(function () {
+                $('.size-label').removeClass('btn-primary').addClass('btn-outline-secondary');
+                if ($(this).is(':checked')) {
+                    $(this).siblings('label').removeClass('btn-outline-secondary').addClass('btn-primary');
+                    $('#sizeError').addClass('d-none'); // Hide error
+                }
+            });
+
+            // Form validation on submit
+            $('.add-to-cart-form').on('submit', function (e) {
+                var isValid = true;
+
+                // Check if colors exist and one is selected
+                if ($('.color-radio').length > 0) {
+                    if (!$('input[name="colorId"]:checked').length) {
+                        $('#colorError').removeClass('d-none').addClass('d-block');
+                        isValid = false;
+                    }
+                }
+
+                // Check if sizes exist and one is selected
+                if ($('.size-radio').length > 0) {
+                    if (!$('input[name="sizeId"]:checked').length) {
+                        $('#sizeError').removeClass('d-none').addClass('d-block');
+                        isValid = false;
+                    }
+                }
+
+                if (!isValid) {
+                    e.preventDefault(); // Stop form submission
+                    // Scroll to first error
+                    $('html, body').animate({
+                        scrollTop: $('.invalid-feedback:not(.d-none)').first().offset().top - 100
+                    }, 300);
+                    return false;
+                }
+            });
         });
-    });
-</script>
+    </script>
 }
 
 <style>
@@ -291,22 +291,22 @@ scrollTop: $('.invalid-feedback:not(.d-none)').first().offset().top - 100
         transition: transform 0.2s, border-color 0.2s;
     }
 
-    .thumbnail-img:hover {
-        transform: scale(1.05);
-        border-color: #0d6efd !important;
-    }
+        .thumbnail-img:hover {
+            transform: scale(1.05);
+            border-color: #0d6efd !important;
+        }
 
     .color-radio, .size-radio {
-    display: none !important;
+        display: none !important;
     }
 
-  .color-label .border,
+    .color-label .border,
     .size-label {
         transition: all 0.2s;
     }
 
     .main-image img {
-    max-height: 500px;
+        max-height: 500px;
         width: 100%;
         object-fit: contain;
     }

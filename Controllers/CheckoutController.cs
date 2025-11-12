@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using ValiModern.Helpers;
 using ValiModern.Models.EF;
@@ -99,86 +98,86 @@ namespace ValiModern.Controllers
 
             // Calculate total amount
             decimal totalAmount = cart.Sum(i => i.Subtotal);
-       
-   // Validate total amount
-        if (totalAmount <= 0)
+
+            // Validate total amount
+            if (totalAmount <= 0)
             {
                 TempData["Error"] = "Invalid order amount. Please check your cart.";
-  return RedirectToAction("Index", "Cart");
+                return RedirectToAction("Index", "Cart");
             }
 
-// Create order
-   var order = new Order
-  {
-          user_id = user.id,
-    order_date = DateTime.Now,
-       status = model.PaymentMethod == "COD" ? "Pending" : "Pending",
-   total_amount = totalAmount,
-        phone = model.Phone,
-           shipping_address = model.Address,
-          created_at = DateTime.Now,
-     updated_at = DateTime.Now
-    };
-
-          _db.Orders.Add(order);
-    _db.SaveChanges();
-
-     // Create order details
-      foreach (var item in cart)
+            // Create order
+            var order = new Order
             {
-      var orderDetail = new Order_Details
-     {
-       order_id = order.id,
-       product_id = item.ProductId,
-          quantity = item.Quantity,
-  price = item.Price,
-     color_id = item.ColorId,
-           size_id = item.SizeId,
-          created_at = DateTime.Now
-        };
-    _db.Order_Details.Add(orderDetail);
+                user_id = user.id,
+                order_date = DateTime.Now,
+                status = model.PaymentMethod == "COD" ? "Pending" : "Pending",
+                total_amount = totalAmount,
+                phone = model.Phone,
+                shipping_address = model.Address,
+                created_at = DateTime.Now,
+                updated_at = DateTime.Now
+            };
+
+            _db.Orders.Add(order);
+            _db.SaveChanges();
+
+            // Create order details
+            foreach (var item in cart)
+            {
+                var orderDetail = new Order_Details
+                {
+                    order_id = order.id,
+                    product_id = item.ProductId,
+                    quantity = item.Quantity,
+                    price = item.Price,
+                    color_id = item.ColorId,
+                    size_id = item.SizeId,
+                    created_at = DateTime.Now
+                };
+                _db.Order_Details.Add(orderDetail);
             }
 
             // Create payment record
-        var payment = new Payment
-       {
-        order_id = order.id,
-             amount = totalAmount,  // Use validated totalAmount
-        payment_method = model.PaymentMethod,
-     status = model.PaymentMethod == "COD" ? "Pending" : "Pending",
-       transaction_id = "",
-payment_date = DateTime.Now
+            var payment = new Payment
+            {
+                order_id = order.id,
+                amount = totalAmount,  // Use validated totalAmount
+                payment_method = model.PaymentMethod,
+                status = model.PaymentMethod == "COD" ? "Pending" : "Pending",
+                transaction_id = "",
+                payment_date = DateTime.Now
             };
             _db.Payments.Add(payment);
-      
+
             try
             {
-             _db.SaveChanges();
+                _db.SaveChanges();
             }
-     catch (Exception ex)
-      {
-   // Log the error
-           System.Diagnostics.Debug.WriteLine($"Error saving payment: {ex.Message}");
-    System.Diagnostics.Debug.WriteLine($"Order Amount: {totalAmount}");
-        TempData["Error"] = "Error processing payment. Please try again.";
-      return RedirectToAction("Index");
-        }
+            catch (Exception ex)
+            {
+                // Log the error
+                System.Diagnostics.Debug.WriteLine($"Error saving payment: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Order Amount: {totalAmount}");
+                TempData["Error"] = "Error processing payment. Please try again.";
+                return RedirectToAction("Index");
+            }
 
-   // Clear cart
+            // Clear cart
             Session.Remove(CartSessionKey);
 
             // Handle payment method
-    if (model.PaymentMethod == "COD")
-          {
-      return RedirectToAction("Confirmation", new { orderId = order.id });
+            if (model.PaymentMethod == "COD")
+            {
+                return RedirectToAction("Confirmation", new { orderId = order.id });
             }
             else if (model.PaymentMethod == "VNPay")
-     {
-   return RedirectToAction("VnPayPayment", new { orderId = order.id });
-     }
+            {
+                return RedirectToAction("VnPayPayment", new { orderId = order.id });
+            }
 
             TempData["Error"] = "Invalid payment method.";
-       return RedirectToAction("Index");
+            return RedirectToAction("Index");
         }
 
         // GET: Checkout/VnPayPayment
@@ -254,101 +253,101 @@ payment_date = DateTime.Now
         // GET: Checkout/VnPayReturn
         // Note: No [Authorize] - this is a PUBLIC callback from VNPay
         public ActionResult VnPayReturn()
-      {
-       if (Request.QueryString.Count > 0)
-         {
-   string vnp_HashSecret = ConfigurationManager.AppSettings["vnp_HashSecret"];
-     var vnpayData = Request.QueryString;
- VnPayLibrary vnpay = new VnPayLibrary();
+        {
+            if (Request.QueryString.Count > 0)
+            {
+                string vnp_HashSecret = ConfigurationManager.AppSettings["vnp_HashSecret"];
+                var vnpayData = Request.QueryString;
+                VnPayLibrary vnpay = new VnPayLibrary();
 
- foreach (string s in vnpayData)
-    {
-             //get all querystring data
-      if (!string.IsNullOrEmpty(s) && s.StartsWith("vnp_"))
-{
-         vnpay.AddResponseData(s, vnpayData[s]);
-      }
-  }
-    
-          string orderCode = Convert.ToString(vnpay.GetResponseData("vnp_TxnRef"));
-   long vnpayTranId = Convert.ToInt64(vnpay.GetResponseData("vnp_TransactionNo"));
-       string vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
-     string vnp_TransactionStatus = vnpay.GetResponseData("vnp_TransactionStatus");
-   String vnp_SecureHash = Request.QueryString["vnp_SecureHash"];
+                foreach (string s in vnpayData)
+                {
+                    //get all querystring data
+                    if (!string.IsNullOrEmpty(s) && s.StartsWith("vnp_"))
+                    {
+                        vnpay.AddResponseData(s, vnpayData[s]);
+                    }
+                }
 
-      bool checkSignature = vnpay.ValidateSignature(vnp_SecureHash, vnp_HashSecret);
-    if (checkSignature)
-      {
-     if (vnp_ResponseCode == "00" && vnp_TransactionStatus == "00")
-    {
-        var itemOrder = _db.Orders.FirstOrDefault(x => x.id.ToString() == orderCode);
-     if (itemOrder != null)
-         {
-     // Update order status - use 'Confirmed' which is allowed by CHECK constraint
-   itemOrder.status = "Confirmed";  // Changed from "Processing" to "Confirmed"
-   itemOrder.updated_at = DateTime.Now;
-  
-  // Update payment
-      var payment = _db.Payments.FirstOrDefault(p => p.order_id == itemOrder.id);
-  if (payment != null)
-   {
-        payment.status = "Completed";
-    payment.transaction_id = vnpayTranId.ToString();
-        payment.payment_date = DateTime.Now;
-    }
-  
- _db.SaveChanges();
-     }
-   //Thanh toan thanh cong
-   TempData["Success"] = "Payment successful!";
-  return RedirectToAction("Confirmation", new { orderId = itemOrder.id });
-}
-  else
-   {
-    //Thanh toan khong thanh cong
-         TempData["Error"] = "Payment failed. Error code: " + vnp_ResponseCode;
-     return RedirectToAction("Index", "Home");
-  }
- }
-        else
- {
-   TempData["Error"] = "Invalid payment signature";
-  return RedirectToAction("Index", "Home");
-              }
-      }
+                string orderCode = Convert.ToString(vnpay.GetResponseData("vnp_TxnRef"));
+                long vnpayTranId = Convert.ToInt64(vnpay.GetResponseData("vnp_TransactionNo"));
+                string vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
+                string vnp_TransactionStatus = vnpay.GetResponseData("vnp_TransactionStatus");
+                String vnp_SecureHash = Request.QueryString["vnp_SecureHash"];
 
-   return RedirectToAction("Index", "Home");
-     }
+                bool checkSignature = vnpay.ValidateSignature(vnp_SecureHash, vnp_HashSecret);
+                if (checkSignature)
+                {
+                    if (vnp_ResponseCode == "00" && vnp_TransactionStatus == "00")
+                    {
+                        var itemOrder = _db.Orders.FirstOrDefault(x => x.id.ToString() == orderCode);
+                        if (itemOrder != null)
+                        {
+                            // Update order status - use 'Confirmed' which is allowed by CHECK constraint
+                            itemOrder.status = "Confirmed";  // Changed from "Processing" to "Confirmed"
+                            itemOrder.updated_at = DateTime.Now;
 
-      // GET: Checkout/Confirmation
-    public ActionResult Confirmation(int orderId)
- {
-       var order = _db.Orders.Find(orderId);
+                            // Update payment
+                            var payment = _db.Payments.FirstOrDefault(p => p.order_id == itemOrder.id);
+                            if (payment != null)
+                            {
+                                payment.status = "Completed";
+                                payment.transaction_id = vnpayTranId.ToString();
+                                payment.payment_date = DateTime.Now;
+                            }
+
+                            _db.SaveChanges();
+                        }
+                        //Thanh toan thanh cong
+                        TempData["Success"] = "Payment successful!";
+                        return RedirectToAction("Confirmation", new { orderId = itemOrder.id });
+                    }
+                    else
+                    {
+                        //Thanh toan khong thanh cong
+                        TempData["Error"] = "Payment failed. Error code: " + vnp_ResponseCode;
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+                else
+                {
+                    TempData["Error"] = "Invalid payment signature";
+                    return RedirectToAction("Index", "Home");
+                }
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        // GET: Checkout/Confirmation
+        public ActionResult Confirmation(int orderId)
+        {
+            var order = _db.Orders.Find(orderId);
             if (order == null)
             {
                 TempData["Error"] = "Order not found.";
-   return RedirectToAction("Index", "Home");
-      }
+                return RedirectToAction("Index", "Home");
+            }
 
-      var payment = _db.Payments.FirstOrDefault(p => p.order_id == orderId);
+            var payment = _db.Payments.FirstOrDefault(p => p.order_id == orderId);
 
             var vm = new OrderConfirmationVM
-    {
-      OrderId = order.id,
-    OrderCode = "#" + order.id.ToString("D6"),
+            {
+                OrderId = order.id,
+                OrderCode = "#" + order.id.ToString("D6"),
                 TotalAmount = order.total_amount,
-          PaymentMethod = payment?.payment_method ?? "N/A",
-         Status = order.status,
-    OrderDate = order.order_date
+                PaymentMethod = payment?.payment_method ?? "N/A",
+                Status = order.status,
+                OrderDate = order.order_date
             };
 
             return View(vm);
-}
+        }
 
         protected override void Dispose(bool disposing)
- {
+        {
             if (disposing) _db.Dispose();
-  base.Dispose(disposing);
+            base.Dispose(disposing);
         }
     }
 }
