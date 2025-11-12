@@ -1,57 +1,152 @@
 @model IEnumerable<ValiModern.Models.EF.Product_Images>
 @{
- var product = ViewBag.Product as ValiModern.Models.EF.Product;
- ViewBag.Title = "Product Images";
- Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
- var productName = product != null ? product.name : string.Empty;
- var productIdText = product != null ? product.id.ToString() : string.Empty;
+    var product = ViewBag.Product as ValiModern.Models.EF.Product;
+    ViewBag.Title = "Product Images";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var productName = product != null ? product.name : string.Empty;
+    var productIdText = product != null ? product.id.ToString() : string.Empty;
 }
+
+@section Styles {
+    <link href="~/Content/Admin/ProductImages.css" rel="stylesheet" />
+}
+
 <div class="container-xl py-3">
- <div class="d-flex justify-content-between align-items-center mb-3">
- <h2 class="h5 fw-bold mb-0">Images - @productName @(string.IsNullOrEmpty(productIdText)?"":"(ID:"+productIdText+")")</h2>
- <div>
- <a href="@Url.Action("Index","Product")" class="btn btn-sm btn-outline-secondary">Back to products</a>
- <a href="@Url.Action("Create", new { productId = productIdText })" class="btn btn-sm btn-primary ms-1"><i class="bi bi-upload"></i> Upload</a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h5 fw-bold mb-0">Images - @productName @(string.IsNullOrEmpty(productIdText) ? "" : "(ID:" + productIdText + ")")</h2>
+        <div>
+    <a href="@Url.Action("Index", "Product")" class="btn btn-sm btn-outline-secondary">
+       <i class="bi bi-arrow-left me-1"></i>Back to products
+        </a>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+    <div class="alert alert-success alert-dismissible fade show">
+          <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
  </div>
- </div>
- @if (TempData["Success"] != null){ <div class="alert alert-success">@TempData["Success"]</div> }
- @if (TempData["Error"] != null){ <div class="alert alert-danger">@TempData["Error"]</div> }
- <form method="post" action="@Url.Action("UpdateOrder")" class="mb-3">
- @Html.AntiForgeryToken()
- @Html.Hidden("productId", productIdText)
- <div class="row g-3">
- @foreach (var img in Model)
- {
- <div class="col-6 col-md-3">
- <div class="border rounded-3 p-2 position-relative h-100">
- <img src="@img.image_url" alt="image" class="img-fluid rounded mb-2" style="max-height:160px;object-fit:cover;" />
- <div class="d-flex justify-content-between align-items-center mb-2">
- <small class="text-muted">ID:@img.id</small>
- @if (img.is_main){<span class="badge bg-primary">Main</span>} else {<span class="badge bg-secondary">Extra</span>}
- </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+  <i class="bi bi-exclamation-triangle me-2"></i>@TempData["Error"]
+       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Multi-Image Upload Dropzone -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <i class="bi bi-cloud-upload me-2"></i>Upload Multiple Images
+        </div>
+        <div class="card-body">
+  <form method="post" action="@Url.Action("UploadMultiple")" enctype="multipart/form-data" id="uploadForm">
+       @Html.AntiForgeryToken()
+   @Html.Hidden("productId", productIdText)
+
+                <div class="multi-image-dropzone border-2 border-dashed rounded-3 p-4 text-center bg-light" id="dropZone">
+  <i class="bi bi-images fs-1 text-muted mb-2"></i>
+          <p class="mb-2">Drag & drop multiple images here or click to browse</p>
+  <input type="file" name="imageFiles" id="imageFiles" class="d-none" multiple accept="image/*" />
+       <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('imageFiles').click()">
+  <i class="bi bi-folder2-open me-1"></i>Choose Files
+      </button>
+                </div>
+
+        <!-- Preview Container -->
+    <div id="previewContainer" class="row g-3 mt-3" style="display:none;"></div>
+
+        <div class="mt-3 text-end">
+  <button type="submit" class="btn btn-success" id="uploadBtn" style="display:none;">
+           <i class="bi bi-upload me-1"></i>Upload All Images
+                    </button>
+                </div>
+     </form>
+        </div>
+    </div>
+
+    <!-- Existing Images -->
+    <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span><i class="bi bi-images me-2"></i>Existing Images (@Model.Count())</span>
+            <button type="button" class="btn btn-sm btn-success" onclick="document.getElementById('saveOrderForm').submit()">
+         <i class="bi bi-save me-1"></i>Save All Changes
+   </button>
+        </div>
+    <div class="card-body">
+      <form method="post" action="@Url.Action("UpdateOrder")" id="saveOrderForm">
+       @Html.AntiForgeryToken()
+    @Html.Hidden("productId", productIdText)
+
+       <div class="row g-3" id="imagesGrid">
+         @foreach (var img in Model)
+  {
+   <div class="col-6 col-md-3" data-image-id="@img.id">
+    <div class="card h-100 shadow-sm image-card">
+     <div class="position-relative">
+         <img src="@img.image_url" alt="image" class="card-img-top" style="height:200px;object-fit:cover;" />
+            @if (img.is_main)
+         {
+             <span class="position-absolute top-0 end-0 m-2 badge bg-primary">
+           <i class="bi bi-star-fill"></i> Main
+  </span>
+           }
+      </div>
+      <div class="card-body p-2">
+    <small class="text-muted">ID: @img.id</small>
+
+   <!-- Sort Order -->
  <div class="mb-2">
- <label class="form-label small">Sort</label>
- <input type="hidden" name="ids" value="@img.id" />
- <input type="number" name="orders" value="@img.sort_order" class="form-control form-control-sm" />
- </div>
- <div class="d-flex justify-content-between">
- <form method="post" action="@Url.Action("SetMain")" class="me-1">
- @Html.AntiForgeryToken()
- @Html.Hidden("id", img.id)
- <button type="submit" class="btn btn-sm btn-outline-info" @(img.is_main?"disabled":"")>Set Main</button>
+   <label class="form-label small mb-1 fw-semibold">Sort Order</label>
+              <input type="hidden" name="ids" value="@img.id" />
+            <input type="number" name="orders" value="@img.sort_order"
+               class="form-control form-control-sm" min="0" />
+          </div>
+
+ <!-- Action Buttons -->
+     <div class="d-grid gap-1">
+       @if (!img.is_main)
+      {
+     <button type="button" class="btn btn-sm btn-outline-info"
+    onclick="setMainImage(@img.id)">
+     <i class="bi bi-star me-1"></i>Set as Main
+    </button>
+        }
+            else
+    {
+     <button type="button" class="btn btn-sm btn-info" disabled>
+           <i class="bi bi-star-fill me-1"></i>Current Main
+       </button>
+  }
+
+       <button type="button" class="btn btn-sm btn-outline-danger"
+        onclick="deleteImage(@img.id, '@img.image_url')">
+       <i class="bi bi-trash me-1"></i>Delete
+            </button>
+    </div>
+      </div>
+          </div>
+      </div>
+      }
+    </div>
  </form>
- <form method="post" action="@Url.Action("Delete")" onsubmit="return confirm('Delete this image?');">
- @Html.AntiForgeryToken()
- @Html.Hidden("id", img.id)
- <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
- </form>
- </div>
- </div>
- </div>
- }
- </div>
- <div class="mt-3">
- <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-save"></i> Save Order</button>
- </div>
- </form>
+   </div>
+    </div>
 </div>
+
+<!-- Hidden forms for Set Main and Delete -->
+<form method="post" id="setMainForm" action="@Url.Action("SetMain")" style="display:none;">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" id="setMainId" />
+</form>
+
+<form method="post" id="deleteForm" action="@Url.Action("Delete")" style="display:none;">
+    @Html.AntiForgeryToken()
+  <input type="hidden" name="id" id="deleteId" />
+</form>
+
+@section scripts {
+    <script src="~/Scripts/Admin/product-images-upload.js"></script>
+}

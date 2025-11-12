@@ -210,6 +210,7 @@
     <Compile Include="Services\PaletteService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Admin\ProductImages.css" />
     <Content Include="Content\admin_layout.css" />
     <Content Include="Content\bootstrap-grid.css" />
     <Content Include="Content\bootstrap-grid.min.css" />
@@ -243,6 +244,7 @@
       <LastGenOutput>ValiModernModel.cs</LastGenOutput>
     </Content>
     <Content Include="Scripts\Admin\image-dropzone.js" />
+    <Content Include="Scripts\Admin\product-images-upload.js" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />

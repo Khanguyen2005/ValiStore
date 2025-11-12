@@ -89,6 +89,95 @@ namespace ValiModern.Areas.Admin.Controllers
             return RedirectToAction("Index", new { productId });
         }
 
+        // POST: Admin/ProductImages/UploadMultiple (New endpoint for dropzone)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UploadMultiple(int productId, IEnumerable<HttpPostedFileBase> imageFiles)
+        {
+            var product = _db.Products.Find(productId);
+            if (product == null)
+            {
+                TempData["Error"] = "Product not found.";
+                return RedirectToAction("Index", "Product");
+            }
+
+            if (imageFiles == null || !imageFiles.Any() || imageFiles.All(f => f == null || f.ContentLength == 0))
+            {
+                TempData["Error"] = "Please select at least one image.";
+                return RedirectToAction("Index", new { productId });
+            }
+
+            int maxSort = _db.Product_Images.Where(pi => pi.product_id == productId).Select(pi => (int?)pi.sort_order).Max() ?? 0;
+            int uploadedCount = 0;
+            var errors = new List<string>();
+
+            foreach (var file in imageFiles)
+            {
+                if (file == null || file.ContentLength == 0) continue;
+
+                string err;
+                var relPath = SaveUpload(file, out err);
+
+                if (relPath == null)
+                {
+                    errors.Add($"{file.FileName}: {err ?? "Upload failed"}");
+                    continue;
+                }
+
+                maxSort++;
+                var pi = new Product_Images
+                {
+                    product_id = productId,
+                    image_url = relPath,
+                    is_main = false,
+                    sort_order = maxSort
+                };
+                _db.Product_Images.Add(pi);
+                uploadedCount++;
+            }
+
+            if (uploadedCount > 0)
+            {
+                _db.SaveChanges();
+
+                // Ensure at least one main image exists
+                var hasMain = _db.Product_Images.Any(x => x.product_id == productId && x.is_main);
+                if (!hasMain)
+                {
+                    var first = _db.Product_Images
+                        .Where(x => x.product_id == productId)
+                        .OrderBy(x => x.sort_order)
+                        .FirstOrDefault();
+                    if (first != null)
+                    {
+                        first.is_main = true;
+                        _db.SaveChanges();
+                    }
+                }
+
+                // Sync product.image_url with current main
+                var mainImg = _db.Product_Images
+                    .Where(x => x.product_id == productId && x.is_main)
+                    .OrderBy(x => x.sort_order)
+                    .FirstOrDefault();
+
+                if (product != null && mainImg != null)
+                {
+                    product.image_url = mainImg.image_url;
+                    _db.SaveChanges();
+                }
+
+                TempData["Success"] = $"Successfully uploaded {uploadedCount} image(s).";
+            }
+
+            if (errors.Any())
+            {
+                TempData["Error"] = string.Join("<br>", errors);
+            }
+
+            return RedirectToAction("Index", new { productId });
+        }
+
         // POST: Admin/ProductImages/SetMain/5
         [HttpPost]
         [ValidateAntiForgeryToken]
