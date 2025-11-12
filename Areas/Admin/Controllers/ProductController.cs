@@ -184,26 +184,44 @@ namespace ValiModern.Areas.Admin.Controllers
             product.brandId = vm.BrandId;
             product.is_active = vm.IsActive;
 
-            // Replace colors
-            foreach (var c in product.Colors.ToList()) _db.Colors.Remove(c);
+            // Update colors: only remove those NOT referenced in Order_Details
+            var usedColorIds = _db.Order_Details.Where(od => od.color_id.HasValue && od.product_id == product.id).Select(od => od.color_id.Value).Distinct().ToList();
+            var colorsToRemove = product.Colors.Where(c => !usedColorIds.Contains(c.id)).ToList();
+            foreach (var c in colorsToRemove) _db.Colors.Remove(c);
+
+            // Add new colors from palette (avoid duplicates by name)
             if (vm.SelectedColorIds != null && vm.SelectedColorIds.Length > 0)
             {
                 var paletteColors = PaletteService.GetColors().Where(c => vm.SelectedColorIds.Contains(c.Id)).ToList();
+                var existingColorNames = product.Colors.Select(c => c.name.ToLower()).ToList();
                 foreach (var c in paletteColors)
                 {
-                    _db.Colors.Add(new Color { product_id = product.id, name = c.Name, color_code = c.ColorCode });
+                    if (!existingColorNames.Contains(c.Name.ToLower()))
+                    {
+                        _db.Colors.Add(new Color { product_id = product.id, name = c.Name, color_code = c.ColorCode });
+                    }
                 }
             }
-            // Replace sizes
-            foreach (var s in product.Sizes.ToList()) _db.Sizes.Remove(s);
+
+            // Update sizes: only remove those NOT referenced in Order_Details
+            var usedSizeIds = _db.Order_Details.Where(od => od.size_id.HasValue && od.product_id == product.id).Select(od => od.size_id.Value).Distinct().ToList();
+            var sizesToRemove = product.Sizes.Where(s => !usedSizeIds.Contains(s.id)).ToList();
+            foreach (var s in sizesToRemove) _db.Sizes.Remove(s);
+
+            // Add new sizes from palette (avoid duplicates by name)
             if (vm.SelectedSizeIds != null && vm.SelectedSizeIds.Length > 0)
             {
                 var paletteSizes = PaletteService.GetSizes().Where(s => vm.SelectedSizeIds.Contains(s.Id)).ToList();
+                var existingSizeNames = product.Sizes.Select(s => s.name.ToLower()).ToList();
                 foreach (var s in paletteSizes)
                 {
-                    _db.Sizes.Add(new Size { product_id = product.id, name = s.Name });
+                    if (!existingSizeNames.Contains(s.Name.ToLower()))
+                    {
+                        _db.Sizes.Add(new Size { product_id = product.id, name = s.Name });
+                    }
                 }
             }
+
             _db.SaveChanges();
             TempData["Success"] = "Product updated.";
             return RedirectToAction("Index");
