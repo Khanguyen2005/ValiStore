@@ -12,6 +12,8 @@ namespace ValiModern.Models.ViewModels
         public string image_url { get; set; }
         public string description { get; set; }
         public int sold { get; set; }
+        public string brand_name { get; set; }
+        public string category_name { get; set; }
         public bool HasDiscount => original_price > price && original_price > 0;
         public int DiscountPercent => HasDiscount ? (int)((original_price - price) / original_price * 100) : 0;
     }

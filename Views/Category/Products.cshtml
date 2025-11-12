@@ -1,0 +1,327 @@
+﻿@model ValiModern.Models.ViewModels.CategoryProductsVM
+@{
+    ViewBag.Title = Model.Category.Name + " - Products";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Category")">Categories</a></li>
+            <li class="breadcrumb-item active" aria-current="page">@Model.Category.Name</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Sidebar Filters -->
+        <div class="col-lg-3 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-funnel me-2"></i>Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get" id="filterForm">
+                        <input type="hidden" name="id" value="@Model.Category.Id" />
+
+                        <!-- Price Range -->
+                        <div class="mb-3">
+                            <h6 class="fw-bold mb-2">Price Range</h6>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <input type="number" name="minPrice" value="@Model.MinPrice" class="form-control form-control-sm" placeholder="Min" />
+                                </div>
+                                <div class="col-6">
+                                    <input type="number" name="maxPrice" value="@Model.MaxPrice" class="form-control form-control-sm" placeholder="Max" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Colors -->
+                        @if (Model.AvailableColors != null && Model.AvailableColors.Any())
+                        {
+                            <div class="mb-3">
+                                <h6 class="fw-bold mb-2">Colors</h6>
+                                <div class="filter-options">
+                                    @foreach (var color in Model.AvailableColors)
+                                    {
+                                        var isChecked = Model.SelectedColorIds != null && Model.SelectedColorIds.Contains(color.Id);
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="colors" value="@color.Id" id="color_@color.Id" @(isChecked ? "checked" : "") />
+                                            <label class="form-check-label d-flex align-items-center" for="color_@color.Id">
+                                                <span class="color-swatch me-2" style="background-color: @color.HexCode"></span>
+                                                @color.Name <small class="text-muted ms-1">(@color.Count)</small>
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Sizes -->
+                        @if (Model.AvailableSizes != null && Model.AvailableSizes.Any())
+                        {
+                            <div class="mb-3">
+                                <h6 class="fw-bold mb-2">Sizes</h6>
+                                <div class="filter-options">
+                                    @foreach (var size in Model.AvailableSizes)
+                                    {
+                                        var isChecked = Model.SelectedSizeIds != null && Model.SelectedSizeIds.Contains(size.Id);
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="sizes" value="@size.Id" id="size_@size.Id" @(isChecked ? "checked" : "") />
+                                            <label class="form-check-label" for="size_@size.Id">
+                                                @size.Name <small class="text-muted">(@size.Count)</small>
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        <button type="submit" class="btn btn-primary w-100 mb-2"><i class="bi bi-check2"></i> Apply Filters</button>
+                        <a href="@Url.Action("Products", "Category", new { id = Model.Category.Id })" class="btn btn-outline-secondary w-100"><i class="bi bi-x-circle"></i> Reset</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="col-lg-9">
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h2 class="h4 mb-0">@Model.Category.Name</h2>
+                    <small class="text-muted">@Model.TotalProducts products found</small>
+                </div>
+
+                <!-- Sort -->
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-sort-down me-1"></i> Sort By
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item @(string.IsNullOrEmpty(Model.Sort) ? "active" : "")"
+                               href="@Url.Action("Products", new { id = Model.Category.Id, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, colors = Model.SelectedColorIds != null ? string.Join(",", Model.SelectedColorIds) : null, sizes = Model.SelectedSizeIds != null ? string.Join(",", Model.SelectedSizeIds) : null })">
+                                Best Selling
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item @(Model.Sort == "newest" ? "active" : "")"
+                               href="@Url.Action("Products", new { id = Model.Category.Id, sort = "newest", minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, colors = Model.SelectedColorIds != null ? string.Join(",", Model.SelectedColorIds) : null, sizes = Model.SelectedSizeIds != null ? string.Join(",", Model.SelectedSizeIds) : null })">
+                                Newest
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item @(Model.Sort == "price_asc" ? "active" : "")"
+                               href="@Url.Action("Products", new { id = Model.Category.Id, sort = "price_asc", minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, colors = Model.SelectedColorIds != null ? string.Join(",", Model.SelectedColorIds) : null, sizes = Model.SelectedSizeIds != null ? string.Join(",", Model.SelectedSizeIds) : null })">
+                                Price: Low to High
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item @(Model.Sort == "price_desc" ? "active" : "")"
+                               href="@Url.Action("Products", new { id = Model.Category.Id, sort = "price_desc", minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, colors = Model.SelectedColorIds != null ? string.Join(",", Model.SelectedColorIds) : null, sizes = Model.SelectedSizeIds != null ? string.Join(",", Model.SelectedSizeIds) : null })">
+                                Price: High to Low
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item @(Model.Sort == "name_asc" ? "active" : "")"
+                               href="@Url.Action("Products", new { id = Model.Category.Id, sort = "name_asc", minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, colors = Model.SelectedColorIds != null ? string.Join(",", Model.SelectedColorIds) : null, sizes = Model.SelectedSizeIds != null ? string.Join(",", Model.SelectedSizeIds) : null })">
+                                Name: A-Z
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item @(Model.Sort == "name_desc" ? "active" : "")"
+                               href="@Url.Action("Products", new { id = Model.Category.Id, sort = "name_desc", minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, colors = Model.SelectedColorIds != null ? string.Join(",", Model.SelectedColorIds) : null, sizes = Model.SelectedSizeIds != null ? string.Join(",", Model.SelectedSizeIds) : null })">
+                                Name: Z-A
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Products -->
+            @if (Model.Products != null && Model.Products.Any())
+            {
+                <div class="row g-3">
+                    @foreach (var product in Model.Products)
+                    {
+                        <div class="col-md-6 col-lg-4">
+                            <div class="card h-100 shadow-sm product-card">
+                                @if (product.HasDiscount)
+                                {
+                                    <span class="badge bg-danger position-absolute top-0 end-0 m-2">-@product.DiscountPercent%</span>
+                                }
+                                <a href="@Url.Action("Details", "Product", new { id = product.id })">
+                                    <img src="@product.image_url" class="card-img-top product-image" alt="@product.name" style="height:250px;object-fit:cover;" />
+                                </a>
+                                <div class="card-body d-flex flex-column">
+                                    <h6 class="card-title" title="@product.name" style="height:2.4em;overflow:hidden;">@product.name</h6>
+                                    <div class="mt-auto">
+                                        <div class="d-flex align-items-center mb-2">
+                                            @if (product.HasDiscount)
+                                            {
+                                                <span class="text-muted text-decoration-line-through me-2">@String.Format("{0:n0}", product.original_price) ₫</span>
+                                            }
+                                            <span class="fw-bold text-danger fs-5">@String.Format("{0:n0}", product.price) ₫</span>
+                                        </div>
+                                        <small class="text-muted"><i class="bi bi-bag-check me-1"></i>Sold: @product.sold</small>
+                                        <a href="@Url.Action("Details", "Product", new { id = product.id })" class="btn btn-primary w-100 mt-2">
+                                            <i class="bi bi-eye me-1"></i>View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- Pagination -->
+                if (Model.TotalPages > 1)
+                {
+                    <nav class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            @if (Model.CurrentPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Products", new { id = Model.Category.Id, page = Model.CurrentPage - 1, sort = Model.Sort, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, colors = Model.SelectedColorIds != null ? string.Join(",", Model.SelectedColorIds) : null, sizes = Model.SelectedSizeIds != null ? string.Join(",", Model.SelectedSizeIds) : null })">
+                                        <i class="bi bi-chevron-left"></i> Previous
+                                    </a>
+                                </li>
+                            }
+
+                            @for (int i = 1; i <= Model.TotalPages; i++)
+                            {
+                                <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                    <a class="page-link" href="@Url.Action("Products", new { id = Model.Category.Id, page = i, sort = Model.Sort, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, colors = Model.SelectedColorIds != null ? string.Join(",", Model.SelectedColorIds) : null, sizes = Model.SelectedSizeIds != null ? string.Join(",", Model.SelectedSizeIds) : null })">@i</a>
+                                </li>
+                            }
+
+                            @if (Model.CurrentPage < Model.TotalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link" href="@Url.Action("Products", new { id = Model.Category.Id, page = Model.CurrentPage + 1, sort = Model.Sort, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, colors = Model.SelectedColorIds != null ? string.Join(",", Model.SelectedColorIds) : null, sizes = Model.SelectedSizeIds != null ? string.Join(",", Model.SelectedSizeIds) : null })">
+                                        Next <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+            else
+            {
+                <div class="empty-state">
+                    <i class="bi bi-inbox"></i>
+                    <h4 class="mt-3">No products found</h4>
+                    <p class="text-muted">Try adjusting your filters or browse all products.</p>
+                    <a href="@Url.Action("Products", "Category", new { id = Model.Category.Id })" class="btn btn-primary">Reset Filters</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Breadcrumb styling - clean and simple */
+    .breadcrumb {
+        background-color: transparent;
+        padding: 0;
+        margin-bottom: 0;
+        display: flex;
+        align-items: center;
+    }
+
+    .breadcrumb-item {
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+    }
+
+        .breadcrumb-item a {
+            color: #6c757d;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            padding: 2px 0;
+        }
+
+            .breadcrumb-item a:hover {
+                color: #0d6efd;
+            }
+
+        .breadcrumb-item.active {
+            color: #0d6efd;
+            font-weight: 600;
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: "›";
+            color: #adb5bd;
+            font-size: 18px;
+            font-weight: 400;
+            padding: 0 8px;
+            display: inline-flex;
+            align-items: center;
+            line-height: 1;
+        }
+
+    .product-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+    }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15) !important;
+        }
+
+    .product-image {
+        transition: transform 0.3s ease;
+    }
+
+    .product-card:hover .product-image {
+        transform: scale(1.05);
+    }
+
+    .color-swatch {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid #ddd;
+    }
+
+    .filter-options {
+        max-height: 250px;
+        overflow-y: auto;
+    }
+
+        .filter-options::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .filter-options::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .filter-options::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+
+            .filter-options::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+
+    .empty-state {
+        padding: 4rem 2rem;
+        text-align: center;
+    }
+
+        .empty-state i {
+            font-size: 5rem;
+            color: #6c757d;
+        }
+</style>

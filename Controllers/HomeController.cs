@@ -44,5 +44,27 @@ namespace ValiModern.Controllers
             }
             return View(vm);
         }
+
+        public ActionResult Contact()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Contact(string name, string email, string subject, string message)
+        {
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email) || 
+                string.IsNullOrWhiteSpace(subject) || string.IsNullOrWhiteSpace(message))
+            {
+                TempData["Error"] = "Please fill in all fields.";
+                return View();
+            }
+
+            // Here you can add logic to save to database or send email
+            // For now, just show success message
+            TempData["Success"] = "Thank you for contacting us! We will get back to you soon.";
+            return RedirectToAction("Contact");
+        }
     }
 }

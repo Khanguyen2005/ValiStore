@@ -1,19 +1,187 @@
 ﻿@{
-    ViewBag.Title = "Contact";
+    ViewBag.Title = "Contact Us";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<main aria-labelledby="title">
-    <h2 id="title">@ViewBag.Title.</h2>
-    <h3>@ViewBag.Message</h3>
 
-    <address>
-        One Microsoft Way<br />
-        Redmond, WA 98052-6399<br />
-        <abbr title="Phone">P:</abbr>
-        425.555.0100
-    </address>
+@section Styles {
+    <link href="~/Content/Contact.css" rel="stylesheet" />
+}
 
-    <address>
-        <strong>Support:</strong>   <a href="mailto:Support@example.com">Support@example.com</a><br />
-        <strong>Marketing:</strong> <a href="mailto:Marketing@example.com">Marketing@example.com</a>
-    </address>
-</main>
+<div class="contact-page">
+    <!-- Hero Section -->
+    <section class="contact-hero text-center py-5">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="display-4 fw-bold mb-3">Get In Touch</h1>
+                <p class="lead mb-0 text-white-75">We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Content -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Contact Form -->
+                <div class="col-lg-7">
+                    <div class="card shadow-sm border-0 h-100">
+                        <div class="card-body p-4 p-lg-5">
+                            <h3 class="mb-4">Send Us a Message</h3>
+
+                            @using (Html.BeginForm("Contact", "Home", FormMethod.Post, new { @class = "contact-form" }))
+                            {
+                                @Html.AntiForgeryToken()
+
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-person me-2"></i>Your Name
+                                        </label>
+                                        <input type="text" name="name" class="form-control form-control-lg" placeholder="John Doe" required />
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-envelope me-2"></i>Email Address
+                                        </label>
+                                        <input type="email" name="email" class="form-control form-control-lg" placeholder="john@example.com" required />
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-chat-left-text me-2"></i>Subject
+                                        </label>
+                                        <input type="text" name="subject" class="form-control form-control-lg" placeholder="How can we help you?" required />
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label fw-semibold">
+                                            <i class="bi bi-pencil me-2"></i>Message
+                                        </label>
+                                        <textarea name="message" class="form-control form-control-lg" rows="6" placeholder="Tell us more about your inquiry..." required></textarea>
+                                    </div>
+
+                                    <div class="col-12 mt-4">
+                                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                                            <i class="bi bi-send me-2"></i>Send Message
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="col-lg-5">
+                    <div class="row g-4">
+                        <!-- Info Cards -->
+                        <div class="col-12">
+                            <div class="card shadow-sm border-0 contact-info-card">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-start">
+                                        <div class="icon-wrapper me-3">
+                                            <i class="bi bi-geo-alt-fill"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-2">Visit Us</h5>
+                                            <p class="text-muted mb-0">
+                                                123 Fashion Street<br />
+                                                Ho Chi Minh City, Vietnam<br />
+                                                700000
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="card shadow-sm border-0 contact-info-card">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-start">
+                                        <div class="icon-wrapper me-3">
+                                            <i class="bi bi-telephone-fill"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-2">Call Us</h5>
+                                            <p class="text-muted mb-1">
+                                                <a href="tel:+84123456789" class="text-decoration-none text-muted">+84 123 456 789</a>
+                                            </p>
+                                            <p class="text-muted mb-0">
+                                                Mon-Fri: 9AM - 6PM
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12">
+                            <div class="card shadow-sm border-0 contact-info-card">
+                                <div class="card-body p-4">
+                                    <div class="d-flex align-items-start">
+                                        <div class="icon-wrapper me-3">
+                                            <i class="bi bi-envelope-fill"></i>
+                                        </div>
+                                        <div>
+                                            <h5 class="mb-2">Email Us</h5>
+                                            <p class="text-muted mb-1">
+                                                <a href="mailto:support@valimodern.com" class="text-decoration-none text-muted">support@valimodern.com</a>
+                                            </p>
+                                            <p class="text-muted mb-0">
+                                                <a href="mailto:sales@valimodern.com" class="text-decoration-none text-muted">sales@valimodern.com</a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Social Media -->
+                        <div class="col-12">
+                            <div class="card shadow-sm border-0 contact-info-card">
+                                <div class="card-body p-4">
+                                    <h5 class="mb-3">Follow Us</h5>
+                                    <div class="d-flex gap-3">
+                                        <a href="#" class="social-icon" title="Facebook">
+                                            <i class="bi bi-facebook"></i>
+                                        </a>
+                                        <a href="#" class="social-icon" title="Instagram">
+                                            <i class="bi bi-instagram"></i>
+                                        </a>
+                                        <a href="#" class="social-icon" title="Twitter">
+                                            <i class="bi bi-twitter"></i>
+                                        </a>
+                                        <a href="#" class="social-icon" title="YouTube">
+                                            <i class="bi bi-youtube"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Map Section -->
+    <section class="map-section py-5 bg-light">
+        <div class="container">
+            <div class="text-center mb-4">
+                <h3 class="fw-bold">Find Us on Map</h3>
+                <p class="text-muted">Come visit our store for the best shopping experience</p>
+            </div>
+            <div class="map-container shadow-sm">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.6236854189573!2d106.69785631533428!3d10.762622192330556!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f38f9ed887b%3A0x14aded5703768989!2sUniversity%20of%20Science%2C%20VNUHCM!5e0!3m2!1sen!2s!4v1635789012345!5m2!1sen!2s"
+                    width="100"
+                    height="400"
+                    style="border:0; border-radius: 12px;"
+                    allowfullscreen=""
+                    loading="lazy">
+                </iframe>
+            </div>
+        </div>
+    </section>
+</div>

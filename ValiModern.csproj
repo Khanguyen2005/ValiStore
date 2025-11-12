@@ -143,6 +143,7 @@
     <Compile Include="Binders\DecimalModelBinder.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CartController.cs" />
+    <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\CheckoutController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
@@ -203,6 +204,7 @@
     <Compile Include="Models\ViewModels\AdminOrderViewModels.cs" />
     <Compile Include="Models\ViewModels\AdminProductViewModels.cs" />
     <Compile Include="Models\ViewModels\CartViewModels.cs" />
+    <Compile Include="Models\ViewModels\CategoryViewModels.cs" />
     <Compile Include="Models\ViewModels\DashboardVM.cs" />
     <Compile Include="Models\ViewModels\HomeViewModels.cs" />
     <Compile Include="Models\ViewModels\VnPayResponseModel.cs" />
@@ -228,8 +230,11 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\Category.css" />
+    <Content Include="Content\Contact.css" />
     <Content Include="Content\Home.css" />
     <Content Include="Content\Layout.css" />
+    <Content Include="Database\sample_category_data.sql" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -286,7 +291,10 @@
     <Content Include="Areas\Admin\Views\Brand\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\Order\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Order\Details.cshtml" />
+    <Content Include="CATEGORY_FEATURE_GUIDE.md" />
+    <Content Include="CATEGORY_IMPLEMENTATION.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
+    <Content Include="Scripts\category-products.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
     <Content Include="Scripts\jquery-3.7.0.slim.js" />
@@ -330,6 +338,8 @@
     <Content Include="Views\Shared\_AddToCartForm.cshtml" />
     <Content Include="Views\Product\Index.cshtml" />
     <Content Include="Views\Product\Details.cshtml" />
+    <Content Include="Views\Category\Index.cshtml" />
+    <Content Include="Views\Category\Products.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
