@@ -18,7 +18,7 @@ namespace ValiModern.Models.EF
         public int order_id { get; set; }
         public int product_id { get; set; }
         public int quantity { get; set; }
-        public decimal price { get; set; }
+        public int price { get; set; }
         public Nullable<int> color_id { get; set; }
         public Nullable<int> size_id { get; set; }
         public System.DateTime created_at { get; set; }

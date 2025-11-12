@@ -24,11 +24,15 @@
             </div>
             <div class="col-md-3">
                 @Html.LabelFor(m => m.Price)
-                @Html.TextBoxFor(m => m.Price, new { @class = "form-control", type = "number", step = "0.01" })
+                <input type="text" class="form-control" id="Price_display" inputmode="numeric" placeholder="0" />
+                <input type="hidden" name="Price" id="Price" value="0" />
+                @Html.ValidationMessageFor(m => m.Price)
             </div>
             <div class="col-md-3">
                 @Html.LabelFor(m => m.OriginalPrice)
-                @Html.TextBoxFor(m => m.OriginalPrice, new { @class = "form-control", type = "number", step = "0.01" })
+                <input type="text" class="form-control" id="OriginalPrice_display" inputmode="numeric" placeholder="0" />
+                <input type="hidden" name="OriginalPrice" id="OriginalPrice" value="0" />
+                @Html.ValidationMessageFor(m => m.OriginalPrice)
             </div>
             <div class="col-md-3">
                 @Html.LabelFor(m => m.Stock)
@@ -90,4 +94,33 @@
 </div>
 @section scripts {
     <script src="~/Scripts/Admin/image-dropzone.js"></script>
+    <script>
+        (function () {
+            function bindMoneyInput(displayId, hiddenId) {
+                const display = document.getElementById(displayId);
+                const hidden = document.getElementById(hiddenId);
+                if (!display || !hidden) return;
+
+                const formatter = new Intl.NumberFormat('vi-VN');
+                const stripNonDigits = s => (s || '').replace(/[^\d]/g, '');
+
+                display.addEventListener('focus', function () {
+                    display.value = hidden.value || '';
+                    display.select();
+                });
+
+                display.addEventListener('input', function () {
+                    hidden.value = stripNonDigits(display.value);
+                });
+
+                display.addEventListener('blur', function () {
+                    const val = parseInt(hidden.value, 10);
+                    display.value = val > 0 ? formatter.format(val) : '';
+                });
+            }
+
+            bindMoneyInput('Price_display', 'Price');
+            bindMoneyInput('OriginalPrice_display', 'OriginalPrice');
+        })();
+    </script>
 }

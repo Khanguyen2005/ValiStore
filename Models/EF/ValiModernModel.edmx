@@ -45,7 +45,7 @@
           <Property Name="order_id" Type="int" Nullable="false" />
           <Property Name="product_id" Type="int" Nullable="false" />
           <Property Name="quantity" Type="int" Nullable="false" />
-          <Property Name="price" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="price" Type="int" Nullable="false" />
           <Property Name="color_id" Type="int" />
           <Property Name="size_id" Type="int" />
           <Property Name="created_at" Type="datetime2" Precision="0" Nullable="false" />
@@ -58,7 +58,7 @@
           <Property Name="user_id" Type="int" Nullable="false" />
           <Property Name="order_date" Type="datetime2" Precision="0" Nullable="false" />
           <Property Name="status" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="total_amount" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="total_amount" Type="bigint" Nullable="false" />
           <Property Name="phone" Type="nvarchar" MaxLength="20" />
           <Property Name="shipping_address" Type="nvarchar" MaxLength="500" />
           <Property Name="created_at" Type="datetime2" Precision="0" Nullable="false" />
@@ -70,7 +70,7 @@
           </Key>
           <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="order_id" Type="int" Nullable="false" />
-          <Property Name="amount" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="amount" Type="bigint" Nullable="false" />
           <Property Name="payment_method" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="status" Type="nvarchar" MaxLength="20" Nullable="false" />
           <Property Name="transaction_id" Type="nvarchar" MaxLength="200" />
@@ -94,8 +94,8 @@
           <Property Name="name" Type="nvarchar" MaxLength="255" Nullable="false" />
           <Property Name="description" Type="nvarchar(max)" />
           <Property Name="image_url" Type="nvarchar" MaxLength="255" />
-          <Property Name="original_price" Type="decimal" Precision="12" Scale="2" Nullable="false" />
-          <Property Name="price" Type="decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="original_price" Type="int" Nullable="false" />
+          <Property Name="price" Type="int" Nullable="false" />
           <Property Name="stock" Type="int" Nullable="false" />
           <Property Name="sold" Type="int" Nullable="false" />
           <Property Name="category_id" Type="int" Nullable="false" />
@@ -371,7 +371,7 @@
           <Property Name="order_id" Type="Int32" Nullable="false" />
           <Property Name="product_id" Type="Int32" Nullable="false" />
           <Property Name="quantity" Type="Int32" Nullable="false" />
-          <Property Name="price" Type="Decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="price" Type="Int32" Nullable="false" />
           <Property Name="color_id" Type="Int32" />
           <Property Name="size_id" Type="Int32" />
           <Property Name="created_at" Type="DateTime" Nullable="false" Precision="0" />
@@ -388,7 +388,7 @@
           <Property Name="user_id" Type="Int32" Nullable="false" />
           <Property Name="order_date" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="total_amount" Type="Decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="total_amount" Type="Int64" Nullable="false" />
           <Property Name="phone" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <Property Name="shipping_address" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="created_at" Type="DateTime" Nullable="false" Precision="0" />
@@ -403,7 +403,7 @@
           </Key>
           <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="order_id" Type="Int32" Nullable="false" />
-          <Property Name="amount" Type="Decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="amount" Type="Int64" Nullable="false" />
           <Property Name="payment_method" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="status" Type="String" MaxLength="20" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="transaction_id" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
@@ -429,8 +429,8 @@
           <Property Name="name" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
           <Property Name="image_url" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
-          <Property Name="original_price" Type="Decimal" Precision="12" Scale="2" Nullable="false" />
-          <Property Name="price" Type="Decimal" Precision="12" Scale="2" Nullable="false" />
+          <Property Name="original_price" Type="Int32" Nullable="false" />
+          <Property Name="price" Type="Int32" Nullable="false" />
           <Property Name="stock" Type="Int32" Nullable="false" />
           <Property Name="sold" Type="Int32" Nullable="false" />
           <Property Name="category_id" Type="Int32" Nullable="false" />

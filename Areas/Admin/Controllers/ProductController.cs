@@ -69,9 +69,9 @@ namespace ValiModern.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(ProductFormVM vm, HttpPostedFileBase imageFile)
         {
-            // Normalize decimal inputs to avoid culture issues
-            if (TryParseDecimal("Price", out var parsedPrice)) { vm.Price = parsedPrice; }
-            if (TryParseDecimal("OriginalPrice", out var parsedOriginal)) { vm.OriginalPrice = parsedOriginal; }
+            // Normalize decimal inputs to avoid culture issues and cast to int
+            if (TryParseDecimal("Price", out var parsedPrice)) { vm.Price = (int)parsedPrice; }
+            if (TryParseDecimal("OriginalPrice", out var parsedOriginal)) { vm.OriginalPrice = (int)parsedOriginal; }
 
             if (!ModelState.IsValid)
             {
@@ -147,9 +147,9 @@ namespace ValiModern.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, ProductFormVM vm, HttpPostedFileBase imageFile)
         {
-            // Normalize decimal inputs again
-            if (TryParseDecimal("Price", out var parsedPrice)) { vm.Price = parsedPrice; }
-            if (TryParseDecimal("OriginalPrice", out var parsedOriginal)) { vm.OriginalPrice = parsedOriginal; }
+            // Normalize decimal inputs again and cast to int
+            if (TryParseDecimal("Price", out var parsedPrice)) { vm.Price = (int)parsedPrice; }
+            if (TryParseDecimal("OriginalPrice", out var parsedOriginal)) { vm.OriginalPrice = (int)parsedOriginal; }
 
             var product = _db.Products.Include(p => p.Colors).Include(p => p.Sizes).FirstOrDefault(p => p.id == id);
             if (product == null) return HttpNotFound();
@@ -265,8 +265,8 @@ namespace ValiModern.Areas.Admin.Controllers
                 vm.Id = product.id;
                 vm.Name = source?.Name ?? product.name;
                 vm.Description = source?.Description ?? product.description;
-                vm.OriginalPrice = source?.OriginalPrice ?? product.original_price;
-                vm.Price = source?.Price ?? product.price;
+                vm.OriginalPrice = source?.OriginalPrice ?? (int)product.original_price;
+                vm.Price = source?.Price ?? (int)product.price;
                 vm.Stock = source?.Stock ?? product.stock;
                 vm.Sold = source?.Sold ?? product.sold;
                 vm.CategoryId = source?.CategoryId ?? product.category_id;

@@ -16,7 +16,7 @@ namespace ValiModern.Models.EF
     {
         public int id { get; set; }
         public int order_id { get; set; }
-        public decimal amount { get; set; }
+        public long amount { get; set; }
         public string payment_method { get; set; }
         public string status { get; set; }
         public string transaction_id { get; set; }

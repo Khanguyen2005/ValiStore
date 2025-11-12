@@ -13,9 +13,9 @@ namespace ValiModern.Models.ViewModels
         public string Name { get; set; }
         public string Description { get; set; }
         [Display(Name = "Original Price"), Required(ErrorMessage = "Original price required")]
-        public decimal OriginalPrice { get; set; }
+        public int OriginalPrice { get; set; }
         [Display(Name = "Price"), Required(ErrorMessage = "Price required")]
-        public decimal Price { get; set; }
+        public int Price { get; set; }
         [Range(0, int.MaxValue)]
         public int Stock { get; set; }
         [Display(Name = "Sold"), Range(0, int.MaxValue)]

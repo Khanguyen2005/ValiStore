@@ -25,7 +25,7 @@ namespace ValiModern.Models.EF
         public int user_id { get; set; }
         public System.DateTime order_date { get; set; }
         public string status { get; set; }
-        public decimal total_amount { get; set; }
+        public long total_amount { get; set; }
         public string phone { get; set; }
         public string shipping_address { get; set; }
         public System.DateTime created_at { get; set; }
