@@ -37,10 +37,16 @@ namespace ValiModern.Models.ViewModels
         public List<ProductCardVM> Products { get; set; }
         public List<Category> Categories { get; set; }
         public List<Brand> Brands { get; set; }
+        public List<FilterOptionVM> AvailableColors { get; set; }
+        public List<FilterOptionVM> AvailableSizes { get; set; }
         public string CurrentCategory { get; set; }
         public string CurrentBrand { get; set; }
         public string CurrentSort { get; set; }
         public string SearchQuery { get; set; }
+        public decimal? MinPrice { get; set; }
+        public decimal? MaxPrice { get; set; }
+        public List<string> SelectedColorNames { get; set; }
+        public List<string> SelectedSizeNames { get; set; }
         public int CurrentPage { get; set; }
         public int TotalPages { get; set; }
         public int TotalProducts { get; set; }

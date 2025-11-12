@@ -234,6 +234,7 @@
     <Content Include="Content\Contact.css" />
     <Content Include="Content\Home.css" />
     <Content Include="Content\Layout.css" />
+    <Content Include="Content\Product.css" />
     <Content Include="Database\sample_category_data.sql" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />

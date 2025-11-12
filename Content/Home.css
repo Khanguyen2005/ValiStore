@@ -4,168 +4,311 @@
 
 /* Banner Carousel Styles */
 .home-banner-wrapper {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     overflow: hidden;
+    background: #f8f9fa;
 }
 
 .home-banner-frame {
+    position: relative;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.home-banner-img {
-    width: 100%;
-    height: auto;
-    display: block;
-    max-height: 400px;
-    object-fit: cover;
-}
-
-@media (min-width: 768px) {
-    .home-banner-img {
-      max-height: 500px;
-  }
-}
-
-/* Product Card Styles */
-.product-card {
-    transition: all 0.3s ease;
-    border-radius: 1rem !important;
+    padding-top: 35%; /* Reduced from 40% - shorter banner */
     overflow: hidden;
 }
 
-.product-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15) !important;
+.home-banner-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.product-img-wrapper {
+/* Category Section */
+.category-section {
+    margin-bottom: 2.5rem;
+}
+
+.section-title {
+    padding-bottom: 0.5rem;
+    color: #2c3e50;
+    font-size: 1.25rem;
+}
+
+.view-all-btn {
+    transition: all 0.3s ease;
+    border-radius: 20px;
+    padding: 0.375rem 1rem;
+    font-size: 0.875rem;
+}
+
+.view-all-btn:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+}
+
+/* Home Product Cards - Compact Version */
+.home-product-card {
+    transition: all 0.3s ease;
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.home-product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12) !important;
+}
+
+.product-image-wrapper {
     position: relative;
+    width: 100%;
+    padding-top: 100%; /* 1:1 Aspect Ratio */
+    overflow: hidden;
     background: #f8f9fa;
-    height: 240px;
-    padding: 1rem;
-    display: flex;
-    align-items: center;
-justify-content: center;
 }
 
-.product-card .card-img-top {
+.product-image {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: contain;
-  transition: transform 0.3s ease;
+    padding: 12px; /* Reduced from 15px */
+    transition: transform 0.3s ease;
 }
 
-.product-card:hover .card-img-top {
-  transform: scale(1.05);
+.home-product-card:hover .product-image {
+    transform: scale(1.05); /* Reduced from 1.08 */
 }
 
-.product-overlay {
-    background: rgba(0, 0, 0, 0.5);
+.discount-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10;
+}
+
+.discount-badge span {
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    color: white;
+    padding: 4px 10px; /* Smaller padding */
+    border-radius: 15px;
+    font-weight: bold;
+    font-size: 0.75rem; /* Smaller font */
+    box-shadow: 0 3px 8px rgba(255, 65, 108, 0.3);
+    display: inline-block;
+}
+
+.product-quick-view {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
 
-.product-card:hover .product-overlay {
+.home-product-card:hover .product-quick-view {
     opacity: 1;
 }
 
-/* Guide Section Styles */
+.product-quick-view .btn {
+    width: 40px; /* Reduced from 45px */
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem; /* Reduced from 1.2rem */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.product-quick-view .btn:hover {
+    transform: scale(1.1);
+    background: #0d6efd !important;
+    color: white !important;
+}
+
+.product-title {
+    font-size: 0.9rem; /* Reduced from 0.95rem */
+    font-weight: 600;
+    color: #333;
+    height: 2.4em;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    line-height: 1.2em;
+}
+
+.home-product-card .card-body {
+    padding: 0.875rem !important; /* Reduced from default */
+}
+
+.product-price {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.original-price {
+    color: #999;
+    text-decoration: line-through;
+    font-size: 0.8rem; /* Smaller */
+}
+
+.current-price {
+    color: #dc3545;
+    font-size: 1rem; /* Reduced from 1.1rem */
+    font-weight: bold;
+}
+
+.home-product-card small {
+    font-size: 0.75rem; /* Smaller text */
+}
+
+.home-product-card .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    transition: all 0.3s ease;
+    border-radius: 6px;
+    font-size: 0.8rem; /* Smaller font */
+    padding: 0.4rem 0.5rem; /* Smaller padding */
+}
+
+.home-product-card .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* Guide Section */
+.guide-section {
+    padding-top: 2.5rem;
+    margin-top: 2.5rem;
+}
+
 .guide-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: all 0.3s ease;
     cursor: pointer;
 }
 
 .guide-card:hover {
-    transform: scale(1.05);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2) !important;
+    transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.15) !important;
 }
 
 .guide-img {
-    height: 280px;
+    height: 250px; /* Reduced from 280px */
     object-fit: cover;
-    transition: transform 0.3s ease;
+    transition: transform 0.5s ease;
 }
 
 .guide-card:hover .guide-img {
-    transform: scale(1.1);
+    transform: scale(1.08);
 }
 
 .guide-overlay {
-    transition: background-color 0.3s ease;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 70%, transparent 100%);
+    transition: all 0.3s ease;
 }
 
 .guide-card:hover .guide-overlay {
-    background-color: rgba(0, 0, 0, 0.85) !important;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 70%, transparent 100%);
 }
 
-/* Enhanced Section Title Underline Animation */
-section h2 span {
-    transition: width 0.5s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-    transform-origin: left;
-    will-change: width;
+.guide-overlay h5 {
+    font-size: 1.1rem;
 }
 
-section:hover h2 span {
-    width: 100% !important;
-}
-
-/* Add subtle scale effect to title on hover */
-section h2 {
-    transition: transform 0.3s ease;
-}
-
-section:hover h2 {
-    transform: translateX(5px);
-}
-
-/* Enhance underline appearance */
-section h2 span.border-bottom {
-    border-width: 4px !important;
-    box-shadow: 0 2px 4px rgba(13, 110, 253, 0.3);
-    border-radius: 2px;
-}
-
-/* Alternative: Gradient underline effect */
-section h2 span.border-primary {
-    background: linear-gradient(90deg, #0d6efd 0%, #1e90ff 100%);
-    border: none !important;
-    height: 4px;
-    bottom: -2px !important;
+.guide-overlay small {
+    font-size: 0.85rem;
 }
 
 /* Responsive Adjustments */
+@media (max-width: 991px) {
+    .section-title {
+        font-size: 1.15rem;
+ }
+
+    .product-image-wrapper {
+      padding-top: 100%;
+    }
+}
+
 @media (max-width: 768px) {
-    .product-img-wrapper {
-  height: 180px;
-  padding: 0.75rem;
+    .home-banner-frame {
+        padding-top: 50%; /* Taller on mobile */
+    }
+
+    .product-image {
+        padding: 10px;
+    }
+
+    .product-title {
+        font-size: 0.85rem;
+    }
+
+    .current-price {
+        font-size: 0.95rem;
     }
 
     .guide-img {
-        height: 200px;
+        height: 180px;
     }
 
-    /* Simpler animation on mobile for performance */
-    section h2 span {
-transition: width 0.3s ease-in-out;
+    .section-title {
+        font-size: 1.1rem;
     }
 
-    section:hover h2 {
-        transform: none;
+    .view-all-btn {
+  font-size: 0.8rem;
+        padding: 0.3rem 0.875rem;
+    }
+
+    .category-section {
+        margin-bottom: 2rem;
     }
 }
 
-/* Smooth Scroll Behavior */
-html {
-    scroll-behavior: smooth;
+@media (max-width: 576px) {
+    .home-banner-frame {
+   padding-top: 60%;
 }
 
-/* Performance optimization */
-.product-card,
-.guide-card,
-section h2 span {
-    backface-visibility: hidden;
-    -webkit-font-smoothing: antialiased;
+    .product-image {
+   padding: 8px;
+    }
+
+    .discount-badge span {
+      font-size: 0.7rem;
+        padding: 3px 8px;
+    }
+
+    .home-product-card .card-body {
+        padding: 0.75rem !important;
+    }
+
+    .home-product-card .btn-primary {
+        font-size: 0.75rem;
+padding: 0.35rem 0.4rem;
+    }
+
+    .product-title {
+        font-size: 0.8rem;
+ height: 2em;
+    }
+
+    .current-price {
+        font-size: 0.9rem;
+    }
+
+    .guide-img {
+        height: 150px;
+    }
+
+ .section-title {
+        font-size: 1rem;
+    }
 }

@@ -16,14 +16,14 @@ namespace ValiModern.Controllers
         public ActionResult Index()
         {
             var categories = _db.Categories
-            .OrderBy(c => c.name)
+                .OrderBy(c => c.name)
                 .Select(c => new CategoryVM
                 {
                     Id = c.id,
                     Name = c.name,
                     Slug = c.name.ToLower().Replace(" ", "-")
                 })
-           .ToList();
+                .ToList();
 
             return View(categories);
         }
@@ -40,11 +40,11 @@ namespace ValiModern.Controllers
 
             int pageSize = 12;
             var products = _db.Products
-            .Include(p => p.Brand)
-            .Include(p => p.Colors)
-            .Include(p => p.Sizes)
-            .Where(p => p.is_active && p.category_id == id)
-            .AsQueryable();
+                .Include(p => p.Brand)
+                .Include(p => p.Colors)
+                .Include(p => p.Sizes)
+                .Where(p => p.is_active && p.category_id == id)
+                .AsQueryable();
 
             // Filter by price range
             if (minPrice.HasValue)
@@ -56,36 +56,36 @@ namespace ValiModern.Controllers
                 products = products.Where(p => p.price <= maxPrice.Value);
             }
 
-            // Parse color and size filters
-            List<int> selectedColorIds = new List<int>();
-            List<int> selectedSizeIds = new List<int>();
+            // Parse color and size filters - USE NAMES not IDs
+            List<string> selectedColorNames = new List<string>();
+            List<string> selectedSizeNames = new List<string>();
 
             if (!string.IsNullOrWhiteSpace(colors))
             {
-                selectedColorIds = colors.Split(',')
-                .Where(s => !string.IsNullOrWhiteSpace(s))
-                .Select(s => int.Parse(s.Trim()))
-                .ToList();
+                selectedColorNames = colors.Split(',')
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .Select(s => s.Trim())
+                    .ToList();
             }
 
             if (!string.IsNullOrWhiteSpace(sizes))
             {
-                selectedSizeIds = sizes.Split(',')
-                .Where(s => !string.IsNullOrWhiteSpace(s))
-                .Select(s => int.Parse(s.Trim()))
-                .ToList();
+                selectedSizeNames = sizes.Split(',')
+                    .Where(s => !string.IsNullOrWhiteSpace(s))
+                    .Select(s => s.Trim())
+                    .ToList();
             }
 
-            // Filter by colors
-            if (selectedColorIds.Any())
+            // Filter by colors - using color NAMES
+            if (selectedColorNames.Any())
             {
-                products = products.Where(p => p.Colors.Any(c => selectedColorIds.Contains(c.id)));
+                products = products.Where(p => p.Colors.Any(c => selectedColorNames.Contains(c.name)));
             }
 
-            // Filter by sizes
-            if (selectedSizeIds.Any())
+            // Filter by sizes - using size NAMES
+            if (selectedSizeNames.Any())
             {
-                products = products.Where(p => p.Sizes.Any(s => selectedSizeIds.Contains(s.id)));
+                products = products.Where(p => p.Sizes.Any(s => selectedSizeNames.Contains(s.name)));
             }
 
             // Sort
@@ -115,35 +115,66 @@ namespace ValiModern.Controllers
             var totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
 
             var productList = products
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .ToList();
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
 
-            // Get all available colors for this category
+            // Build base query for available options (excluding color/size filters)
+            var baseFilteredProducts = _db.Products
+                .Include(p => p.Colors)
+                .Include(p => p.Sizes)
+                .Where(p => p.is_active && p.category_id == id)
+                .AsQueryable();
+
+            // Apply price filter to base query
+            if (minPrice.HasValue)
+            {
+                baseFilteredProducts = baseFilteredProducts.Where(p => p.price >= minPrice.Value);
+            }
+            if (maxPrice.HasValue)
+            {
+                baseFilteredProducts = baseFilteredProducts.Where(p => p.price <= maxPrice.Value);
+            }
+
+            // Get distinct product IDs from base filtered products
+            var baseProductIds = baseFilteredProducts.Select(p => p.id).Distinct().ToList();
+
+            // Get all available colors for this category (count distinct products, not color records)
             var availableColors = _db.Colors
-               .Where(c => c.Product.category_id == id && c.Product.is_active)
-               .GroupBy(c => new { c.name, c.color_code })
-                .Select(g => new FilterOptionVM
+                .Where(c => baseProductIds.Contains(c.product_id))
+                .GroupBy(c => new { c.name, c.color_code })
+                .Select(g => new
                 {
-                    Id = g.FirstOrDefault().id,
                     Name = g.Key.name,
                     HexCode = g.Key.color_code,
-                    Count = g.Count()
+                    ProductCount = g.Select(c => c.product_id).Distinct().Count()
                 })
-               .OrderBy(c => c.Name)
-               .ToList();
-
-            // Get all available sizes for this category
-            var availableSizes = _db.Sizes
-                .Where(s => s.Product.category_id == id && s.Product.is_active)
-                .GroupBy(s => s.name)
-                .Select(g => new FilterOptionVM
+                .OrderBy(c => c.Name)
+                .ToList()
+                .Select(c => new FilterOptionVM
                 {
-                    Id = g.FirstOrDefault().id,
+                    Name = c.Name,
+                    HexCode = c.HexCode,
+                    Count = c.ProductCount
+                })
+                .ToList();
+
+            // Get all available sizes for this category (count distinct products, not size records)
+            var availableSizes = _db.Sizes
+                .Where(s => baseProductIds.Contains(s.product_id))
+                .GroupBy(s => s.name)
+                .Select(g => new
+                {
                     Name = g.Key,
-                    Count = g.Count()
+                    ProductCount = g.Select(s => s.product_id).Distinct().Count()
                 })
                 .OrderBy(s => s.Name)
+                .ToList()
+                .Select(s => new FilterOptionVM
+                {
+                    Name = s.Name,
+                    Count = s.ProductCount
+                })
                 .ToList();
 
             var vm = new CategoryProductsVM
@@ -174,8 +205,8 @@ namespace ValiModern.Controllers
                 Sort = sort,
                 MinPrice = minPrice,
                 MaxPrice = maxPrice,
-                SelectedColorIds = selectedColorIds,
-                SelectedSizeIds = selectedSizeIds
+                SelectedColorNames = selectedColorNames,
+                SelectedSizeNames = selectedSizeNames
             };
 
             return View(vm);

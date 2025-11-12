@@ -1,0 +1,213 @@
+/* Product Shop Page Styles */
+
+/* Hero Banner */
+.shop-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* Filters Sidebar */
+.filters-sidebar .card-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.filter-options {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.filter-options::-webkit-scrollbar {
+    width: 6px;
+}
+
+.filter-options::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.filter-options::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.filter-options::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.color-swatch {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 2px solid #ddd;
+    flex-shrink: 0;
+}
+
+.filter-list .list-group-item {
+    padding: 0.5rem 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.filter-list .list-group-item:hover {
+    background-color: #f8f9fa;
+    padding-left: 1rem;
+}
+
+.filter-list .list-group-item.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-left: 3px solid #fff;
+    font-weight: 600;
+}
+
+/* Product Card */
+.product-card {
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.product-card:hover {
+ transform: translateY(-8px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.15) !important;
+}
+
+.product-image-wrapper {
+    position: relative;
+    width: 100%;
+    padding-top: 100%; /* 1:1 Aspect Ratio */
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.product-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Changed from cover to contain to prevent cropping */
+    padding: 10px; /* Add padding around image */
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+.discount-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+}
+
+.discount-badge span {
+ background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 0.875rem;
+    box-shadow: 0 4px 10px rgba(255, 65, 108, 0.3);
+}
+
+.product-title {
+    font-weight: 600;
+    color: #333;
+    height: 2.4em;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.product-meta {
+    line-height: 1.4;
+}
+
+.product-price {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.original-price {
+    color: #999;
+    text-decoration: line-through;
+    font-size: 0.9rem;
+}
+
+.current-price {
+    color: #dc3545;
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+/* Products Header */
+.products-header {
+    border-left: 4px solid #667eea;
+}
+
+/* Empty State */
+.empty-state i {
+    color: #dee2e6;
+}
+
+/* Pagination */
+.pagination {
+    margin-top: 2rem;
+}
+
+.pagination .page-link {
+    color: #667eea;
+    border: 1px solid #dee2e6;
+    padding: 0.5rem 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.pagination .page-link:hover {
+    background-color: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+ border-color: #667eea;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .shop-hero {
+        padding: 2rem 0 !important;
+    }
+
+    .shop-hero h1 {
+        font-size: 2rem;
+    }
+
+  .filters-sidebar .card {
+        position: static !important;
+    }
+}
+
+@media (max-width: 767px) {
+    .product-image-wrapper {
+     padding-top: 75%; /* Make images slightly shorter on mobile */
+    }
+
+    .products-header {
+        flex-direction: column;
+        gap: 1rem;
+  align-items: flex-start !important;
+    }
+
+    .products-header .dropdown {
+        width: 100%;
+ }
+
+    .products-header .dropdown button {
+        width: 100%;
+    }
+}
