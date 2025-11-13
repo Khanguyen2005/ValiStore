@@ -5,173 +5,155 @@
     var product = Model.Product;
     var images = product.Product_Images.OrderBy(i => i.sort_order).ToList();
     var mainImage = images.FirstOrDefault(i => i.is_main) ?? images.FirstOrDefault();
+    var discountPercent = (product.original_price > product.price && product.original_price > 0)
+        ? (int)System.Math.Round((product.original_price - product.price) / product.original_price * 100M, 0)
+        : 0;
 }
 
-<div class="container my-4">
-    <nav aria-label="breadcrumb">
+@section Styles {
+    <link href="~/Content/ProductDetails.css" rel="stylesheet" />
+}
+
+<div class="container py-4 product-detail-page">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
-            <li class="breadcrumb-item"><a href="@Url.Action("Index")">Shop</a></li>
+            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Product")">Shop</a></li>
             @if (product.Category != null)
             {
-                <li class="breadcrumb-item"><a href="@Url.Action("Index", new { category = product.Category.name })">@product.Category.name</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Product", new { category = product.Category.name })">@product.Category.name</a></li>
             }
-            <li class="breadcrumb-item active">@product.name</li>
+            <li class="breadcrumb-item active" aria-current="page">@product.name</li>
         </ol>
     </nav>
 
-    <div class="row">
-        <!-- Product Images -->
-        <div class="col-lg-6 mb-4">
-            <div class="product-images">
-                @if (mainImage != null)
-                {
-                    <div class="main-image mb-3">
-                        <img src="@mainImage.image_url" alt="@product.name" class="img-fluid rounded shadow-sm" id="mainImage" />
+    <div class="row g-4">
+        <!-- Gallery -->
+        <div class="col-lg-6">
+            <div class="product-gallery card border-0 shadow-sm h-100">
+                <div class="p-3 pb-2">
+                    <div class="main-image-wrapper rounded position-relative overflow-hidden bg-light">
+                        @if (mainImage != null)
+                        {
+                            <img src="@mainImage.image_url" alt="@product.name" id="mainImage" class="main-image img-fluid" onerror="this.onerror=null;this.src='/Content/images/placeholder.png';" />
+                        }
+                        @if (discountPercent > 0)
+                        {
+                            <div class="gallery-discount-badge">-@discountPercent%</div>
+                        }
                     </div>
-                }
-
+                </div>
                 @if (images.Count > 1)
                 {
-                    <div class="thumbnail-images d-flex gap-2">
+                    <div class="thumb-strip d-flex gap-2 px-3 pb-3 flex-wrap">
                         @foreach (var img in images)
                         {
-                            <img src="@img.image_url" alt="Image" class="img-thumbnail thumbnail-img"
-                                 style="width:80px;height:80px;object-fit:cover;cursor:pointer;"
-                                 onclick="changeMainImage('@img.image_url')" />
+                            <button type="button" class="thumb-btn @(img == mainImage ? "active" : "")" onclick="changeMainImage('@img.image_url', this)">
+                                <img src="@img.image_url" alt="thumb" class="thumb-img" onerror="this.onerror=null;this.src='/Content/images/placeholder.png';" />
+                            </button>
                         }
                     </div>
                 }
             </div>
         </div>
 
-        <!-- Product Info & Add to Cart -->
+        <!-- Info -->
         <div class="col-lg-6">
-            <div class="product-info">
-                <h1 class="h3 fw-bold mb-3">@product.name</h1>
-
-                <!-- Price -->
-                <div class="mb-3">
-                    @if (product.original_price > product.price)
-                    {
-                        <span class="text-muted text-decoration-line-through fs-5 me-2">@String.Format("{0:n0}", product.original_price) ₫</span>
-                        <span class="text-primary fw-bold fs-3">@String.Format("{0:n0}", product.price) ₫</span>
-                        <span class="badge bg-danger ms-2">-@(((product.original_price - product.price) / product.original_price * 100).ToString("F0"))%</span>
-                    }
-                    else
-                    {
-                        <span class="text-primary fw-bold fs-3">@String.Format("{0:n0}", product.price) ₫</span>
-                    }
-                </div>
-
-                <!-- Rating & Sold -->
-                <div class="d-flex align-items-center mb-3">
-                    <div class="me-4">
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-fill text-warning"></i>
-                        <i class="bi bi-star-half text-warning"></i>
-                        <span class="ms-1">4.5</span>
+            <div class="product-info card border-0 shadow-sm h-100">
+                <div class="card-body p-4 d-flex flex-column">
+                    <h1 class="product-title h3 fw-bold mb-3">@product.name</h1>
+                    <div class="price-row mb-3">
+                        @if (discountPercent > 0)
+                        {
+                            <span class="old-price">@String.Format("{0:n0}", product.original_price) ₫</span>
+                            <span class="current-price">@String.Format("{0:n0}", product.price) ₫</span>
+                            <span class="badge discount-pill ms-2">-@discountPercent%</span>
+                        }
+                        else
+                        {
+                            <span class="current-price">@String.Format("{0:n0}", product.price) ₫</span>
+                        }
                     </div>
-                    <div class="text-muted">
-                        <i class="bi bi-bag-check me-1"></i>
-                        Sold: <strong>@product.sold</strong>
-                    </div>
-                </div>
-
-                <!-- Brand & Category -->
-                <div class="mb-3">
-                    @if (product.Brand != null)
-                    {
-                        <span class="badge bg-secondary me-2">
-                            <i class="bi bi-tag me-1"></i>@product.Brand.name
+                    <div class="meta-row d-flex flex-wrap align-items-center gap-3 mb-3 small text-muted">
+                        <span class="rating-stars" title="Rating 4.5/5">
+                            <i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-fill"></i><i class="bi bi-star-half"></i>
+                            <span class="ms-1 fw-semibold">4.5</span>
                         </span>
-                    }
-                    @if (product.Category != null)
-                    {
-                        <span class="badge bg-info">
-                            <i class="bi bi-grid me-1"></i>@product.Category.name
-                        </span>
-                    }
-                </div>
-
-                <!-- Description -->
-                <div class="mb-4">
-                    <h6 class="fw-bold">Description:</h6>
-                    <p class="text-muted">@(string.IsNullOrEmpty(product.description) ? "No description available." : product.description)</p>
-                </div>
-
-                <!-- Add to Cart Form -->
-                @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post, new { @class = "add-to-cart-form" }))
-                {
-                    @Html.AntiForgeryToken()
-                    @Html.Hidden("productId", product.id)
-
-                    <!-- Color Selection -->
-                    if (product.Colors != null && product.Colors.Any())
-                    {
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Color: <span class="text-danger">*</span></label>
-                            <div class="color-options d-flex flex-wrap gap-2">
-                                @foreach (var color in product.Colors)
-                                {
-                                    <div class="form-check">
-                                        <input class="form-check-input color-radio" type="radio" name="colorId" value="@color.id" id="color_@color.id" />
-                                        <label class="form-check-label color-label" for="color_@color.id">
-                                            <div class="d-flex align-items-center p-2 border rounded" style="cursor:pointer;">
-                                                <span class="color-swatch" style="display:inline-block;width:30px;height:30px;background-color:@color.color_code;border:2px solid #ddd;border-radius:50%;margin-right:8px;"></span>
-                                                <span>@color.name</span>
-                                            </div>
-                                        </label>
-                                    </div>
-                                }
-                            </div>
-                            <div class="invalid-feedback d-none" id="colorError">Please select a color</div>
-                        </div>
-                    }
-
-                    <!-- Size Selection -->
-                    if (product.Sizes != null && product.Sizes.Any())
-                    {
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Size: <span class="text-danger">*</span></label>
-                            <div class="size-options d-flex flex-wrap gap-2">
-                                @foreach (var size in product.Sizes)
-                                {
-                                    <div class="form-check">
-                                        <input class="form-check-input size-radio" type="radio" name="sizeId" value="@size.id" id="size_@size.id" />
-                                        <label class="form-check-label size-label btn btn-outline-secondary" for="size_@size.id" style="cursor:pointer;">
-                                            @size.name
-                                        </label>
-                                    </div>
-                                }
-                            </div>
-                            <div class="invalid-feedback d-none" id="sizeError">Please select a size</div>
-                        </div>
-                    }
-
-                    <!-- Quantity -->
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Quantity:</label>
-                        <div class="input-group" style="max-width:150px;">
-                            <button type="button" class="btn btn-outline-secondary" onclick="decreaseQty()">-</button>
-                            <input type="number" name="quantity" id="quantity" value="1" min="1" max="@product.stock" class="form-control text-center" />
-                            <button type="button" class="btn btn-outline-secondary" onclick="increaseQty()">+</button>
-                        </div>
-                        <small class="text-muted">Available: <strong>@product.stock</strong> in stock</small>
+                        <span><i class="bi bi-bag-check me-1"></i>Sold: <strong>@product.sold</strong></span>
+                        @if (discountPercent > 0)
+                        {<span class="text-danger fw-semibold"><i class="bi bi-percent me-1"></i>@discountPercent% OFF</span>}
+                        @if (product.Brand != null)
+                        {<span class="badge bg-secondary-subtle text-dark fw-normal"><i class="bi bi-tag me-1"></i>@product.Brand.name</span>}
+                        @if (product.Category != null)
+                        {<span class="badge bg-info-subtle text-dark fw-normal"><i class="bi bi-grid me-1"></i>@product.Category.name</span>}
+                    </div>
+                    <div class="description mb-4">
+                        <h6 class="fw-bold mb-2">Description</h6>
+                        <p class="text-muted mb-0">@(string.IsNullOrEmpty(product.description) ? "No description available." : product.description)</p>
                     </div>
 
-                    <!-- Action Buttons -->
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg" @(product.stock <= 0 ? "disabled" : "")>
-                            <i class="bi bi-cart-plus me-2"></i>@(product.stock > 0 ? "Add to Cart" : "Out of Stock")
-                        </button>
-                        <a href="@Url.Action("Index")" class="btn btn-outline-secondary">
-                            <i class="bi bi-arrow-left me-2"></i>Continue Shopping
-                        </a>
-                    </div>
-                }
+                    @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post, new { @class = "add-to-cart-form mt-auto" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.Hidden("productId", product.id)
+
+                        <!-- Color selector -->
+                        if (product.Colors != null && product.Colors.Any())
+                        {
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Color <span class="text-danger">*</span></label>
+                                <div class="color-options d-flex flex-wrap gap-2">
+                                    @foreach (var color in product.Colors)
+                                    {
+                                        <input type="radio" name="colorId" value="@color.id" class="btn-check" id="color_@color.id" autocomplete="off" />
+                                        <label class="color-chip" for="color_@color.id" title="@color.name">
+                                            <span class="chip-swatch" style="background:@color.color_code"></span>
+                                            <span class="chip-name">@color.name</span>
+                                        </label>
+                                    }
+                                </div>
+                                <div class="invalid-feedback d-none" id="colorError">Please select a color</div>
+                            </div>
+                        }
+
+                        <!-- Size selector -->
+                        if (product.Sizes != null && product.Sizes.Any())
+                        {
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Size <span class="text-danger">*</span></label>
+                                <div class="size-options d-flex flex-wrap gap-2">
+                                    @foreach (var size in product.Sizes)
+                                    {
+                                        <input type="radio" name="sizeId" value="@size.id" class="btn-check" id="size_@size.id" autocomplete="off" />
+                                        <label class="size-chip" for="size_@size.id">@size.name</label>
+                                    }
+                                </div>
+                                <div class="invalid-feedback d-none" id="sizeError">Please select a size</div>
+                            </div>
+                        }
+
+                        <!-- Quantity -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Quantity</label>
+                            <div class="qty-group">
+                                <button type="button" class="qty-btn" onclick="decreaseQty()"><i class="bi bi-dash"></i></button>
+                                <input type="number" name="quantity" id="quantity" value="1" min="1" max="@product.stock" class="qty-input" />
+                                <button type="button" class="qty-btn" onclick="increaseQty()"><i class="bi bi-plus"></i></button>
+                            </div>
+                            <small class="text-muted d-block mt-1">Available: <strong>@product.stock</strong> in stock</small>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm" @(product.stock <= 0 ? "disabled" : "")>
+                                <i class="bi bi-cart-plus me-2"></i>@(product.stock > 0 ? "Add to Cart" : "Out of Stock")
+                            </button>
+                            <a href="@Url.Action("Index", "Product")" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Back to Shop
+                            </a>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
     </div>
@@ -179,21 +161,27 @@
     <!-- Related Products -->
     @if (Model.RelatedProducts != null && Model.RelatedProducts.Any())
     {
-        <section class="mt-5">
-            <h3 class="h4 fw-bold mb-3">Related Products</h3>
+        <section class="mt-5 related-section">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="h5 fw-bold mb-0">Related Products</h3>
+                <a class="small text-decoration-none fw-semibold" href="@Url.Action("Index", "Product", new { category = product.Category?.name })">View all<i class="bi bi-arrow-right ms-1"></i></a>
+            </div>
             <div class="row g-3">
                 @foreach (var related in Model.RelatedProducts)
                 {
-                    <div class="col-md-3">
-                        <div class="card h-100 shadow-sm">
-                            <a href="@Url.Action("Details", new { id = related.id })">
-                                <img src="@related.image_url" class="card-img-top" alt="@related.name" style="height:180px;object-fit:cover;" />
+                    <div class="col-6 col-md-3">
+                        <div class="card related-card h-100 border-0 shadow-sm">
+                            @if (related.HasDiscount)
+                            {<div class="related-discount">-@related.DiscountPercent%</div>}
+                            <a href="@Url.Action("Details", new { id = related.id })" class="ratio ratio-1x1 bg-light d-block overflow-hidden">
+                                <img src="@related.image_url" alt="@related.name" class="related-img" onerror="this.onerror=null;this.src='/Content/images/placeholder.png';" />
                             </a>
-                            <div class="card-body">
-                                <h6 class="card-title text-truncate" title="@related.name">@related.name</h6>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="fw-bold text-primary">@String.Format("{0:n0}", related.price) ₫</span>
-                                    <a href="@Url.Action("Details", new { id = related.id })" class="btn btn-sm btn-outline-primary">View</a>
+                            <div class="card-body p-2 d-flex flex-column">
+                                <h6 class="related-title mb-1" title="@related.name">@related.name</h6>
+                                <div class="related-price mt-auto">
+                                    @if (related.HasDiscount)
+                                    {<span class="old">@String.Format("{0:n0}", related.original_price) ₫</span>}
+                                    <span class="new">@String.Format("{0:n0}", related.price) ₫</span>
                                 </div>
                             </div>
                         </div>
@@ -206,108 +194,30 @@
 
 @section scripts {
     <script>
-        // Change main image
-        function changeMainImage(url) {
-            document.getElementById('mainImage').src = url;
+        function changeMainImage(url, btn) {
+            const main = document.getElementById('mainImage');
+            if (main) { main.src = url; }
+            document.querySelectorAll('.thumb-btn').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
         }
-
-        // Quantity controls
         function increaseQty() {
-            var qtyInput = document.getElementById('quantity');
-            var max = parseInt(qtyInput.getAttribute('max'));
-            var current = parseInt(qtyInput.value);
-            if (current < max) {
-                qtyInput.value = current + 1;
-            }
+            var el = document.getElementById('quantity');
+            var max = parseInt(el.max); var v = parseInt(el.value); if (v < max) el.value = v + 1;
         }
-
         function decreaseQty() {
-            var qtyInput = document.getElementById('quantity');
-            var min = parseInt(qtyInput.getAttribute('min'));
-            var current = parseInt(qtyInput.value);
-            if (current > min) {
-                qtyInput.value = current - 1;
-            }
+            var el = document.getElementById('quantity');
+            var min = parseInt(el.min); var v = parseInt(el.value); if (v > min) el.value = v - 1;
         }
-
-        // Style selected options + Form validation
-        $(document).ready(function () {
-            // Hide radio buttons
-            $('.color-radio, .size-radio').hide();
-
-            // Color selection
-            $('.color-radio').change(function () {
-                $('.color-label .border').removeClass('border-primary').addClass('border-secondary');
-                if ($(this).is(':checked')) {
-                    $(this).siblings('label').find('.border').removeClass('border-secondary').addClass('border-primary');
-                    $('#colorError').addClass('d-none'); // Hide error
-                }
-            });
-
-            // Size selection
-            $('.size-radio').change(function () {
-                $('.size-label').removeClass('btn-primary').addClass('btn-outline-secondary');
-                if ($(this).is(':checked')) {
-                    $(this).siblings('label').removeClass('btn-outline-secondary').addClass('btn-primary');
-                    $('#sizeError').addClass('d-none'); // Hide error
-                }
-            });
-
-            // Form validation on submit
-            $('.add-to-cart-form').on('submit', function (e) {
-                var isValid = true;
-
-                // Check if colors exist and one is selected
-                if ($('.color-radio').length > 0) {
-                    if (!$('input[name="colorId"]:checked').length) {
-                        $('#colorError').removeClass('d-none').addClass('d-block');
-                        isValid = false;
-                    }
-                }
-
-                // Check if sizes exist and one is selected
-                if ($('.size-radio').length > 0) {
-                    if (!$('input[name="sizeId"]:checked').length) {
-                        $('#sizeError').removeClass('d-none').addClass('d-block');
-                        isValid = false;
-                    }
-                }
-
-                if (!isValid) {
-                    e.preventDefault(); // Stop form submission
-                    // Scroll to first error
-                    $('html, body').animate({
-                        scrollTop: $('.invalid-feedback:not(.d-none)').first().offset().top - 100
-                    }, 300);
-                    return false;
-                }
+        // Validation highlight
+        $(function () {
+            $('input[name="colorId"]').on('change', function(){ $('#colorError').addClass('d-none'); });
+            $('input[name="sizeId"]').on('change', function(){ $('#sizeError').addClass('d-none'); });
+            $('.add-to-cart-form').on('submit', function(e){
+                let ok = true;
+                if ($('input[name="colorId"]').length && !$('input[name="colorId"]:checked').length) { $('#colorError').removeClass('d-none'); ok = false; }
+                if ($('input[name="sizeId"]').length && !$('input[name="sizeId"]:checked').length) { $('#sizeError').removeClass('d-none'); ok = false; }
+                if (!ok) { e.preventDefault(); $('html,body').animate({ scrollTop: $('.invalid-feedback:not(.d-none)').first().offset().top - 120 }, 300); }
             });
         });
     </script>
 }
-
-<style>
-    .thumbnail-img {
-        transition: transform 0.2s, border-color 0.2s;
-    }
-
-        .thumbnail-img:hover {
-            transform: scale(1.05);
-            border-color: #0d6efd !important;
-        }
-
-    .color-radio, .size-radio {
-        display: none !important;
-    }
-
-    .color-label .border,
-    .size-label {
-        transition: all 0.2s;
-    }
-
-    .main-image img {
-        max-height: 500px;
-        width: 100%;
-        object-fit: contain;
-    }
-</style>

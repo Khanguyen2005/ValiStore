@@ -1,0 +1,42 @@
+/* Cart Page Styles */
+.cart-page h2 { color:#2c3e50; }
+
+/* Card headers */
+.bg-gradient-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; }
+
+/* Cart list */
+.cart-list .card-body { padding: 0; }
+.cart-item { padding: 14px 12px; border-bottom: 1px solid #eef0f2; transition: background .2s, box-shadow .2s; }
+.cart-item:hover { background: #fafbfc; box-shadow: inset 0 0 0 9999px rgba(0,0,0,0.01); }
+
+.cart-thumb { width: 84px; height: 84px; flex: 0 0 84px; border-radius: 10px; overflow: hidden; background: #f6f7f9; display:flex; align-items:center; justify-content:center; }
+.cart-thumb-img { width:100%; height:100%; object-fit: contain; padding: 8px; }
+.cart-thumb-placeholder { width:100%; height:100%; display:flex; align-items:center; justify-content:center; }
+
+.cart-title { font-weight: 600; color:#344767; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cart-attrs { line-height: 1.2; }
+.color-dot { display:inline-block; width:12px; height:12px; border-radius:50%; border:1px solid rgba(0,0,0,.1); vertical-align:middle; margin-right:4px; }
+
+/* Qty stepper */
+.qty-form { border:1px solid #e9ecef; border-radius: 10px; overflow: hidden; }
+.qty-btn { background:#f8f9fa; border:none; width:38px; height:38px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition: background .2s; }
+.qty-btn:hover { background:#e9ecef; }
+.qty-input { width:56px; height:38px; border:none; outline:none; }
+.qty-input:focus { outline:none; box-shadow:none; }
+
+/* Remove button */
+.btn-icon { width:38px; height:38px; display:inline-flex; align-items:center; justify-content:center; border-radius:10px; }
+
+/* Summary card */
+.summary-card .card-body { padding: 1.25rem; }
+.summary-card hr { margin: .75rem 0 1rem; }
+
+/* Empty state */
+.empty-cart { border: 1px dashed #dee2e6; }
+
+@media (max-width: 575.98px) {
+  .cart-item { padding: 12px 10px; }
+  .cart-thumb { width:70px; height:70px; flex-basis:70px; }
+  .qty-input { width:48px; height:36px; }
+  .qty-btn { width:36px; height:36px; }
+}

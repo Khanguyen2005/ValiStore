@@ -230,11 +230,13 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\Cart.css" />
     <Content Include="Content\Category.css" />
     <Content Include="Content\Contact.css" />
     <Content Include="Content\Home.css" />
     <Content Include="Content\Layout.css" />
     <Content Include="Content\Product.css" />
+    <Content Include="Content\ProductDetails.css" />
     <Content Include="Database\sample_category_data.sql" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />

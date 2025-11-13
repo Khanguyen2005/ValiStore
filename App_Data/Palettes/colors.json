@@ -1,5 +1,5 @@
 {
-  "LastId": 6,
+  "LastId": 14,
   "Items": [
     {
       "Id": 1,
@@ -30,6 +30,46 @@
       "Id": 6,
       "Name": "Pink",
       "ColorCode": "#FF99FF"
+    },
+    {
+      "Id": 7,
+      "Name": "orange",
+      "ColorCode": "#FFA500"
+    },
+    {
+      "Id": 8,
+      "Name": "green moss",
+      "ColorCode": "#32572d"
+    },
+    {
+      "Id": 9,
+      "Name": "burgundy",
+      "ColorCode": "#800020"
+    },
+    {
+      "Id": 10,
+      "Name": "mint",
+      "ColorCode": "#9ADBB3"
+    },
+    {
+      "Id": 11,
+      "Name": "blue",
+      "ColorCode": "#0000FF"
+    },
+    {
+      "Id": 12,
+      "Name": "grey",
+      "ColorCode": "#C0C0C0"
+    },
+    {
+      "Id": 13,
+      "Name": "dark mouse grey",
+      "ColorCode": "#696969"
+    },
+    {
+      "Id": 14,
+      "Name": "green",
+      "ColorCode": "#00FF00"
     }
   ]
 }
