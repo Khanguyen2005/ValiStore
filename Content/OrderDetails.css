@@ -1,0 +1,401 @@
+﻿/* ========= Order Details - Refined Styles ========= */
+/* Replace your existing OrderDetails.css with this file */
+
+/* Variables for easy theming */
+:root {
+    --bg: #ffffff;
+    --muted: #6c757d;
+    --text: #212529;
+    --accent: #0d6efd; /* primary */
+    --success: #28a745;
+    --danger: #dc3545;
+    --card-radius: 12px;
+    --soft-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+    --thin-line: #e9ecef;
+}
+
+/* Base */
+.container.my-5 {
+    max-width: 1180px;
+}
+
+/* Card baseline */
+.card {
+    border-radius: var(--card-radius);
+    background: var(--bg);
+    box-shadow: var(--soft-shadow);
+    border: 0;
+}
+
+/* Card header */
+.card-header {
+    background: transparent;
+    border-bottom: 1px solid var(--thin-line);
+}
+
+/* Card body spacing */
+.card-body {
+    padding: 1.25rem !important;
+}
+
+/* Header area */
+.order-details-header h2 {
+    color: var(--text);
+    letter-spacing: -0.2px;
+    font-weight: 700;
+}
+
+.order-details-header .text-muted {
+    color: var(--muted);
+    font-size: .95rem;
+}
+
+/* Buttons */
+.btn {
+    border-radius: 999px;
+    padding: .45rem .9rem;
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+    .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 22px rgba(13,110,253,0.12);
+    }
+
+/* Status badges - more compact and consistent */
+.badge {
+    border-radius: 999px;
+    font-weight: 600;
+    padding: .45rem .9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: .45rem;
+    box-shadow: none;
+}
+
+/* Timeline */
+.order-timeline {
+    position: relative;
+    padding: 8px 0 0 0;
+}
+
+.timeline-step {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    position: relative;
+    margin-bottom: 28px;
+    opacity: .45;
+    transition: opacity .25s ease, transform .25s ease;
+}
+
+    .timeline-step.completed {
+        opacity: 1;
+        transform: none;
+    }
+
+    .timeline-step:last-child {
+        margin-bottom: 0;
+    }
+
+/* Vertical line */
+.order-timeline::before {
+    content: "";
+    position: absolute;
+    left: 30px;
+    top: 18px;
+    bottom: 10px;
+    width: 3px;
+    background: linear-gradient(#f1f3f5, #f1f3f5);
+    border-radius: 2px;
+    z-index: 0;
+}
+
+.timeline-step.completed ~ .timeline-step::before {
+}
+
+/* Icon */
+.timeline-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px solid var(--thin-line);
+    color: var(--muted);
+    font-size: 18px;
+    flex-shrink: 0;
+    z-index: 1;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+    transition: all .22s ease;
+}
+
+.timeline-step.completed .timeline-icon {
+    border-color: var(--accent);
+    background: rgba(13,110,253,0.06);
+    color: var(--accent);
+    box-shadow: 0 10px 26px rgba(13,110,253,0.08);
+}
+
+/* Content */
+.timeline-content {
+    padding-top: 6px;
+}
+
+.timeline-title {
+    font-weight: 700;
+    color: #343a40;
+    margin-bottom: 4px;
+    font-size: 15px;
+}
+
+.timeline-date {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+/* Color swatch */
+.color-swatch {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 0 1px #e9ecef;
+    border: 2px solid #fff;
+}
+
+/* Table adjustments */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-bottom: 0;
+    background: transparent;
+}
+
+    .table thead th {
+        background: #fafbfc;
+        border-bottom: 2px solid var(--thin-line);
+        font-weight: 700;
+        color: var(--muted);
+        font-size: 12px;
+        letter-spacing: .6px;
+        text-transform: uppercase;
+        padding: .9rem 1rem;
+    }
+
+    .table tbody td {
+        vertical-align: middle;
+        padding: .9rem 1rem;
+        border-top: 1px solid #f2f4f6;
+        background: #fff;
+    }
+
+    .table tbody tr:hover td {
+        background: #fbfcfe;
+    }
+
+    /* Image cell */
+    .table tbody td.ps-4 img {
+        width: 72px;
+        height: 72px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    /* Product link */
+    .table tbody td a {
+        color: #222;
+        font-weight: 600;
+    }
+
+        .table tbody td a:hover {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+/* Price & Subtotal formatting */
+.text-success {
+    color: var(--success) !important;
+}
+
+.fs-6 {
+    font-size: .95rem;
+}
+
+/* Align price to center/right */
+.table td.text-center {
+    text-align: center;
+}
+
+.table td.text-end {
+    text-align: right;
+}
+
+/* Qty badge */
+.badge.bg-primary {
+    background-color: var(--accent) !important;
+    color: #fff;
+    padding: .45rem .7rem;
+    border-radius: 999px;
+    font-weight: 700;
+    box-shadow: 0 6px 18px rgba(13,110,253,0.08);
+}
+
+/* Footer total row */
+tfoot tr td {
+    background: #fafbfd;
+}
+
+tfoot strong.fs-4 {
+    color: var(--success);
+    font-size: 1.55rem;
+    letter-spacing: -0.5px;
+}
+
+/* Payment card */
+.payment-item {
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+}
+
+/* Payment method */
+.payment-method strong {
+    font-weight: 700;
+}
+
+/* Transaction code */
+code {
+    background: #f6f7fb;
+    padding: .25rem .45rem;
+    border-radius: 6px;
+    color: #e83e8c;
+    font-size: 0.9rem;
+}
+
+/* Modal */
+#cancelOrderModal .modal-content {
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+#cancelOrderModal .modal-header {
+    border-radius: 14px 14px 0 0;
+}
+
+/* Info group */
+.info-group label {
+    font-size: .78rem;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .6px;
+}
+
+.info-group .fw-bold {
+    font-weight: 700;
+    font-size: .98rem;
+    color: var(--text);
+}
+
+/* Small screens: tidy up */
+@media (max-width: 991px) {
+    .order-timeline::before {
+        left: 26px;
+    }
+
+    .timeline-icon {
+        width: 42px;
+        height: 42px;
+    }
+
+    .table thead th {
+        padding: .7rem .6rem;
+        font-size: 11px;
+    }
+
+    .table tbody td {
+        padding: .6rem .6rem;
+        font-size: .95rem;
+    }
+}
+
+/* Mobile: make table horizontally scrollable instead of squashed */
+@media (max-width: 576px) {
+    .container.my-5 {
+        padding-left: .9rem;
+        padding-right: .9rem;
+    }
+
+    .table {
+        min-width: 680px;
+    }
+
+    .timeline-title {
+        font-size: 14px;
+    }
+
+    .timeline-date {
+        font-size: 12px;
+    }
+}
+
+/* Print */
+@media print {
+    .btn, .modal, .order-details-header a {
+        display: none !important;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #e9ecef !important;
+    }
+}
+
+/* subtle animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.card {
+    animation: fadeInUp .28s ease both;
+}
+
+
+/* ===== Currency class alignment (RECOMMENDED) ===== */
+.currency {
+    display: inline-block;
+    font-size: .92em; /* nhỏ hơn số chính */
+    line-height: 1;
+    transform: translateY(-0.08em); /* nâng ký hiệu lên; chỉnh từ -0.06 đến -0.12 cho font bạn dùng */
+    margin-left: .4rem;
+    color: inherit;
+    vertical-align: middle;
+}
+
+/* Wrap number + currency to align nicely */
+.table td .fw-semibold,
+.table td .text-success,
+tfoot .text-success,
+.payment-details .text-success {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    line-height: 1;
+}
+
+/* Optionally reduce underline or code styling collision */
+tfoot .currency {
+    text-decoration: none;
+}

@@ -1,0 +1,377 @@
+﻿/* ========================================
+   ORDER INDEX PAGE STYLES (FINAL REFINED)
+   ======================================== */
+
+/* --- Page Structure & Header --- */
+.container h2 {
+    color: #263243; /* Darker text for header */
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+
+    .container h2 i {
+        color: #0d6efd; /* Primary color for icon */
+    }
+
+/* --- Status Filter Pills Navigation --- */
+
+/* Wrapper to add a clean separation line and set high Z-Index */
+.nav-pills-wrapper {
+    /* Đảm bảo wrapper cũng có z-index cao nếu nó là phần tử bị che */
+    position: relative;
+    z-index: 101;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #eef1f4;
+}
+
+/* Áp dụng cho phần tử UL chứa các tab lọc */
+.nav.nav-pills {
+    /* FIX LỖI BỊ CHE (Z-INDEX) */
+    position: relative;
+    z-index: 100; /* Giá trị cao hơn bất kỳ phần tử lân cận nào có thể chồng lên */
+
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+    align-items: center;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+}
+
+/* Base pill style */
+.nav-pills .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    padding: .5rem 1rem;
+    border-radius: 999px;
+    border: 1px solid #eef1f4;
+    font-weight: 600;
+    color: #546075;
+    background: #fcfdfe;
+    min-height: 40px;
+    box-shadow: none;
+    transition: all .2s ease;
+    white-space: nowrap;
+}
+
+    /* Subtle hover effect */
+    .nav-pills .nav-link:hover:not(.active) {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(13,110,253,0.05);
+        background: #fff;
+        color: #263243;
+        border-color: #d1e2ff;
+    }
+
+    /* Active pill: brighter, more prominent */
+    .nav-pills .nav-link.active {
+        background: linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%) !important;
+        color: #fff !important;
+        box-shadow: 0 6px 16px rgba(13,110,253,0.25);
+        border-color: transparent !important;
+        transform: none;
+    }
+
+    /* icon inside pill */
+    .nav-pills .nav-link i {
+        font-size: 1.05rem;
+        line-height: 1;
+        display: inline-flex;
+        justify-content: center;
+        /* Reset icon color for inactive state */
+        color: inherit;
+    }
+
+    /* --- Tinh chỉnh màu ICON và TEXT theo trạng thái (chỉ khi INACTIVE) --- */
+
+    /* Pending */
+    .nav-pills .nav-link:not(.active)[href*="Pending"] {
+        color: #b07b00; /* Vàng đậm cho text */
+    }
+
+        .nav-pills .nav-link:not(.active)[href*="Pending"] i {
+            color: #ffc107; /* Vàng cho icon */
+        }
+
+    /* Confirmed */
+    .nav-pills .nav-link:not(.active)[href*="Confirmed"] {
+        color: #0f8fa3;
+    }
+
+        .nav-pills .nav-link:not(.active)[href*="Confirmed"] i {
+            color: #17a2b8;
+        }
+
+    /* Shipped */
+    .nav-pills .nav-link:not(.active)[href*="Shipped"] {
+        color: #0d6efd;
+    }
+
+        .nav-pills .nav-link:not(.active)[href*="Shipped"] i {
+            color: #0d6efd;
+        }
+
+    /* Completed */
+    .nav-pills .nav-link:not(.active)[href*="Completed"] {
+        color: #1e7e34;
+    }
+
+        .nav-pills .nav-link:not(.active)[href*="Completed"] i {
+            color: #28a745;
+        }
+
+    /* Cancelled */
+    .nav-pills .nav-link:not(.active)[href*="Cancelled"] {
+        color: #bd2130;
+    }
+
+        .nav-pills .nav-link:not(.active)[href*="Cancelled"] i {
+            color: #dc3545;
+        }
+
+    /* All/Secondary (Mặc định) */
+    .nav-pills .nav-link:not(.active)[href*="All"] {
+        color: #263243;
+    }
+
+        .nav-pills .nav-link:not(.active)[href*="All"] .badge {
+            background: #6c757d !important;
+            color: #fff !important;
+        }
+
+
+    /* ===== Perfect circular count badges ===== */
+    /* Replace any existing .nav-pills .nav-link .badge rules with this block */
+
+    /* Use a fixed height + min-width and center content with grid -> keeps perfect circle for 1-2 digits */
+    .nav-pills .nav-link .badge {
+        display: inline-grid !important;
+        place-items: center !important; /* center number */
+        width: 34px !important; /* fixed width */
+        height: 34px !important; /* fixed height -> makes a square */
+        min-width: 34px !important; /* ensure at least this wide */
+        padding: 0 !important; /* remove padding so size stable */
+        border-radius: 50% !important; /* perfect circle */
+        font-weight: 700 !important;
+        font-size: 0.85rem !important;
+        line-height: 1 !important;
+        margin-left: 0.45rem !important;
+        box-shadow: 0 6px 18px rgba(15,23,42,0.06) !important;
+        box-sizing: border-box !important;
+    }
+
+        /* For two-digit numbers still looking good: slightly reduce font-size */
+        .nav-pills .nav-link .badge[data-digits="2"] {
+            font-size: 0.78rem !important;
+        }
+
+    /* Active pill: subtle white-ish badge */
+    .nav-pills .nav-link.active .badge {
+        background: rgba(255,255,255,0.14) !important;
+        color: #fff !important;
+        box-shadow: none !important;
+    }
+
+    /* Different status colored badges */
+    .nav-pills .nav-link .badge.bg-warning {
+        background: #ffc107 !important;
+        color: #222 !important;
+    }
+
+    .nav-pills .nav-link .badge.bg-info {
+        background: #17a2b8 !important;
+        color: #fff !important;
+    }
+
+    .nav-pills .nav-link .badge.bg-primary {
+        background: #0d6efd !important;
+        color: #fff !important;
+    }
+
+    .nav-pills .nav-link .badge.bg-success {
+        background: #28a745 !important;
+        color: #fff !important;
+    }
+
+    .nav-pills .nav-link .badge.bg-danger {
+        background: #dc3545 !important;
+        color: #fff !important;
+    }
+
+    .nav-pills .nav-link .badge.bg-secondary {
+        background: #6c757d !important;
+        color: #fff !important;
+    }
+
+/* Responsive: reduce size on very small screens */
+@media (max-width: 576px) {
+    .nav-pills .nav-link .badge {
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+        font-size: 0.78rem !important;
+        margin-left: 0.35rem !important;
+    }
+
+        .nav-pills .nav-link .badge[data-digits="2"] {
+            font-size: 0.72rem !important;
+        }
+}
+
+
+/* --- Order Card Styling (Giữ nguyên) --- */
+
+.order-card {
+    transition: all 0.25s ease;
+    border: 1px solid #f1f3f5;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #ffffff;
+    cursor: pointer;
+}
+
+    .order-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        border-color: #0d6efd; /* Highlight border on hover */
+    }
+
+    .order-card .card-body {
+        padding: 1.25rem 1.5rem;
+    }
+
+    /* Order Details - Typography and Layout */
+    .order-card .text-primary {
+        color: #0d6efd !important;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .order-card small.text-muted {
+        font-size: 0.85rem;
+    }
+
+    .order-card .fw-bold.text-success.fs-5 {
+        font-size: 1.35rem !important; /* Make total amount pop */
+        font-weight: 700 !important;
+        color: #28a745 !important;
+    }
+
+    /* Status Badges in Order Cards */
+    .order-card .badge {
+        font-weight: 600;
+        padding: 0.5rem 1.1rem;
+        font-size: 0.85rem;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+/* Status colors override for consistency */
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+}
+
+.badge.bg-info {
+    background-color: #17a2b8 !important;
+}
+
+.badge.bg-primary {
+    background-color: #0d6efd !important;
+}
+
+.badge.bg-success {
+    background-color: #28a745 !important;
+}
+
+.badge.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.badge.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+
+/* --- Action Button (Giữ nguyên) --- */
+
+.order-card .btn-outline-primary {
+    border-width: 1px;
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+    .order-card .btn-outline-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
+    }
+
+/* --- Pagination & Empty State & Responsive (Giữ nguyên) --- */
+/* ... (các phần còn lại của CSS không thay đổi) ... */
+
+@media (max-width: 992px) {
+    .order-card .row > div {
+        margin-bottom: 0.5rem;
+    }
+
+    .order-card .col-md-3, .order-card .col-md-2 {
+        text-align: left !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .order-card .card-body {
+        padding: 1rem;
+    }
+
+    .order-card .fw-bold.text-success.fs-5 {
+        font-size: 1.2rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .nav.nav-pills {
+        gap: .5rem;
+    }
+
+    .nav-pills .nav-link {
+        padding: .4rem .8rem;
+        font-size: .9rem;
+        min-height: 38px;
+    }
+
+    .order-card .row {
+        gap: 0.5rem;
+    }
+
+    .order-card .btn-outline-primary {
+        width: 100%;
+    }
+}
+/* --- Animation (Keep) --- */
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.order-card {
+    animation: slideIn 0.3s ease-out;
+}
+
+    .order-card:nth-child(1) {
+        animation-delay: 0.05s;
+    }
+/* ... */
