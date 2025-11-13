@@ -151,6 +151,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\PayPalClient.cs" />
     <Compile Include="Helpers\VnPayLibrary.cs" />
     <Compile Include="Models\EF\Banner.cs">
       <DependentUpon>ValiModernModel.tt</DependentUpon>
@@ -237,6 +238,7 @@
     <Content Include="Content\Layout.css" />
     <Content Include="Content\Product.css" />
     <Content Include="Content\ProductDetails.css" />
+    <Content Include="Database\add_paypal_payment_method.sql" />
     <Content Include="Database\sample_category_data.sql" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />

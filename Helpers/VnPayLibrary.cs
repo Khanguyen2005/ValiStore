@@ -43,10 +43,6 @@ namespace ValiModern.Helpers
             }
         }
 
-        /// <summary>
-        /// Create VNPay request URL per reference implementation
-        /// Hash data = URL-encoded key + "=" + URL-encoded value joined by "&"
-        /// </summary>
         public string CreateRequestUrl(string baseUrl, string vnp_HashSecret)
         {
             StringBuilder data = new StringBuilder();
@@ -76,9 +72,6 @@ namespace ValiModern.Helpers
             return baseUrl;
         }
 
-        /// <summary>
-        /// Validate VNPay return signature
-        /// </summary>
         public bool ValidateSignature(string inputHash, string secretKey)
         {
             string rspRaw = GetResponseData();
@@ -145,11 +138,21 @@ namespace ValiModern.Helpers
                     string[] addresses = ipAddress.Split(',');
                     if (addresses.Length > 0)
                     {
-                        return addresses[0].Trim();
+                        ipAddress = addresses[0].Trim();
                     }
                 }
+                else
+                {
+                    ipAddress = request.ServerVariables["REMOTE_ADDR"];
+                }
 
-                return request.ServerVariables["REMOTE_ADDR"];
+                // Convert IPv6 localhost to IPv4 for VNPay compatibility
+                if (string.IsNullOrEmpty(ipAddress) || ipAddress == "::1" || ipAddress.ToLower() == "unknown")
+                {
+                    ipAddress = "127.0.0.1";
+                }
+
+                return ipAddress;
             }
             catch
             {
