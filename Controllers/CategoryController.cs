@@ -29,7 +29,7 @@ namespace ValiModern.Controllers
         }
 
         // GET: Category/Products/5
-        public ActionResult Products(int id, string sort, decimal? minPrice, decimal? maxPrice, string colors, string sizes, int page = 1)
+        public ActionResult Products(int id, string sort, int? minPrice, int? maxPrice, string colors, string sizes, int page = 1)
         {
             var category = _db.Categories.Find(id);
             if (category == null)

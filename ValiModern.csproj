@@ -326,6 +326,7 @@
     <Content Include="Uploads\products\simplecarry-issac-2-s-navy-2-638984845321575110.jpg" />
     <Content Include="Uploads\products\vali-larita-rena-ah0624-20-s-green-15676-01750838850-638984862049741157.jpg" />
     <Content Include="Uploads\products\vali-larita-rena-ah0624-20-s-green-15676-11750838850-638984862322746670.jpg" />
+    <Content Include="ValiModernDB_Full.sql" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -352,6 +353,13 @@
     <Content Include="Views\Category\Products.cshtml" />
     <Content Include="Views\Order\Index.cshtml" />
     <Content Include="Views\Order\Details.cshtml" />
+    <None Include="Web.config.AWS_BACKUP" />
+    <None Include="Web.config.Debug.AWS_BACKUP">
+      <DependentUpon>Web.config.AWS_BACKUP</DependentUpon>
+    </None>
+    <None Include="Web.config.Release.AWS_BACKUP">
+      <DependentUpon>Web.config.AWS_BACKUP</DependentUpon>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

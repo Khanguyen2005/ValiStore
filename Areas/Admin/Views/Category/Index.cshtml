@@ -44,7 +44,7 @@
                     <tr>
                         <td>@c.id</td>
                         <td>@c.name</td>
-                        <td>@(c.Products?.Count ?? 0)</td>
+                        <td>@(c.Products != null ? c.Products.Count : 0)</td>
                         <td class="text-end">
                             <a class="btn btn-sm btn-outline-primary" href="@Url.Action("Edit", new { id = c.id })"><i class="bi bi-pencil"></i></a>
                             @using (Html.BeginForm("Delete", "Category", FormMethod.Post, new { onsubmit = "return confirm('Delete this category?')" }))

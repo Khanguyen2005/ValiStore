@@ -52,9 +52,13 @@
                 {
                     <tr>
                         <td>@b.id</td>
-                        <td>@(string.IsNullOrEmpty(b.image_url)?Html.Raw("<span class='text-muted small'>No image</span>") : Html.Raw($"<img src='{b.image_url}' style='height:40px;width:auto;border-radius:6px;' />"))</td>
+                        <td>
+                            @(string.IsNullOrEmpty(b.image_url)
+        ? Html.Raw("<span class='text-muted small'>No image</span>")
+        : Html.Raw(string.Format("<img src='{0}' style='height:40px;width:auto;border-radius:6px;' />", b.image_url)))
+                        </td>
                         <td>@b.name</td>
-                        <td>@(b.Products?.Count ??0)</td>
+                        <td>@(b.Products != null ? b.Products.Count : 0)</td>
                         <td class="text-end">
                             <a class="btn btn-sm btn-outline-primary" href="@Url.Action("Edit", new { id = b.id })"><i class="bi bi-pencil"></i></a>
                             @using (Html.BeginForm("Delete", "Brand", FormMethod.Post, new { onsubmit = "return confirm('Delete this brand?')" }))

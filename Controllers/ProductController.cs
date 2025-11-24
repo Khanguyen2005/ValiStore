@@ -13,7 +13,7 @@ namespace ValiModern.Controllers
         private readonly ValiModernDBEntities _db = new ValiModernDBEntities();
 
         // GET: Product
-        public ActionResult Index(string category, string brand, string sort, string q, decimal? minPrice, decimal? maxPrice, string colors, string sizes, int page = 1)
+        public ActionResult Index(string category, string brand, string sort, string q, int? minPrice, int? maxPrice, string colors, string sizes, int page = 1)
         {
             int pageSize = 12;
             var products = _db.Products

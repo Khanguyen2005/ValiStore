@@ -2,8 +2,8 @@
 @{
     Layout = null;
 
-    bool isAuthenticated = User?.Identity?.IsAuthenticated ?? false;
-    bool isAdmin = User?.IsInRole("admin") ?? false;
+    bool isAuthenticated = (User != null && User.Identity != null && User.Identity.IsAuthenticated);
+    bool isAdmin = (User != null && User.IsInRole("admin"));
     string displayName = "Admin";
 
     if (isAuthenticated)
@@ -28,7 +28,7 @@
                     {
                         displayName = emailClaim.Value;
                     }
-                    else if (!string.IsNullOrWhiteSpace(User.Identity?.Name))
+                    else if (!string.IsNullOrWhiteSpace(User.Identity.Name))
                     {
                         displayName = User.Identity.Name;
                     }
@@ -107,12 +107,7 @@
                 <a class="nav-link d-flex align-items-center" href="@Url.Action("Index","Banner")">
                     <span class="nav-icon"><i class="bi bi-image-fill"></i></span>Banners
                 </a>
-                <a class="nav-link d-flex align-items-center" href="@Url.Action("Index","Payment")">
-                    <span class="nav-icon"><i class="bi bi-credit-card-2-front-fill"></i></span>Payments
-                </a>
-                <a class="nav-link d-flex align-items-center" href="@Url.Action("Reports","Admin")">
-                    <span class="nav-icon"><i class="bi bi-graph-up"></i></span>Reports
-                </a>
+                
             </nav>
 
             <div class="sidebar-footer">

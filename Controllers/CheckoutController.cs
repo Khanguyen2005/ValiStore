@@ -128,7 +128,7 @@ namespace ValiModern.Controllers
             }
 
             // Calculate total amount
-            decimal totalAmount = cart.Sum(i => i.Subtotal);
+            long totalAmount = cart.Sum(i => i.Subtotal);
 
             // Validate total amount
             if (totalAmount <= 0)
@@ -143,7 +143,7 @@ namespace ValiModern.Controllers
                 user_id = user.id,
                 order_date = DateTime.Now,
                 status = model.PaymentMethod == "COD" ? "Pending" : "Pending",
-                total_amount = (long)totalAmount,
+                total_amount = totalAmount,
                 phone = model.Phone,
                 shipping_address = model.Address,
                 created_at = DateTime.Now,
@@ -161,7 +161,7 @@ namespace ValiModern.Controllers
                     order_id = order.id,
                     product_id = item.ProductId,
                     quantity = item.Quantity,
-                    price = (int)item.Price,
+                    price = item.Price,
                     color_id = item.ColorId,
                     size_id = item.SizeId,
                     created_at = DateTime.Now
@@ -181,7 +181,7 @@ namespace ValiModern.Controllers
             var payment = new Payment
             {
                 order_id = order.id,
-                amount = (long)totalAmount,
+                amount = totalAmount,
                 payment_method = model.PaymentMethod,
                 status = model.PaymentMethod == "COD" ? "Pending" : "Pending",
                 transaction_id = "",
@@ -500,14 +500,14 @@ namespace ValiModern.Controllers
                     return Json(new { error = "User not found" });
                 }
 
-                decimal totalAmount = cart.Sum(i => i.Subtotal);
+                long totalAmount = cart.Sum(i => i.Subtotal);
 
                 var order = new Order
                 {
                     user_id = user.id,
                     order_date = DateTime.Now,
                     status = "Confirmed",
-                    total_amount = (long)totalAmount,
+                    total_amount = totalAmount,
                     phone = user.phone ?? "N/A",
                     shipping_address = user.address ?? "N/A",
                     created_at = DateTime.Now,
@@ -528,7 +528,7 @@ namespace ValiModern.Controllers
                         order_id = order.id,
                         product_id = item.ProductId,
                         quantity = item.Quantity,
-                        price = (int)item.Price,
+                        price = item.Price,
                         color_id = item.ColorId.HasValue && item.ColorId.Value > 0 ? item.ColorId : null,
                         size_id = item.SizeId.HasValue && item.SizeId.Value > 0 ? item.SizeId : null,
                         created_at = DateTime.Now
@@ -548,7 +548,7 @@ namespace ValiModern.Controllers
                 var payment = new Payment
                 {
                     order_id = order.id,
-                    amount = (long)totalAmount,
+                    amount = totalAmount,
                     payment_method = "PayPal",
                     status = "Completed",
                     transaction_id = response.id,

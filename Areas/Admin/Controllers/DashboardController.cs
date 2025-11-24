@@ -17,6 +17,7 @@ namespace ValiModern.Areas.Admin.Controllers
         public ActionResult Index()
         {
             var today = DateTime.Today;
+            var tomorrow = today.AddDays(1);
             var firstDayOfMonth = new DateTime(today.Year, today.Month, 1);
 
             var vm = new DashboardVM
@@ -30,9 +31,17 @@ namespace ValiModern.Areas.Admin.Controllers
                 CancelledOrders = _db.Orders.Count(o => o.status == "Cancelled"),
 
                 // Revenue statistics (count only Completed orders)
-                TotalRevenue = _db.Orders.Where(o => o.status == "Completed").Sum(o => (decimal?)o.total_amount) ?? 0,
-                TodayRevenue = _db.Orders.Where(o => o.status == "Completed" && DbFunctions.TruncateTime(o.order_date) == today).Sum(o => (decimal?)o.total_amount) ?? 0,
-                MonthRevenue = _db.Orders.Where(o => o.status == "Completed" && o.order_date >= firstDayOfMonth).Sum(o => (decimal?)o.total_amount) ?? 0,
+                TotalRevenue = (decimal)(_db.Orders
+                    .Where(o => o.status == "Completed")
+                    .Sum(o => (long?)o.total_amount) ?? 0),
+                
+                TodayRevenue = (decimal)(_db.Orders
+                    .Where(o => o.status == "Completed" && o.order_date >= today && o.order_date < tomorrow)
+                    .Sum(o => (long?)o.total_amount) ?? 0),
+                
+                MonthRevenue = (decimal)(_db.Orders
+                    .Where(o => o.status == "Completed" && o.order_date >= firstDayOfMonth && o.order_date < tomorrow)
+                    .Sum(o => (long?)o.total_amount) ?? 0),
 
                 // Products statistics
                 TotalProducts = _db.Products.Count(),
@@ -52,8 +61,8 @@ namespace ValiModern.Areas.Admin.Controllers
                     .Select(o => new RecentOrderVM
                     {
                         Id = o.id,
-                        UserName = o.User?.username ?? "N/A",
-                        TotalAmount = o.total_amount,
+                        UserName = (o.User != null ? o.User.username : null) ?? "N/A",
+                        TotalAmount = (decimal)o.total_amount,
                         Status = o.status,
                         OrderDate = o.order_date
                     }).ToList(),
