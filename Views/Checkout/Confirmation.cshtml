@@ -4,123 +4,153 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container my-5">
+@section Styles {
+    <style>
+        .bi-check-circle-fill {
+            animation: scaleIn 0.5s ease-in-out;
+        }
+
+        @@keyframes scaleIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* FIX: Button v?i design system và c?n gi?a icon */
+        .order-confirmation-page .btn-primary {
+            background: var(--primary-gradient, linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%));
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .order-confirmation-page .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-primary, 0 6px 18px rgba(13, 110, 253, 0.25));
+            background: linear-gradient(135deg, #0b5ed7 0%, #3283e8 100%);
+        }
+
+        .order-confirmation-page .btn-primary i {
+            font-size: 1rem;
+            line-height: 1;
+        }
+
+        .order-confirmation-page .btn-outline-secondary {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+    </style>
+}
+
+<div class="container my-5 order-confirmation-page">
     <div class="row justify-content-center">
         <div class="col-lg-6">
             <div class="card shadow-sm">
-    <div class="card-body text-center py-5">
-         <div class="mb-4">
-  <i class="bi bi-check-circle-fill text-success" style="font-size:5rem;"></i>
-       </div>
+                <div class="card-body text-center py-5">
+                    <div class="mb-4">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size:5rem;"></i>
+                    </div>
  
-         <h2 class="mb-3">Order Placed Successfully!</h2>
-    <p class="text-muted mb-4">Thank you for your order. We'll process it shortly.</p>
+                    <h2 class="mb-3">Order Placed Successfully!</h2>
+                    <p class="text-muted mb-4">Thank you for your order. We'll process it shortly.</p>
 
-           <div class="bg-light rounded p-4 mb-4 text-start">
-    <div class="row mb-2">
-     <div class="col-6 text-muted">Order Code:</div>
-   <div class="col-6 text-end"><strong>@Model.OrderCode</strong></div>
+                    <div class="bg-light rounded p-4 mb-4 text-start">
+                        <div class="row mb-2">
+                            <div class="col-6 text-muted">Order Code:</div>
+                            <div class="col-6 text-end"><strong>@Model.OrderCode</strong></div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-6 text-muted">Order Date:</div>
+                            <div class="col-6 text-end">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-6 text-muted">Payment Method:</div>
+                            <div class="col-6 text-end">
+                                @if (Model.PaymentMethod == "COD")
+                                {
+                                    <span class="badge bg-warning">COD</span>
+                                }
+                                else if (Model.PaymentMethod == "VNPay")
+                                {
+                                    <span class="badge bg-primary">VNPay</span>
+                                }
+                                else
+                                {
+                                    <span>@Model.PaymentMethod</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="row mb-2">
+                            <div class="col-6 text-muted">Status:</div>
+                            <div class="col-6 text-end">
+                                @if (Model.Status == "Pending")
+                                {
+                                    <span class="badge bg-warning">Pending</span>
+                                }
+                                else if (Model.Status == "Processing")
+                                {
+                                    <span class="badge bg-info">Processing</span>
+                                }
+                                else if (Model.Status == "Completed")
+                                {
+                                    <span class="badge bg-success">Completed</span>
+                                }
+                                else if (Model.Status == "Cancelled")
+                                {
+                                    <span class="badge bg-danger">Cancelled</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary">@Model.Status</span>
+                                }
+                            </div>
+                        </div>
+                        <hr class="my-3" />
+                        <div class="row">
+                            <div class="col-6 text-muted">Total Amount:</div>
+                            <div class="col-6 text-end">
+                                <strong class="text-primary fs-5">@String.Format("{0:n0}", Model.TotalAmount) VND</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (Model.PaymentMethod == "COD")
+                    {
+                        <div class="alert alert-info mb-4">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Payment on Delivery:</strong> Please prepare exact cash when receiving your order.
+                        </div>
+                    }
+                    else if (Model.PaymentMethod == "VNPay" && Model.Status == "Processing")
+                    {
+                        <div class="alert alert-success mb-4">
+                            <i class="bi bi-check-circle me-2"></i>
+                            <strong>Payment Successful:</strong> Your payment via VNPay has been confirmed.
+                        </div>
+                    }
+
+                    <div class="d-grid gap-2">
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
+                            <i class="bi bi-house-door"></i>Continue Shopping
+                        </a>
+                        <a href="@Url.Action("Index", "Order")" class="btn btn-outline-secondary">
+                            <i class="bi bi-list-ul"></i>View My Orders
+                        </a>
+                    </div>
+                </div>
             </div>
-        <div class="row mb-2">
-         <div class="col-6 text-muted">Order Date:</div>
-     <div class="col-6 text-end">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</div>
-   </div>
-      <div class="row mb-2">
-  <div class="col-6 text-muted">Payment Method:</div>
-  <div class="col-6 text-end">
-    @if (Model.PaymentMethod == "COD")
-   {
-          <span class="badge bg-warning">COD</span>
-}
-     else if (Model.PaymentMethod == "VNPay")
-       {
-    <span class="badge bg-primary">VNPay</span>
-             }
-           else
-     {
-     <span>@Model.PaymentMethod</span>
-  }
-         </div>
-      </div>
-  <div class="row mb-2">
-        <div class="col-6 text-muted">Status:</div>
-  <div class="col-6 text-end">
-     @if (Model.Status == "Pending")
-       {
-    <span class="badge bg-warning">Pending</span>
- }
-           else if (Model.Status == "Processing")
-   {
-  <span class="badge bg-info">Processing</span>
-           }
-     else if (Model.Status == "Completed")
-     {
-  <span class="badge bg-success">Completed</span>
-       }
-      else if (Model.Status == "Cancelled")
-     {
-    <span class="badge bg-danger">Cancelled</span>
-          }
-    else
-    {
- <span class="badge bg-secondary">@Model.Status</span>
-       }
-     </div>
-    </div>
-      <hr class="my-3" />
-                <div class="row">
-   <div class="col-6 text-muted">Total Amount:</div>
-<div class="col-6 text-end">
-       <strong class="text-primary fs-5">@String.Format("{0:n0}", Model.TotalAmount) VND</strong>
-         </div>
-     </div>
-       </div>
-
-         @if (Model.PaymentMethod == "COD")
-       {
-  <div class="alert alert-info mb-4">
-    <i class="bi bi-info-circle me-2"></i>
-        <strong>Payment on Delivery:</strong> Please prepare exact cash when receiving your order.
-      </div>
-    }
-  else if (Model.PaymentMethod == "VNPay" && Model.Status == "Processing")
-       {
-       <div class="alert alert-success mb-4">
-      <i class="bi bi-check-circle me-2"></i>
-   <strong>Payment Successful:</strong> Your payment via VNPay has been confirmed.
- </div>
-   }
-
-      <div class="d-grid gap-2">
-  <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
-      <i class="bi bi-house-door me-2"></i>Continue Shopping
-    </a>
-     <a href="@Url.Action("Index", "Order")" class="btn btn-outline-secondary">
-     <i class="bi bi-list-ul me-2"></i>View My Orders
- </a>
-      </div>
-   </div>
-       </div>
         </div>
     </div>
 </div>
-
-<style>
-    .bi-check-circle-fill {
-        animation: scaleIn 0.5s ease-in-out;
-    }
-
-    @@keyframes scaleIn {
-        0% {
-       transform: scale(0);
-    opacity: 0;
-        }
- 50% {
-     transform: scale(1.1);
-    }
-        100% {
-    transform: scale(1);
-   opacity: 1;
-   }
-    }
-</style>

@@ -41,10 +41,12 @@
         <div class="col-md-3">
                 @Html.LabelFor(m => m.Stock)
    @Html.TextBoxFor(m => m.Stock, new { @class = "form-control", type = "number" })
+                <small class="text-muted">Current stock quantity</small>
 </div>
          <div class="col-md-3">
-    @Html.LabelFor(m => m.Sold)
-             @Html.TextBoxFor(m => m.Sold, new { @class = "form-control", type = "number" })
+                <label class="form-label">Sold</label>
+                <input type="text" class="form-control" value="@Model.Sold" readonly disabled />
+                <small class="text-muted">Auto-calculated from completed orders</small>
           </div>
             <div class="col-md-6">
            <label class="form-label">Colors</label>

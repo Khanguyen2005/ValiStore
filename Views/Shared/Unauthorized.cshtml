@@ -1,0 +1,27 @@
+@{
+    ViewBag.Title = "Unauthorized";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container my-5 py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <i class="bi bi-shield-lock text-danger" style="font-size: 120px;"></i>
+            <h1 class="display-4 fw-bold mt-4 mb-3">Không có quy?n truy c?p</h1>
+            <p class="lead text-muted mb-4">
+                Xin l?i, b?n không có quy?n truy c?p vào trang này.
+            </p>
+            <p class="text-muted">
+                Trang này yêu c?u quy?n truy c?p ??c bi?t. Vui lòng liên h? qu?n tr? viên n?u b?n ngh? ?ây là l?i.
+            </p>
+            <div class="mt-4">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-primary btn-lg me-2">
+                    <i class="bi bi-house-door me-2"></i>V? trang ch?
+                </a>
+                <a href="javascript:history.back()" class="btn btn-outline-secondary btn-lg">
+                    <i class="bi bi-arrow-left me-2"></i>Quay l?i
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

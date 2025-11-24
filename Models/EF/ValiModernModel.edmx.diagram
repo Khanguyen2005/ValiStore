@@ -27,6 +27,7 @@
         <AssociationConnector Association="ValiModernDBModel.FK_Payments_Orders" ManuallyRouted="false" />
         <AssociationConnector Association="ValiModernDBModel.FK_PImages_Products" ManuallyRouted="false" />
         <AssociationConnector Association="ValiModernDBModel.FK_Sizes_Products" ManuallyRouted="false" />
+        <AssociationConnector Association="ValiModernDBModel.FK_Orders_Shipper" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

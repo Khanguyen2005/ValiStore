@@ -34,13 +34,10 @@
                 <input type="hidden" name="OriginalPrice" id="OriginalPrice" value="0" />
                 @Html.ValidationMessageFor(m => m.OriginalPrice)
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
                 @Html.LabelFor(m => m.Stock)
                 @Html.TextBoxFor(m => m.Stock, new { @class = "form-control", type = "number" })
-            </div>
-            <div class="col-md-3">
-                @Html.LabelFor(m => m.Sold)
-                @Html.TextBoxFor(m => m.Sold, new { @class = "form-control", type = "number" })
+                <small class="text-muted">Initial stock quantity</small>
             </div>
             <div class="col-md-6">
                 <label class="form-label">Colors</label>

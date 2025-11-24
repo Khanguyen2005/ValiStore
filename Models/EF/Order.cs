@@ -30,11 +30,16 @@ namespace ValiModern.Models.EF
         public string shipping_address { get; set; }
         public System.DateTime created_at { get; set; }
         public System.DateTime updated_at { get; set; }
+        public Nullable<int> shipper_id { get; set; }
+        public Nullable<System.DateTime> assigned_at { get; set; }
+        public Nullable<System.DateTime> delivered_at { get; set; }
+        public string delivery_note { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Order_Details> Order_Details { get; set; }
         public virtual User User { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Payment> Payments { get; set; }
+        public virtual User User1 { get; set; }
     }
 }

@@ -1,0 +1,142 @@
+@model ValiModern.Models.ViewModels.ShipperDeliveryListVM
+@{
+    ViewBag.Title = "My Deliveries";
+    Layout = "~/Views/Shared/_ShipperLayout.cshtml";
+}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="h4 fw-bold mb-3">
+            <i class="bi bi-truck me-2 text-success"></i>My Delivery Orders
+        </h2>
+
+        <!-- Filter Buttons -->
+        <div class="btn-group mb-3" role="group">
+            <a href="@Url.Action("Index", new { filter = "" })" 
+               class="btn @(string.IsNullOrEmpty(ViewBag.Filter) ? "btn-success" : "btn-outline-success")">
+                <i class="bi bi-grid-3x3-gap me-1"></i>All (@Model.TotalCount)
+            </a>
+            <a href="@Url.Action("Index", new { filter = "assigned" })" 
+               class="btn @(ViewBag.Filter == "assigned" ? "btn-success" : "btn-outline-success")">
+                <i class="bi bi-box-seam me-1"></i>Pending (@Model.AssignedCount)
+            </a>
+            <a href="@Url.Action("Index", new { filter = "delivered" })" 
+               class="btn @(ViewBag.Filter == "delivered" ? "btn-success" : "btn-outline-success")">
+                <i class="bi bi-check-circle me-1"></i>Completed (@Model.DeliveredCount)
+            </a>
+        </div>
+    </div>
+</div>
+
+@if (!Model.Orders.Any())
+{
+    <div class="alert alert-info">
+        <i class="bi bi-info-circle me-2"></i>
+        @if (ViewBag.Filter == "assigned")
+        {
+            <text>No pending deliveries at the moment.</text>
+        }
+        else if (ViewBag.Filter == "delivered")
+        {
+            <text>No completed deliveries yet.</text>
+        }
+        else
+        {
+            <text>No orders assigned to you yet.</text>
+        }
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var order in Model.Orders)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm border-0 @(order.DeliveredAt == null ? "border-start border-5 border-warning" : "")">
+                    <div class="card-header bg-white border-0 pb-0">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1 fw-bold">Order #@order.OrderId</h6>
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar me-1"></i>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")
+                                </small>
+                            </div>
+                            @if (order.DeliveredAt == null)
+                            {
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Delivered</span>
+                            }
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="mb-2">
+                            <small class="text-muted d-block">
+                                <i class="bi bi-person me-1"></i><strong>Customer:</strong>
+                            </small>
+                            <div class="ms-3">@order.CustomerName</div>
+                        </div>
+
+                        <div class="mb-2">
+                            <small class="text-muted d-block">
+                                <i class="bi bi-telephone me-1"></i><strong>Phone:</strong>
+                            </small>
+                            <div class="ms-3">
+                                <a href="tel:@order.Phone" class="text-decoration-none">@order.Phone</a>
+                            </div>
+                        </div>
+
+                        <div class="mb-2">
+                            <small class="text-muted d-block">
+                                <i class="bi bi-geo-alt me-1"></i><strong>Address:</strong>
+                            </small>
+                            <div class="ms-3 small">@order.ShippingAddress</div>
+                        </div>
+
+                        <div class="mb-2">
+                            <small class="text-muted d-block">
+                                <i class="bi bi-box me-1"></i><strong>Items:</strong>
+                            </small>
+                            <div class="ms-3">@order.ItemCount item(s)</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <small class="text-muted d-block">
+                                <i class="bi bi-cash me-1"></i><strong>Total:</strong>
+                            </small>
+                            <div class="ms-3 fw-bold text-success">@order.TotalAmount.ToString("N0") d</div>
+                        </div>
+
+                        @if (order.DeliveredAt != null)
+                        {
+                            <div class="alert alert-success py-2 mb-2">
+                                <small>
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    Delivered: @order.DeliveredAt.Value.ToString("dd/MM/yyyy HH:mm")
+                                </small>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-warning py-2 mb-2">
+                                <small>
+                                    <i class="bi bi-clock me-1"></i>
+                                    Assigned: @order.AssignedAt.ToString("dd/MM/yyyy HH:mm")
+                                </small>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="card-footer bg-white border-0">
+                        <a href="@Url.Action("Details", new { id = order.OrderId })" class="btn btn-sm btn-success w-100">
+                            <i class="bi bi-eye me-1"></i>View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

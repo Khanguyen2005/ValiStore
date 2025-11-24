@@ -63,6 +63,10 @@
           <Property Name="shipping_address" Type="nvarchar" MaxLength="500" />
           <Property Name="created_at" Type="datetime2" Precision="0" Nullable="false" />
           <Property Name="updated_at" Type="datetime2" Precision="0" Nullable="false" />
+          <Property Name="shipper_id" Type="int" />
+          <Property Name="assigned_at" Type="datetime2" Precision="0" />
+          <Property Name="delivered_at" Type="datetime2" Precision="0" />
+          <Property Name="delivery_note" Type="nvarchar" MaxLength="500" />
         </EntityType>
         <EntityType Name="Payments">
           <Key>
@@ -123,6 +127,7 @@
           <Property Name="address" Type="nvarchar" MaxLength="500" />
           <Property Name="created_at" Type="datetime2" Precision="0" Nullable="false" />
           <Property Name="updated_at" Type="datetime2" Precision="0" Nullable="false" />
+          <Property Name="role" Type="nvarchar" MaxLength="20" />
         </EntityType>
         <Association Name="FK_Colors_Products">
           <End Role="Products" Type="Self.Products" Multiplicity="1">
@@ -185,6 +190,18 @@
             </Principal>
             <Dependent Role="Order_Details">
               <PropertyRef Name="size_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Orders_Shipper">
+          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
+          <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Orders">
+              <PropertyRef Name="shipper_id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -298,6 +315,10 @@
             <End Role="Sizes" EntitySet="Sizes" />
             <End Role="Order_Details" EntitySet="Order_Details" />
           </AssociationSet>
+          <AssociationSet Name="FK_Orders_Shipper" Association="Self.FK_Orders_Shipper">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Orders" EntitySet="Orders" />
+          </AssociationSet>
           <AssociationSet Name="FK_Orders_Users" Association="Self.FK_Orders_Users">
             <End Role="Users" EntitySet="Users" />
             <End Role="Orders" EntitySet="Orders" />
@@ -396,6 +417,11 @@
           <NavigationProperty Name="Order_Details" Relationship="Self.FK_OD_Orders" FromRole="Orders" ToRole="Order_Details" />
           <NavigationProperty Name="User" Relationship="Self.FK_Orders_Users" FromRole="Orders" ToRole="Users" />
           <NavigationProperty Name="Payments" Relationship="Self.FK_Payments_Orders" FromRole="Orders" ToRole="Payments" />
+          <Property Name="shipper_id" Type="Int32" />
+          <Property Name="assigned_at" Type="DateTime" Precision="0" />
+          <Property Name="delivered_at" Type="DateTime" Precision="0" />
+          <Property Name="delivery_note" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="User1" Relationship="ValiModernDBModel.FK_Orders_Shipper" FromRole="Order" ToRole="User" />
         </EntityType>
         <EntityType Name="Payment">
           <Key>
@@ -467,6 +493,8 @@
           <Property Name="updated_at" Type="DateTime" Nullable="false" Precision="0" />
           <NavigationProperty Name="Orders" Relationship="Self.FK_Orders_Users" FromRole="Users" ToRole="Orders" />
           <Property Name="password" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="role" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="Orders1" Relationship="ValiModernDBModel.FK_Orders_Shipper" FromRole="User" ToRole="Order" />
         </EntityType>
         <Association Name="FK_Products_Brands">
           <End Role="Brands" Type="Self.Brand" Multiplicity="1" />
@@ -666,7 +694,23 @@
             <End Role="Products" EntitySet="Products" />
             <End Role="Sizes" EntitySet="Sizes" />
           </AssociationSet>
+          <AssociationSet Name="FK_Orders_Shipper" Association="ValiModernDBModel.FK_Orders_Shipper">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Order" EntitySet="Orders" />
+          </AssociationSet>
         </EntityContainer>
+        <Association Name="FK_Orders_Shipper">
+          <End Type="ValiModernDBModel.User" Role="User" Multiplicity="0..1" />
+          <End Type="ValiModernDBModel.Order" Role="Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="shipper_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -726,6 +770,10 @@
           <EntitySetMapping Name="Orders">
             <EntityTypeMapping TypeName="ValiModernDBModel.Order">
               <MappingFragment StoreEntitySet="Orders">
+                <ScalarProperty Name="delivery_note" ColumnName="delivery_note" />
+                <ScalarProperty Name="delivered_at" ColumnName="delivered_at" />
+                <ScalarProperty Name="assigned_at" ColumnName="assigned_at" />
+                <ScalarProperty Name="shipper_id" ColumnName="shipper_id" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="user_id" ColumnName="user_id" />
                 <ScalarProperty Name="order_date" ColumnName="order_date" />
@@ -791,6 +839,7 @@
           <EntitySetMapping Name="Users">
             <EntityTypeMapping TypeName="ValiModernDBModel.User">
               <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="role" ColumnName="role" />
                 <ScalarProperty Name="password" ColumnName="password" />
                 <ScalarProperty Name="id" ColumnName="id" />
                 <ScalarProperty Name="username" ColumnName="username" />

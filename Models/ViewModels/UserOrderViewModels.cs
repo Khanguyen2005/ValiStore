@@ -39,11 +39,18 @@ namespace ValiModern.Models.ViewModels
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
+        // Shipper delivery information
+        public DateTime? DeliveredAt { get; set; }
+        public string DeliveryNote { get; set; }
+        public string ShipperName { get; set; }
+
         public List<UserOrderItemDetailVM> Items { get; set; } = new List<UserOrderItemDetailVM>();
         public List<UserOrderPaymentVM> Payments { get; set; } = new List<UserOrderPaymentVM>();
 
-        // Helper property
+        // Helper properties
         public bool CanCancel => Status == "Pending";
+        public bool ShowDeliveryNotification => Status == "Shipped" && DeliveredAt.HasValue;
+        public bool CanConfirmReceived => Status == "Shipped" && DeliveredAt.HasValue;
     }
 
     // User Order Item Detail

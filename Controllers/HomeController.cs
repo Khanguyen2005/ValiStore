@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Data.Entity;
+using System.Linq;
 using System.Web.Mvc;
 using ValiModern.Models.EF;
 using ValiModern.Models.ViewModels;
@@ -7,6 +8,7 @@ namespace ValiModern.Controllers
 {
     public class HomeController : Controller
     {
+        [OutputCache(Duration = 300, VaryByParam = "none")] // Cache 5 minutes
         public ActionResult Index()
         {
             var vm = new HomeIndexVM
@@ -16,15 +18,36 @@ namespace ValiModern.Controllers
             };
             using (var db = new ValiModernDBEntities())
             {
+                // Optimize: get banners
                 vm.Banners = db.Banners.OrderBy(b => b.id).ToList();
+                
+                // Optimize: get all categories and products in one go instead of N+1 queries
                 var categories = db.Categories.OrderBy(c => c.id).ToList();
+                
+                // Get all active products for these categories in ONE query
+                var categoryIds = categories.Select(c => c.id).ToList();
+                var allProducts = db.Products
+                    .Where(p => p.is_active && categoryIds.Contains(p.category_id))
+                    .OrderByDescending(p => p.sold)
+                    .Select(p => new {
+                        p.id,
+                        p.name,
+                        p.price,
+                        p.original_price,
+                        p.image_url,
+                        p.description,
+                        p.sold,
+                        p.category_id
+                    })
+                    .ToList()
+                    .GroupBy(p => p.category_id)
+                    .ToDictionary(g => g.Key, g => g.Take(8).ToList());
+                
+                // Build category blocks
                 foreach (var c in categories)
                 {
-                    var products = db.Products
-                        .Where(p => p.is_active && p.category_id == c.id)
-                        .OrderByDescending(p => p.sold)
-                        .Take(8)
-                        .Select(p => new ProductCardVM
+                    var products = allProducts.ContainsKey(c.id) 
+                        ? allProducts[c.id].Select(p => new ProductCardVM
                         {
                             id = p.id,
                             name = p.name,
@@ -33,7 +56,9 @@ namespace ValiModern.Controllers
                             image_url = p.image_url,
                             description = p.description,
                             sold = p.sold
-                        }).ToList();
+                        }).ToList()
+                        : new System.Collections.Generic.List<ProductCardVM>();
+                        
                     vm.Blocks.Add(new CategoryBlockVM
                     {
                         CategoryId = c.id,

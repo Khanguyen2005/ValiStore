@@ -22,42 +22,44 @@ namespace ValiModern.Areas.Admin.Controllers
 
             var vm = new DashboardVM
             {
-                // Orders statistics
-                TotalOrders = _db.Orders.Count(),
-                PendingOrders = _db.Orders.Count(o => o.status == "Pending"),
-                ConfirmedOrders = _db.Orders.Count(o => o.status == "Confirmed"),
-                ShippedOrders = _db.Orders.Count(o => o.status == "Shipped"),
-                CompletedOrders = _db.Orders.Count(o => o.status == "Completed"),
-                CancelledOrders = _db.Orders.Count(o => o.status == "Cancelled"),
+                // Orders statistics - Use AsNoTracking for read-only queries
+                TotalOrders = _db.Orders.AsNoTracking().Count(),
+                PendingOrders = _db.Orders.AsNoTracking().Count(o => o.status == "Pending"),
+                ConfirmedOrders = _db.Orders.AsNoTracking().Count(o => o.status == "Confirmed"),
+                ShippedOrders = _db.Orders.AsNoTracking().Count(o => o.status == "Shipped"),
+                CompletedOrders = _db.Orders.AsNoTracking().Count(o => o.status == "Completed"),
+                CancelledOrders = _db.Orders.AsNoTracking().Count(o => o.status == "Cancelled"),
 
                 // Revenue statistics (count only Completed orders)
                 TotalRevenue = (decimal)(_db.Orders
+                    .AsNoTracking()
                     .Where(o => o.status == "Completed")
                     .Sum(o => (long?)o.total_amount) ?? 0),
                 
                 TodayRevenue = (decimal)(_db.Orders
+                    .AsNoTracking()
                     .Where(o => o.status == "Completed" && o.order_date >= today && o.order_date < tomorrow)
                     .Sum(o => (long?)o.total_amount) ?? 0),
                 
                 MonthRevenue = (decimal)(_db.Orders
+                    .AsNoTracking()
                     .Where(o => o.status == "Completed" && o.order_date >= firstDayOfMonth && o.order_date < tomorrow)
                     .Sum(o => (long?)o.total_amount) ?? 0),
 
                 // Products statistics
-                TotalProducts = _db.Products.Count(),
-                ActiveProducts = _db.Products.Count(p => p.is_active),
-                LowStockProducts = _db.Products.Count(p => p.stock < 10 && p.is_active),
+                TotalProducts = _db.Products.AsNoTracking().Count(),
+                ActiveProducts = _db.Products.AsNoTracking().Count(p => p.is_active),
+                LowStockProducts = _db.Products.AsNoTracking().Count(p => p.stock < 10 && p.is_active),
 
                 // Users statistics
-                TotalUsers = _db.Users.Count(),
-                NewUsersThisMonth = _db.Users.Count(u => u.created_at >= firstDayOfMonth),
+                TotalUsers = _db.Users.AsNoTracking().Count(),
+                NewUsersThisMonth = _db.Users.AsNoTracking().Count(u => u.created_at >= firstDayOfMonth),
 
-                // Recent orders
+                // Recent orders - Optimize with projection first
                 RecentOrders = _db.Orders
-                    .Include(o => o.User)
+                    .AsNoTracking()
                     .OrderByDescending(o => o.order_date)
                     .Take(5)
-                    .ToList()
                     .Select(o => new RecentOrderVM
                     {
                         Id = o.id,
@@ -67,19 +69,25 @@ namespace ValiModern.Areas.Admin.Controllers
                         OrderDate = o.order_date
                     }).ToList(),
 
-                // Top products
-                TopProducts = _db.Products
-                    .OrderByDescending(p => p.sold)
-                    .Take(5)
-                    .ToList()
-                    .Select(p => new TopProductVM
-                    {
-                        Id = p.id,
-                        Name = p.name,
-                        ImageUrl = p.image_url,
-                        Sold = p.sold,
-                        Revenue = p.sold * p.price
-                    }).ToList()
+                // Top products by revenue - Optimize query
+                TopProducts = (from product in _db.Products.AsNoTracking()
+                              where product.is_active
+                              let productRevenue = _db.Order_Details
+                                  .AsNoTracking()
+                                  .Where(od => od.product_id == product.id && od.Order.status == "Completed")
+                                  .Sum(od => (long?)od.quantity * od.price) ?? 0
+                              where productRevenue > 0  // Only show products with actual revenue
+                              orderby productRevenue descending
+                              select new TopProductVM
+                              {
+                                  Id = product.id,
+                                  Name = product.name,
+                                  ImageUrl = product.image_url,
+                                  Sold = product.sold,  // Use Product.sold (includes default + actual)
+                                  Revenue = (decimal)productRevenue  // Revenue from Completed orders only
+                              })
+                              .Take(5)
+                              .ToList()
             };
 
             return View(vm);

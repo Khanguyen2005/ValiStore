@@ -1,0 +1,344 @@
+@model ValiModern.Models.ViewModels.ProfileViewModel
+@{
+    ViewBag.Title = "My Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <style>
+        .profile-page {
+            padding: 2rem 0;
+        }
+
+        .profile-header {
+            background: var(--primary-gradient, linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%));
+            color: white;
+            padding: 2rem;
+            border-radius: var(--radius-lg, 14px);
+            margin-bottom: 2rem;
+            box-shadow: var(--shadow-lg, 0 6px 18px rgba(0, 0, 0, 0.1));
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: white;
+            color: var(--primary, #0d6efd);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            margin: 0 auto 1rem;
+        }
+
+        .profile-role-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--radius-pill, 999px);
+            font-size: 0.875rem;
+        }
+
+        .profile-role-badge i {
+            font-size: 1rem;
+        }
+
+        .profile-card {
+            border-radius: var(--radius-lg, 14px);
+            box-shadow: var(--shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.06));
+            border: 1px solid var(--gray-200, #e9ecef);
+        }
+
+        .profile-card .card-header {
+            background: var(--gray-50, #f8f9fa);
+            border-bottom: 1px solid var(--gray-200, #e9ecef);
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .profile-card .card-header i {
+            font-size: 1.5rem;
+            color: var(--primary, #0d6efd);
+            width: 30px;
+            text-align: center;
+        }
+
+        .profile-card .card-header h5 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .profile-info-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--gray-200, #e9ecef);
+        }
+
+        .profile-info-item:last-child {
+            border-bottom: none;
+        }
+
+        .profile-info-label {
+            font-weight: 600;
+            color: var(--text-secondary, #6c757d);
+            font-size: 0.875rem;
+            margin-bottom: 0.35rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .profile-info-label i {
+            width: 18px;
+            text-align: center;
+            color: var(--primary, #0d6efd);
+        }
+
+        .profile-info-value {
+            color: var(--text-primary, #212529);
+            font-size: 1rem;
+        }
+
+        /* Button Styles */
+        .profile-page .btn-primary {
+            background: var(--primary-gradient, linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%));
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all var(--transition-base, 0.3s ease);
+        }
+
+        .profile-page .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-primary, 0 6px 18px rgba(13, 110, 253, 0.25));
+        }
+
+        .profile-page .btn-primary i {
+            font-size: 1rem;
+        }
+
+        .profile-page .btn-outline-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 2px solid var(--secondary, #6c757d);
+        }
+
+        .profile-page .btn-outline-secondary i {
+            font-size: 1rem;
+        }
+
+        /* Form Styles */
+        .profile-page .form-label {
+            font-weight: 600;
+            color: var(--text-primary, #212529);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .profile-page .form-label i {
+            width: 18px;
+            color: var(--primary, #0d6efd);
+        }
+
+        .profile-page .form-control {
+            border: 2px solid var(--gray-300, #dee2e6);
+            border-radius: var(--radius-md, 10px);
+            padding: 0.75rem 1rem;
+            transition: all var(--transition-fast, 0.15s);
+        }
+
+        .profile-page .form-control:focus {
+            border-color: var(--primary, #0d6efd);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        }
+
+        .profile-page .form-control:disabled,
+        .profile-page .form-control[readonly] {
+            background-color: var(--gray-100, #f8f9fa);
+            cursor: not-allowed;
+        }
+
+        @@media (max-width: 767.98px) {
+            .profile-header {
+                padding: 1.5rem;
+            }
+
+            .profile-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+}
+
+<div class="container profile-page">
+    <!-- Profile Header -->
+    <div class="profile-header">
+        <div class="text-center">
+            <div class="profile-avatar">
+                @(!string.IsNullOrEmpty(Model.Username) ? Model.Username.Substring(0, 1).ToUpper() : "U")
+            </div>
+            <h3 class="mb-2">@Model.Username</h3>
+            <p class="mb-2">@Model.Email</p>
+            <div class="profile-role-badge">
+                <i class="bi bi-@(Model.IsAdmin ? "shield-check" : Model.Role == "shipper" ? "truck" : "person")"></i>
+                <span>@(Model.IsAdmin ? "Administrator" : Model.Role == "shipper" ? "Shipper" : "Customer")</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Profile Information Card -->
+        <div class="col-lg-6">
+            <div class="card profile-card">
+                <div class="card-header">
+                    <i class="bi bi-person-circle"></i>
+                    <h5>Profile Information</h5>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show">
+                            <i class="bi bi-check-circle me-2"></i>@TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <i class="bi bi-exclamation-triangle me-2"></i>@TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @using (Html.BeginForm("UpdateProfile", "Account", FormMethod.Post, new { @class = "needs-validation" }))
+                    {
+                        @Html.AntiForgeryToken()
+                        @Html.HiddenFor(m => m.UserId)
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-person"></i>
+                                Username *
+                            </label>
+                            @Html.TextBoxFor(m => m.Username, new { @class = "form-control", placeholder = "Enter your username" })
+                            @Html.ValidationMessageFor(m => m.Username, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-envelope"></i>
+                                Email Address
+                            </label>
+                            @Html.TextBoxFor(m => m.Email, new { @class = "form-control", @readonly = "readonly", disabled = "disabled" })
+                            <small class="text-muted">Email cannot be changed</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">
+                                <i class="bi bi-telephone"></i>
+                                Phone Number
+                            </label>
+                            @Html.TextBoxFor(m => m.Phone, new { @class = "form-control", placeholder = "Enter your phone number" })
+                            @Html.ValidationMessageFor(m => m.Phone, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">
+                                <i class="bi bi-geo-alt"></i>
+                                Address
+                            </label>
+                            @Html.TextAreaFor(m => m.Address, new { @class = "form-control", rows = 3, placeholder = "Enter your address" })
+                            @Html.ValidationMessageFor(m => m.Address, "", new { @class = "text-danger small" })
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="bi bi-check-circle"></i>
+                                Save Changes
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Details & Actions -->
+        <div class="col-lg-6">
+            <!-- Account Details Card -->
+            <div class="card profile-card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-info-circle"></i>
+                    <h5>Account Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="profile-info-item">
+                        <div class="profile-info-label">
+                            <i class="bi bi-calendar-check"></i>
+                            Member Since
+                        </div>
+                        <div class="profile-info-value">
+                            @(Model.CreatedAt.HasValue ? Model.CreatedAt.Value.ToString("MMMM dd, yyyy") : "N/A")
+                        </div>
+                    </div>
+
+                    <div class="profile-info-item">
+                        <div class="profile-info-label">
+                            <i class="bi bi-clock-history"></i>
+                            Last Updated
+                        </div>
+                        <div class="profile-info-value">
+                            @(Model.UpdatedAt.HasValue ? Model.UpdatedAt.Value.ToString("MMMM dd, yyyy HH:mm") : "N/A")
+                        </div>
+                    </div>
+
+                    <div class="profile-info-item">
+                        <div class="profile-info-label">
+                            <i class="bi bi-shield-check"></i>
+                            Account Status
+                        </div>
+                        <div class="profile-info-value">
+                            <span class="badge bg-success">
+                                <i class="bi bi-check-circle me-1"></i>Active
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Card -->
+            <div class="card profile-card">
+                <div class="card-header">
+                    <i class="bi bi-shield-lock"></i>
+                    <h5>Security</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Keep your account secure by changing your password regularly.
+                    </p>
+                    <a href="@Url.Action("ChangePassword", "Account")" class="btn btn-outline-secondary w-100">
+                        <i class="bi bi-key"></i>
+                        Change Password
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

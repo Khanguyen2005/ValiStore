@@ -4,7 +4,11 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container my-4">
+@section Styles {
+    <link href="~/Content/Checkout.css" rel="stylesheet" />
+}
+
+<div class="container my-4 checkout-page">
     <h2 class="mb-4">Checkout</h2>
 
     @if (TempData["Error"] != null)

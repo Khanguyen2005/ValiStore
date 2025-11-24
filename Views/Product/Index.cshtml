@@ -9,7 +9,6 @@
 }
 
 <div class="product-shop-page">
-    <!-- Hero Banner -->
     <section class="shop-hero text-center py-4 mb-4">
         <div class="container">
             <h1 class="display-5 fw-bold mb-2">Discover Our Collection</h1>
@@ -19,7 +18,6 @@
 
     <div class="container mb-5">
         <div class="row g-4">
-            <!-- Sidebar Filters -->
             <div class="col-lg-3">
                 <div class="filters-sidebar">
                     <div class="card shadow-sm border-0 sticky-top" style="top: 20px;">
@@ -29,7 +27,6 @@
                         <div class="card-body p-4">
                             @using (Html.BeginForm("Index", "Product", FormMethod.Get, new { @id = "filterForm" }))
                             {
-                                <!-- Search -->
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold mb-2">
                                         <i class="bi bi-search me-2"></i>Search
@@ -40,7 +37,6 @@
                                     @Html.Hidden("sort", Model.CurrentSort)
                                 </div>
 
-                                <!-- Price Range -->
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold mb-2">
                                         <i class="bi bi-currency-dollar me-2"></i>Price Range
@@ -55,7 +51,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Colors -->
                                 if (Model.AvailableColors != null && Model.AvailableColors.Any())
                                 {
                                     <div class="mb-4">
@@ -79,7 +74,6 @@
                                     </div>
                                 }
 
-                                <!-- Sizes -->
                                 if (Model.AvailableSizes != null && Model.AvailableSizes.Any())
                                 {
                                     <div class="mb-4">
@@ -102,7 +96,6 @@
                                     </div>
                                 }
 
-                                <!-- Categories -->
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold mb-2">
                                         <i class="bi bi-grid me-2"></i>Categories
@@ -122,7 +115,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Brands -->
                                 <div class="mb-4">
                                     <label class="form-label fw-semibold mb-2">
                                         <i class="bi bi-tag me-2"></i>Brands
@@ -156,16 +148,13 @@
                 </div>
             </div>
 
-            <!-- Products Grid -->
             <div class="col-lg-9">
-                <!-- Header -->
                 <div class="products-header d-flex justify-content-between align-items-center mb-4 p-3 bg-light rounded">
                     <div>
                         <h2 class="h5 mb-1">Products</h2>
                         <small class="text-muted"><i class="bi bi-box-seam me-1"></i>@Model.TotalProducts products found</small>
                     </div>
 
-                    <!-- Sort Dropdown -->
                     <div class="dropdown">
                         <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                             <i class="bi bi-sort-down me-1"></i> Sort By
@@ -207,7 +196,6 @@
                     </div>
                 </div>
 
-                <!-- Products Grid -->
                 @if (Model.Products != null && Model.Products.Any())
                 {
                     <div class="row g-4 mb-4">
@@ -264,7 +252,6 @@
                         }
                     </div>
 
-                    <!-- Pagination -->
                     if (Model.TotalPages > 1)
                     {
                         <nav aria-label="Product pagination">
@@ -272,9 +259,16 @@
                                 @if (Model.CurrentPage > 1)
                                 {
                                     <li class="page-item">
-                                        <a class="page-link" href="@Url.Action("Index", new { category = Model.CurrentCategory, brand = Model.CurrentBrand, q = Model.SearchQuery, sort = Model.CurrentSort, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, colors = Model.SelectedColorNames != null ? string.Join(",", Model.SelectedColorNames) : null, sizes = Model.SelectedSizeNames != null ? string.Join(",", Model.SelectedSizeNames) : null, page = Model.CurrentPage - 1 })">
-                                            <i class="bi bi-chevron-left"></i>
+                                        <a class="page-link" href="@Url.Action("Index", new { category = Model.CurrentCategory, brand = Model.CurrentBrand, q = Model.SearchQuery, sort = Model.CurrentSort, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, colors = Model.SelectedColorNames != null ? string.Join(",", Model.SelectedColorNames) : null, sizes = Model.SelectedSizeNames != null ? string.Join(",", Model.SelectedSizeNames) : null, page = Model.CurrentPage - 1 })" aria-label="Previous">
+                                            <i class="bi bi-arrow-left-short"></i>
                                         </a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    /* Disabled state visual for Previous button */
+                                    <li class="page-item disabled">
+                                        <span class="page-link"><i class="bi bi-arrow-left-short"></i></span>
                                     </li>
                                 }
 
@@ -288,9 +282,16 @@
                                 @if (Model.CurrentPage < Model.TotalPages)
                                 {
                                     <li class="page-item">
-                                        <a class="page-link" href="@Url.Action("Index", new { category = Model.CurrentCategory, brand = Model.CurrentBrand, q = Model.SearchQuery, sort = Model.CurrentSort, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, colors = Model.SelectedColorNames != null ? string.Join(",", Model.SelectedColorNames) : null, sizes = Model.SelectedSizeNames != null ? string.Join(",", Model.SelectedSizeNames) : null, page = Model.CurrentPage + 1 })">
-                                            <i class="bi bi-chevron-right"></i>
+                                        <a class="page-link" href="@Url.Action("Index", new { category = Model.CurrentCategory, brand = Model.CurrentBrand, q = Model.SearchQuery, sort = Model.CurrentSort, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, colors = Model.SelectedColorNames != null ? string.Join(",", Model.SelectedColorNames) : null, sizes = Model.SelectedSizeNames != null ? string.Join(",", Model.SelectedSizeNames) : null, page = Model.CurrentPage + 1 })" aria-label="Next">
+                                            <i class="bi bi-arrow-right-short"></i>
                                         </a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    /* Disabled state visual for Next button */
+                                    <li class="page-item disabled">
+                                        <span class="page-link"><i class="bi bi-arrow-right-short"></i></span>
                                     </li>
                                 }
                             </ul>

@@ -4,6 +4,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using ValiModern.Filters;
+using ValiModern.Helpers;
 using ValiModern.Models.EF;
 
 namespace ValiModern.Areas.Admin.Controllers
@@ -57,6 +58,10 @@ namespace ValiModern.Areas.Admin.Controllers
             var brand = new Brand { name = name, image_url = relPath };
             _db.Brands.Add(brand);
             _db.SaveChanges();
+            
+            // Invalidate cache when brand is created
+            CacheHelper.InvalidateBrandCache();
+            
             TempData["Success"] = "Brand created.";
             return RedirectToAction("Index");
         }
@@ -94,6 +99,10 @@ namespace ValiModern.Areas.Admin.Controllers
                 brand.image_url = rel;
             }
             _db.SaveChanges();
+            
+            // Invalidate cache when brand is updated
+            CacheHelper.InvalidateBrandCache();
+            
             TempData["Success"] = "Brand updated.";
             return RedirectToAction("Index");
         }
@@ -114,6 +123,10 @@ namespace ValiModern.Areas.Admin.Controllers
             DeletePhysical(brand.image_url);
             _db.Brands.Remove(brand);
             _db.SaveChanges();
+            
+            // Invalidate cache when brand is deleted
+            CacheHelper.InvalidateBrandCache();
+            
             TempData["Success"] = "Brand deleted.";
             return RedirectToAction("Index");
         }

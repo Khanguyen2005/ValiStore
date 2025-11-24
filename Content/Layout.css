@@ -1,123 +1,143 @@
-﻿body {
+﻿/* ========================================
+   LAYOUT - NAVBAR & GLOBAL STYLES
+   Uses Customer Design System Variables
+   ======================================== */
+
+body {
     font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
     background: #ffffff;
     color: #212529;
 }
 
-/* ===== Navbar ===== */
+/* ===== Navbar - Primary Color Scheme ===== */
 .navbar {
-    background: linear-gradient(90deg, #0d6efd, #1e90ff);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    background: linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%);
+    box-shadow: 0 4px 16px rgba(13, 110, 253, 0.2);
     padding: 0.75rem 0;
+    border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+    align-items: center; /* FIX: Đảm bảo các item được căn giữa theo chiều dọc */
 }
 
 .navbar-brand {
-    font-weight: 700;
-    font-size: 1.5rem;
+    font-weight: 800;
+    font-size: 1.65rem;
     color: #fff !important;
     letter-spacing: 0.5px;
     transition: transform 0.2s ease;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .navbar-brand:hover {
     transform: scale(1.05);
+    color: #fff !important;
 }
 
 .nav-link {
-    font-weight: 500;
+    font-weight: 600;
     transition: all 0.2s ease;
     padding: 0.5rem 1rem !important;
+    color: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 8px;
+}
+
+/* FIX: Icon spacing - Đồng nhất khoảng cách icon */
+/* Navbar Icons */
+.navbar .nav-link i {
+    margin-right: 0.5rem; /* Consistent spacing */
 }
 
 .nav-link:hover {
- color: #ffe082 !important;
+    color: #fff !important;
+    background: rgba(255, 255, 255, 0.15);
     transform: translateY(-2px);
 }
 
-.nav-link.text-warning {
-    color: #ffeb3b !important;
-    font-weight: 600;
+.nav-link.active {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff !important;
 }
 
 /* ===== Enhanced Cart Icon ===== */
+/* Tìm và thay thế đoạn .cart-icon-wrapper cũ bằng đoạn này */
+
 .cart-icon-wrapper {
     position: relative;
-  padding: 0.5rem 1rem !important;
-    transition: all 0.3s ease;
-    background: rgba(255,255,255,0.1);
+    width: 42px;
+    height: 42px;
+    padding: 0 !important;
+    /* FIX 1: Dùng flex thay vì inline-flex để kiểm soát căn chỉnh tốt hơn */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.15);
     border-radius: 12px;
-    margin-right: 0.5rem;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    /* FIX 2: Bỏ margin-right ở đây vì bạn đã dùng gap-2 ở thẻ <ul> cha, tránh bị lệch khoảng cách ngang */
+    margin-right: 0;
+    /* FIX 3: Reset line-height để không bị ảnh hưởng bởi class nav-link */
+    line-height: 1;
+    color: rgba(255, 255, 255, 0.95); /* Đảm bảo màu icon đồng bộ */
 }
 
-.cart-icon-wrapper:hover {
-    transform: scale(1.15) translateY(-3px);
-    background: rgba(255,255,255,0.2);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-}
-
-.cart-icon-wrapper i {
-  font-size: 1.75rem;
-    font-weight: bold;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-}
+    /* Thêm css để đảm bảo thẻ <a> không bị gạch chân hay đổi màu lạ */
+    .cart-icon-wrapper:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+        color: #fff; /* Màu khi hover */
+    }
 
 .cart-badge-pulse {
- animation: pulse 2s infinite;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 0.3rem 0.6rem;
-    min-width: 22px;
-    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.5);
-}
-
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
-        transform: scale(1);
-    }
-    50% {
-        box-shadow: 0 0 0 8px rgba(220, 53, 69, 0);
-        transform: scale(1.05);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
-        transform: scale(1);
-    }
+    top: -2px; /* FIX: Điều chỉnh vị trí badge */
+    right: -2px; /* FIX: Điều chỉnh vị trí badge */
+    transform: translate(0,0);
+    font-size: 11px;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 2px solid var(--primary);
 }
 
 /* ===== Enhanced User Avatar ===== */
 .user-avatar {
     width: 42px;
-  height: 42px;
+    height: 42px;
     border-radius: 50%;
     display: inline-flex;
-align-items: center;
+    align-items: center;
     justify-content: center;
     font-weight: 700;
     font-size: 1.1rem;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #fff;
     border: 3px solid #fff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s ease;
 }
 
 .user-menu-trigger {
     padding: 0.5rem 1rem !important;
-  background: rgba(255,255,255,0.1);
- border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
     transition: all 0.3s ease;
+    color: rgba(255, 255, 255, 0.95) !important;
 }
 
 .user-menu-trigger:hover {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
     transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    color: #fff !important;
 }
 
 .user-menu-trigger:hover .user-avatar {
     transform: scale(1.15) rotate(5deg);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
     border-width: 4px;
 }
 
@@ -127,12 +147,12 @@ transition: all 0.3s ease;
     border-radius: 50%;
     display: inline-flex;
     align-items: center;
-justify-content: center;
+    justify-content: center;
     font-weight: 700;
     font-size: 1.5rem;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #fff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* ===== User Dropdown Menu ===== */
@@ -142,25 +162,34 @@ justify-content: center;
     min-width: 280px !important;
     padding: 0 !important;
     margin-top: 0.75rem !important;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
 }
 
 .user-dropdown .dropdown-item {
     padding: 0.85rem 1.5rem;
     transition: all 0.2s ease;
- border-radius: 0;
-  font-weight: 500;
+    border-radius: 0;
+    font-weight: 500;
+    color: #212529;
+}
+
+/* User Menu Dropdown */
+.user-dropdown .dropdown-item i {
+    width: 20px;
+    margin-right: 0.75rem;
+    text-align: center;
+    font-size: 1rem;
 }
 
 .user-dropdown .dropdown-item:hover {
     background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
     padding-left: 2rem;
+    color: #0d6efd;
 }
 
-.user-dropdown .dropdown-item i {
-    width: 24px;
- text-align: center;
-font-size: 1.1rem;
+/* Badge spacing in user menu */
+.user-dropdown .dropdown-item small i {
+    margin-right: 0.35rem;
 }
 
 .user-dropdown .dropdown-item.text-danger:hover {
@@ -168,18 +197,63 @@ font-size: 1.1rem;
     color: #dc3545 !important;
 }
 
+/* ===== Categories Dropdown ===== */
+.dropdown-menu {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    padding: 0.5rem 0;
+    margin-top: 0.5rem;
+}
+
+.dropdown-item {
+    padding: 0.6rem 1.25rem;
+    transition: all 0.2s ease;
+    color: #212529;
+    font-weight: 500;
+}
+
+/* Category Dropdown Icons */
+.dropdown-menu .dropdown-item i.bi-tag,
+.dropdown-menu .dropdown-item i.bi-list-ul,
+.dropdown-menu .dropdown-item i.bi-grid {
+    width: 18px;
+    margin-right: 0.75rem;
+    display: inline-block;
+}
+
+.dropdown-item:hover {
+    background: #f8f9fa;
+    color: #0d6efd;
+    padding-left: 1.75rem;
+}
+
+/* Dropdown Menu Icons */
+.dropdown-menu .dropdown-item i {
+    width: 20px; /* Fixed width for alignment */
+    margin-right: 0.75rem; /* Consistent spacing */
+    text-align: center;
+}
+
+.dropdown-divider {
+    margin: 0.5rem 0;
+    border-color: #e9ecef;
+}
+
 /* ===== Auth Buttons ===== */
 .btn-outline-light {
-    border: 2px solid rgba(255,255,255,0.6);
-  transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.7);
+    transition: all 0.3s ease;
     font-weight: 600;
+    color: #fff;
 }
 
 .btn-outline-light:hover {
-    background: rgba(255,255,255,0.25);
+    background: rgba(255, 255, 255, 0.25);
     border-color: #fff;
     transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.25);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    color: #fff;
 }
 
 .btn-light {
@@ -192,15 +266,16 @@ font-size: 1.1rem;
 
 .btn-light:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
     background: #f8f9fa;
+    color: #0b5ed7;
 }
 
 /* ===== Alerts with Icons ===== */
 .alert {
     border-radius: 12px;
     border: none;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .alert-success {
@@ -214,15 +289,15 @@ font-size: 1.1rem;
 }
 
 .alert i {
-  font-size: 1.1rem;
+    font-size: 1.1rem;
 }
 
 /* ===== Footer ===== */
 footer {
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-border-top: 1px solid #dee2e6;
+    border-top: 1px solid #dee2e6;
     color: #495057;
- padding: 1.5rem 0;
+    padding: 1.5rem 0;
     font-size: 0.95rem;
     margin-top: 3rem;
 }
@@ -237,26 +312,26 @@ footer .bi-heart-fill {
         transform: scale(1);
     }
     50% {
- transform: scale(1.1);
+        transform: scale(1.1);
     }
 }
 
 /* ===== Page Container ===== */
 .site-container {
-  padding-top: 1.5rem;
+    padding-top: 1.5rem;
     padding-bottom: 2.5rem;
     min-height: calc(100vh - 200px);
 }
 
 /* ===== Responsive ===== */
 @media (max-width: 991px) {
-.navbar-nav {
-      padding: 1rem 0;
+    .navbar-nav {
+        padding: 1rem 0;
     }
 
     .user-avatar {
-width: 38px;
-   height: 38px;
+        width: 38px;
+        height: 38px;
         font-size: 1rem;
     }
 
@@ -267,9 +342,27 @@ width: 38px;
     .user-dropdown {
         min-width: 240px !important;
     }
+    
+    .navbar-brand {
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+    
+    .nav-link {
+        padding: 0.4rem 0.8rem !important;
+    }
 }
 
 /* ===== Smooth Transitions ===== */
-* {
-    transition: color 0.2s ease, background-color 0.2s ease;
+a {
+    transition: color 0.2s ease;
+}
+
+button {
+    transition: all 0.2s ease;
 }

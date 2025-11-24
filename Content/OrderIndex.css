@@ -1,36 +1,32 @@
 ﻿/* ========================================
-   ORDER INDEX PAGE STYLES (FINAL REFINED)
+   ORDER INDEX PAGE STYLES
+   Using Customer Design System
+   Primary Color: #0d6efd
    ======================================== */
 
-/* --- Page Structure & Header --- */
+/* --- Page Header --- */
 .container h2 {
-    color: #263243; /* Darker text for header */
+    color: var(--text-primary, #212529);
     font-weight: 700;
     font-size: 1.8rem;
 }
 
-    .container h2 i {
-        color: #0d6efd; /* Primary color for icon */
-    }
+.container h2 i {
+    color: var(--primary, #0d6efd);
+}
 
 /* --- Status Filter Pills Navigation --- */
-
-/* Wrapper to add a clean separation line and set high Z-Index */
 .nav-pills-wrapper {
-    /* Đảm bảo wrapper cũng có z-index cao nếu nó là phần tử bị che */
     position: relative;
     z-index: 101;
     margin-bottom: 1.5rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid #eef1f4;
+    border-bottom: 1px solid var(--gray-200, #e9ecef);
 }
 
-/* Áp dụng cho phần tử UL chứa các tab lọc */
 .nav.nav-pills {
-    /* FIX LỖI BỊ CHE (Z-INDEX) */
     position: relative;
-    z-index: 100; /* Giá trị cao hơn bất kỳ phần tử lân cận nào có thể chồng lên */
-
+    z-index: 100;
     display: flex;
     gap: 0.75rem;
     padding: 0.5rem 0;
@@ -46,165 +42,152 @@
     align-items: center;
     gap: .5rem;
     padding: .5rem 1rem;
-    border-radius: 999px;
-    border: 1px solid #eef1f4;
+    border-radius: var(--radius-pill, 999px);
+    border: 2px solid var(--gray-200, #e9ecef);
     font-weight: 600;
-    color: #546075;
-    background: #fcfdfe;
+    color: var(--text-secondary, #6c757d);
+    background: var(--white, #ffffff);
     min-height: 40px;
     box-shadow: none;
-    transition: all .2s ease;
+    transition: all var(--transition-base, 0.25s ease);
     white-space: nowrap;
 }
 
-    /* Subtle hover effect */
-    .nav-pills .nav-link:hover:not(.active) {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(13,110,253,0.05);
-        background: #fff;
-        color: #263243;
-        border-color: #d1e2ff;
-    }
+/* Subtle hover effect */
+.nav-pills .nav-link:hover:not(.active) {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
+    background: var(--white, #ffffff);
+    color: var(--text-primary, #212529);
+    border-color: var(--primary, #0d6efd);
+}
 
-    /* Active pill: brighter, more prominent */
-    .nav-pills .nav-link.active {
-        background: linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%) !important;
-        color: #fff !important;
-        box-shadow: 0 6px 16px rgba(13,110,253,0.25);
-        border-color: transparent !important;
-        transform: none;
-    }
+/* Active pill: primary gradient */
+.nav-pills .nav-link.active {
+    background: var(--primary-gradient, linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%)) !important;
+    color: var(--white, #ffffff) !important;
+    box-shadow: var(--shadow-primary, 0 6px 18px rgba(13, 110, 253, 0.25));
+    border-color: transparent !important;
+    transform: none;
+}
 
-    /* icon inside pill */
-    .nav-pills .nav-link i {
-        font-size: 1.05rem;
-        line-height: 1;
-        display: inline-flex;
-        justify-content: center;
-        /* Reset icon color for inactive state */
-        color: inherit;
-    }
+/* icon inside pill */
+.nav-pills .nav-link i {
+    font-size: 1.05rem;
+    line-height: 1;
+    display: inline-flex;
+    justify-content: center;
+    color: inherit;
+}
 
-    /* --- Tinh chỉnh màu ICON và TEXT theo trạng thái (chỉ khi INACTIVE) --- */
+/* Status-specific colors for INACTIVE pills */
+.nav-pills .nav-link:not(.active)[href*="Pending"] {
+    color: #b07b00;
+}
 
-    /* Pending */
-    .nav-pills .nav-link:not(.active)[href*="Pending"] {
-        color: #b07b00; /* Vàng đậm cho text */
-    }
+.nav-pills .nav-link:not(.active)[href*="Pending"] i {
+    color: var(--warning, #ffc107);
+}
 
-        .nav-pills .nav-link:not(.active)[href*="Pending"] i {
-            color: #ffc107; /* Vàng cho icon */
-        }
+.nav-pills .nav-link:not(.active)[href*="Confirmed"] {
+    color: #0f8fa3;
+}
 
-    /* Confirmed */
-    .nav-pills .nav-link:not(.active)[href*="Confirmed"] {
-        color: #0f8fa3;
-    }
+.nav-pills .nav-link:not(.active)[href*="Confirmed"] i {
+    color: var(--info, #17a2b8);
+}
 
-        .nav-pills .nav-link:not(.active)[href*="Confirmed"] i {
-            color: #17a2b8;
-        }
+.nav-pills .nav-link:not(.active)[href*="Shipped"] {
+    color: var(--primary, #0d6efd);
+}
 
-    /* Shipped */
-    .nav-pills .nav-link:not(.active)[href*="Shipped"] {
-        color: #0d6efd;
-    }
+.nav-pills .nav-link:not(.active)[href*="Shipped"] i {
+    color: var(--primary, #0d6efd);
+}
 
-        .nav-pills .nav-link:not(.active)[href*="Shipped"] i {
-            color: #0d6efd;
-        }
+.nav-pills .nav-link:not(.active)[href*="Completed"] {
+    color: #1e7e34;
+}
 
-    /* Completed */
-    .nav-pills .nav-link:not(.active)[href*="Completed"] {
-        color: #1e7e34;
-    }
+.nav-pills .nav-link:not(.active)[href*="Completed"] i {
+    color: var(--success, #28a745);
+}
 
-        .nav-pills .nav-link:not(.active)[href*="Completed"] i {
-            color: #28a745;
-        }
+.nav-pills .nav-link:not(.active)[href*="Cancelled"] {
+    color: #bd2130;
+}
 
-    /* Cancelled */
-    .nav-pills .nav-link:not(.active)[href*="Cancelled"] {
-        color: #bd2130;
-    }
+.nav-pills .nav-link:not(.active)[href*="Cancelled"] i {
+    color: var(--danger, #dc3545);
+}
 
-        .nav-pills .nav-link:not(.active)[href*="Cancelled"] i {
-            color: #dc3545;
-        }
+.nav-pills .nav-link:not(.active)[href*="All"] {
+    color: var(--text-primary, #212529);
+}
 
-    /* All/Secondary (Mặc định) */
-    .nav-pills .nav-link:not(.active)[href*="All"] {
-        color: #263243;
-    }
+.nav-pills .nav-link:not(.active)[href*="All"] .badge {
+    background: var(--secondary, #6c757d) !important;
+    color: var(--white, #ffffff) !important;
+}
 
-        .nav-pills .nav-link:not(.active)[href*="All"] .badge {
-            background: #6c757d !important;
-            color: #fff !important;
-        }
+/* ===== Perfect circular count badges ===== */
+.nav-pills .nav-link .badge {
+    display: inline-grid !important;
+    place-items: center !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    font-weight: 700 !important;
+    font-size: 0.85rem !important;
+    line-height: 1 !important;
+    margin-left: 0.45rem !important;
+    box-shadow: var(--shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.06)) !important;
+    box-sizing: border-box !important;
+}
 
+.nav-pills .nav-link .badge[data-digits="2"] {
+    font-size: 0.78rem !important;
+}
 
-    /* ===== Perfect circular count badges ===== */
-    /* Replace any existing .nav-pills .nav-link .badge rules with this block */
+/* Active pill: subtle white-ish badge */
+.nav-pills .nav-link.active .badge {
+    background: rgba(255, 255, 255, 0.14) !important;
+    color: var(--white, #ffffff) !important;
+    box-shadow: none !important;
+}
 
-    /* Use a fixed height + min-width and center content with grid -> keeps perfect circle for 1-2 digits */
-    .nav-pills .nav-link .badge {
-        display: inline-grid !important;
-        place-items: center !important; /* center number */
-        width: 34px !important; /* fixed width */
-        height: 34px !important; /* fixed height -> makes a square */
-        min-width: 34px !important; /* ensure at least this wide */
-        padding: 0 !important; /* remove padding so size stable */
-        border-radius: 50% !important; /* perfect circle */
-        font-weight: 700 !important;
-        font-size: 0.85rem !important;
-        line-height: 1 !important;
-        margin-left: 0.45rem !important;
-        box-shadow: 0 6px 18px rgba(15,23,42,0.06) !important;
-        box-sizing: border-box !important;
-    }
+/* Different status colored badges */
+.nav-pills .nav-link .badge.bg-warning {
+    background: var(--warning, #ffc107) !important;
+    color: var(--gray-900, #212529) !important;
+}
 
-        /* For two-digit numbers still looking good: slightly reduce font-size */
-        .nav-pills .nav-link .badge[data-digits="2"] {
-            font-size: 0.78rem !important;
-        }
+.nav-pills .nav-link .badge.bg-info {
+    background: var(--info, #17a2b8) !important;
+    color: var(--white, #ffffff) !important;
+}
 
-    /* Active pill: subtle white-ish badge */
-    .nav-pills .nav-link.active .badge {
-        background: rgba(255,255,255,0.14) !important;
-        color: #fff !important;
-        box-shadow: none !important;
-    }
+.nav-pills .nav-link .badge.bg-primary {
+    background: var(--primary, #0d6efd) !important;
+    color: var(--white, #ffffff) !important;
+}
 
-    /* Different status colored badges */
-    .nav-pills .nav-link .badge.bg-warning {
-        background: #ffc107 !important;
-        color: #222 !important;
-    }
+.nav-pills .nav-link .badge.bg-success {
+    background: var(--success, #28a745) !important;
+    color: var(--white, #ffffff) !important;
+}
 
-    .nav-pills .nav-link .badge.bg-info {
-        background: #17a2b8 !important;
-        color: #fff !important;
-    }
+.nav-pills .nav-link .badge.bg-danger {
+    background: var(--danger, #dc3545) !important;
+    color: var(--white, #ffffff) !important;
+}
 
-    .nav-pills .nav-link .badge.bg-primary {
-        background: #0d6efd !important;
-        color: #fff !important;
-    }
-
-    .nav-pills .nav-link .badge.bg-success {
-        background: #28a745 !important;
-        color: #fff !important;
-    }
-
-    .nav-pills .nav-link .badge.bg-danger {
-        background: #dc3545 !important;
-        color: #fff !important;
-    }
-
-    .nav-pills .nav-link .badge.bg-secondary {
-        background: #6c757d !important;
-        color: #fff !important;
-    }
+.nav-pills .nav-link .badge.bg-secondary {
+    background: var(--secondary, #6c757d) !important;
+    color: var(--white, #ffffff) !important;
+}
 
 /* Responsive: reduce size on very small screens */
 @media (max-width: 576px) {
@@ -216,104 +199,186 @@
         margin-left: 0.35rem !important;
     }
 
-        .nav-pills .nav-link .badge[data-digits="2"] {
-            font-size: 0.72rem !important;
-        }
+    .nav-pills .nav-link .badge[data-digits="2"] {
+        font-size: 0.72rem !important;
+    }
 }
 
-
-/* --- Order Card Styling (Giữ nguyên) --- */
-
+/* --- Order Card Styling --- */
 .order-card {
-    transition: all 0.25s ease;
-    border: 1px solid #f1f3f5;
-    border-radius: 12px;
+    transition: all var(--transition-base, 0.25s ease);
+    border: 2px solid var(--gray-200, #e9ecef);
+    border-radius: var(--radius-lg, 14px);
     overflow: hidden;
-    background-color: #ffffff;
+    background-color: var(--white, #ffffff);
     cursor: pointer;
 }
 
-    .order-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-        border-color: #0d6efd; /* Highlight border on hover */
-    }
+.order-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg, 0 6px 18px rgba(0, 0, 0, 0.1));
+    border-color: var(--primary, #0d6efd);
+}
 
-    .order-card .card-body {
-        padding: 1.25rem 1.5rem;
-    }
+.order-card .card-body {
+    padding: 1.25rem 1.5rem;
+}
 
-    /* Order Details - Typography and Layout */
-    .order-card .text-primary {
-        color: #0d6efd !important;
-        font-weight: 700;
-        font-size: 1.1rem;
-    }
+/* Order Details - Typography and Layout */
+.order-card .text-primary {
+    color: var(--primary, #0d6efd) !important;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
 
-    .order-card small.text-muted {
-        font-size: 0.85rem;
-    }
+.order-card small.text-muted {
+    font-size: 0.85rem;
+    color: var(--text-muted, #868e96);
+}
 
-    .order-card .fw-bold.text-success.fs-5 {
-        font-size: 1.35rem !important; /* Make total amount pop */
-        font-weight: 700 !important;
-        color: #28a745 !important;
-    }
+.order-card .fw-bold.text-success.fs-5 {
+    font-size: 1.35rem !important;
+    font-weight: 700 !important;
+    color: var(--success, #28a745) !important;
+}
 
-    /* Status Badges in Order Cards */
-    .order-card .badge {
-        font-weight: 600;
-        padding: 0.5rem 1.1rem;
-        font-size: 0.85rem;
-        border-radius: 6px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    }
+/* Status Badges in Order Cards */
+.order-card .badge {
+    font-weight: 600;
+    padding: 0.5rem 1.1rem;
+    font-size: 0.85rem;
+    border-radius: var(--radius-md, 10px);
+    box-shadow: var(--shadow-sm, 0 2px 4px rgba(0, 0, 0, 0.05));
+}
 
-/* Status colors override for consistency */
+/* Status colors using design system */
 .badge.bg-warning {
-    background-color: #ffc107 !important;
-    color: #212529 !important;
+    background-color: var(--warning, #ffc107) !important;
+    color: var(--gray-900, #212529) !important;
 }
 
 .badge.bg-info {
-    background-color: #17a2b8 !important;
+    background-color: var(--info, #17a2b8) !important;
+    color: var(--white, #ffffff) !important;
 }
 
 .badge.bg-primary {
-    background-color: #0d6efd !important;
+    background-color: var(--primary, #0d6efd) !important;
+    color: var(--white, #ffffff) !important;
 }
 
 .badge.bg-success {
-    background-color: #28a745 !important;
+    background-color: var(--success, #28a745) !important;
+    color: var(--white, #ffffff) !important;
 }
 
 .badge.bg-danger {
-    background-color: #dc3545 !important;
+    background-color: var(--danger, #dc3545) !important;
+    color: var(--white, #ffffff) !important;
 }
 
 .badge.bg-secondary {
-    background-color: #6c757d !important;
+    background-color: var(--secondary, #6c757d) !important;
+    color: var(--white, #ffffff) !important;
 }
 
-
-/* --- Action Button (Giữ nguyên) --- */
-
+/* --- Action Button --- */
 .order-card .btn-outline-primary {
-    border-width: 1px;
+    border-width: 2px;
     font-weight: 600;
     padding: 0.4rem 1rem;
-    border-radius: 8px;
-    transition: all 0.2s ease;
+    border-radius: var(--radius-md, 10px);
+    transition: all var(--transition-base, 0.2s ease);
 }
 
-    .order-card .btn-outline-primary:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.2);
-    }
+.order-card .btn-outline-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-primary, 0 4px 10px rgba(13, 110, 253, 0.2));
+}
 
-/* --- Pagination & Empty State & Responsive (Giữ nguyên) --- */
-/* ... (các phần còn lại của CSS không thay đổi) ... */
+/* --- Empty State --- */
+.text-center.py-5 {
+    padding: 3rem 1rem;
+}
 
+.text-center.py-5 i.display-1 {
+    color: var(--gray-400, #ced4da);
+    font-size: 4rem;
+}
+
+.text-center.py-5 h4 {
+    color: var(--text-secondary, #6c757d);
+}
+
+.text-center.py-5 p {
+    color: var(--text-muted, #868e96);
+}
+
+/* --- Pagination (standardized square buttons) --- */
+.pagination {
+    display:flex;
+    justify-content: center; /* FIX: Căn giữa pagination */
+    gap:0.5rem; /* FIX: Khoảng cách đồng nhất */
+}
+
+.pagination .page-item { 
+    display:flex; 
+}
+
+.pagination .page-link {
+    width:42px; /* FIX: Kích thước vuông 42x42 */
+    height:42px; /* FIX: Kích thước vuông 42x42 */
+    padding:0;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:600;
+    font-size:.9rem;
+    border:2px solid var(--gray-300,#dee2e6);
+    border-radius:12px; /* FIX: Bo tròn đồng bộ */
+    background:#fff;
+    color:var(--primary,#0d6efd);
+    transition:all var(--transition-fast,0.15s);
+    box-shadow:0 2px 6px rgba(0,0,0,0.04);
+    margin:0;
+}
+
+.pagination .page-link i { 
+    font-size:1rem; 
+    line-height:1; 
+}
+
+.pagination .page-link:hover:not(.disabled) {
+    background:var(--primary-light,#e7f1ff);
+    border-color:var(--primary,#0d6efd);
+    transform:translateY(-2px);
+    box-shadow:0 6px 14px rgba(13,110,253,0.15);
+}
+
+.pagination .page-item.active .page-link {
+    background:var(--primary,#0d6efd);
+    color:#fff;
+    border-color:var(--primary,#0d6efd);
+    box-shadow:0 8px 20px -4px rgba(13,110,253,0.3);
+    transform: translateY(-1px);
+}
+
+.pagination .page-item.disabled .page-link { 
+    opacity:.5; 
+    cursor:not-allowed; 
+    background-color: var(--gray-100, #f8f9fa);
+}
+
+@media (max-width:576px){ 
+    .pagination .page-link{ 
+        width:38px; 
+        height:38px; 
+        font-size:.85rem; 
+        border-radius: 10px;
+    } 
+}
+
+/* --- Responsive --- */
 @media (max-width: 992px) {
     .order-card .row > div {
         margin-bottom: 0.5rem;
@@ -353,14 +418,13 @@
         width: 100%;
     }
 }
-/* --- Animation (Keep) --- */
 
+/* --- Animation --- */
 @keyframes slideIn {
     from {
         opacity: 0;
         transform: translateY(10px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -371,7 +435,14 @@
     animation: slideIn 0.3s ease-out;
 }
 
-    .order-card:nth-child(1) {
-        animation-delay: 0.05s;
-    }
-/* ... */
+.order-card:nth-child(1) {
+    animation-delay: 0.05s;
+}
+
+.order-card:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.order-card:nth-child(3) {
+    animation-delay: 0.15s;
+}

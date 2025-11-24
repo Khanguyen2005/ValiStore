@@ -1,0 +1,656 @@
+/* ========================================
+   VALIMODERN CUSTOMER DESIGN SYSTEM
+   Unified Color Scheme & Components
+   Primary Color: #0d6efd (Vibrant Blue)
+   ======================================== */
+
+:root {
+    /* Primary Colors */
+    --primary: #0d6efd;
+    --primary-hover: #0b5ed7;
+    --primary-light: #e7f1ff;
+    --primary-gradient: linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%);
+    
+    /* Secondary Colors */
+    --secondary: #6c757d;
+    --secondary-light: #e9ecef;
+    
+    /* Success, Warning, Danger */
+    --success: #28a745;
+    --success-light: #d4edda;
+    --warning: #ffc107;
+    --warning-light: #fff3cd;
+    --danger: #dc3545;
+    --danger-light: #f8d7da;
+    --info: #17a2b8;
+    --info-light: #d1ecf1;
+    
+    /* Neutral Colors */
+    --white: #ffffff;
+    --gray-50: #fafbfc;
+    --gray-100: #f8f9fa;
+    --gray-200: #e9ecef;
+    --gray-300: #dee2e6;
+    --gray-400: #ced4da;
+    --gray-500: #adb5bd;
+    --gray-600: #6c757d;
+    --gray-700: #495057;
+    --gray-800: #343a40;
+    --gray-900: #212529;
+    
+    /* Text Colors */
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --text-muted: #868e96;
+    
+    /* Spacing */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-xxl: 3rem;
+    
+    /* Border Radius */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --radius-xl: 18px;
+    --radius-pill: 999px;
+    
+    /* Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 6px 18px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --shadow-primary: 0 6px 18px rgba(13, 110, 253, 0.15);
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.25s ease;
+    --transition-slow: 0.35s ease;
+}
+
+/* ========================================
+   GLOBAL RESETS & BASE STYLES
+   ======================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: var(--white);
+    color: var(--text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ========================================
+   BUTTONS - Unified Button System
+   ======================================== */
+
+.btn {
+    font-weight: 600;
+    padding: 0.55rem 1.25rem;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-base);
+    border: 2px solid transparent;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Primary Button */
+.btn-primary {
+    background: var(--primary-gradient);
+    color: var(--white);
+    border-color: transparent;
+    box-shadow: var(--shadow-primary);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0b5ed7 0%, #3283e8 100%);
+    box-shadow: 0 8px 22px rgba(13, 110, 253, 0.25);
+    color: var(--white);
+}
+
+.btn-outline-primary {
+    background: transparent;
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
+}
+
+/* Success Button */
+.btn-success {
+    background: var(--success);
+    color: var(--white);
+    border-color: transparent;
+}
+
+.btn-success:hover {
+    background: #218838;
+    box-shadow: 0 6px 18px rgba(40, 167, 69, 0.2);
+    color: var(--white);
+}
+
+/* Danger Button */
+.btn-danger {
+    background: var(--danger);
+    color: var(--white);
+    border-color: transparent;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+    box-shadow: 0 6px 18px rgba(220, 53, 69, 0.2);
+    color: var(--white);
+}
+
+.btn-outline-danger {
+    background: transparent;
+    color: var(--danger);
+    border-color: var(--danger);
+}
+
+.btn-outline-danger:hover {
+    background: var(--danger);
+    color: var(--white);
+}
+
+/* Secondary Button */
+.btn-secondary {
+    background: var(--secondary);
+    color: var(--white);
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+    color: var(--white);
+}
+
+.btn-outline-secondary {
+    background: transparent;
+    color: var(--secondary);
+    border-color: var(--secondary);
+}
+
+.btn-outline-secondary:hover {
+    background: var(--secondary);
+    color: var(--white);
+}
+
+/* Button Sizes */
+.btn-sm {
+    padding: 0.4rem 0.9rem;
+    font-size: 0.875rem;
+}
+
+.btn-lg {
+    padding: 0.75rem 1.75rem;
+    font-size: 1.125rem;
+}
+
+/* Pill Buttons */
+.btn.rounded-pill {
+    border-radius: var(--radius-pill);
+}
+
+/* ========================================
+   CARDS - Unified Card System
+   ======================================== */
+
+.card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+    transition: all var(--transition-base);
+    overflow: hidden;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary);
+}
+
+.card-header {
+    background: var(--gray-50);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 1rem 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.card-footer {
+    background: var(--gray-50);
+    border-top: 1px solid var(--gray-200);
+    padding: 1rem 1.25rem;
+}
+
+/* ========================================
+   BADGES - Unified Badge System
+   ======================================== */
+
+.badge {
+    padding: 0.45rem 0.85rem;
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    letter-spacing: 0.02em;
+}
+
+.badge.bg-primary {
+    background: var(--primary) !important;
+    color: var(--white);
+}
+
+.badge.bg-success {
+    background: var(--success) !important;
+    color: var(--white);
+}
+
+.badge.bg-warning {
+    background: var(--warning) !important;
+    color: var(--gray-900);
+}
+
+.badge.bg-danger {
+    background: var(--danger) !important;
+    color: var(--white);
+}
+
+.badge.bg-info {
+    background: var(--info) !important;
+    color: var(--white);
+}
+
+.badge.bg-secondary {
+    background: var(--secondary) !important;
+    color: var(--white);
+}
+
+/* ========================================
+   ALERTS - Unified Alert System
+   ======================================== */
+
+.alert {
+    border-radius: var(--radius-md);
+    border: none;
+    padding: 1rem 1.25rem;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.alert i {
+    font-size: 1.25rem;
+    line-height: 1;
+}
+
+.alert-success {
+    background: var(--success-light);
+    color: #155724;
+}
+
+.alert-success i {
+    color: var(--success);
+}
+
+.alert-danger {
+    background: var(--danger-light);
+    color: #721c24;
+}
+
+.alert-danger i {
+    color: var(--danger);
+}
+
+.alert-warning {
+    background: var(--warning-light);
+    color: #856404;
+}
+
+.alert-warning i {
+    color: var(--warning);
+}
+
+.alert-info {
+    background: var(--info-light);
+    color: #0c5460;
+}
+
+.alert-info i {
+    color: var(--info);
+}
+
+/* ========================================
+   STATUS BADGES - Order/Product Status
+   ======================================== */
+
+.status-badge {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-pill);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.status-badge.status-pending {
+    background: var(--warning);
+    color: var(--gray-900);
+}
+
+.status-badge.status-confirmed {
+    background: var(--info);
+    color: var(--white);
+}
+
+.status-badge.status-shipped {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.status-badge.status-completed {
+    background: var(--success);
+    color: var(--white);
+}
+
+.status-badge.status-cancelled {
+    background: var(--danger);
+    color: var(--white);
+}
+
+/* ========================================
+   FORMS - Unified Form Elements
+   ======================================== */
+
+.form-control, .form-select {
+    border: 2px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    padding: 0.6rem 0.95rem;
+    transition: all var(--transition-fast);
+    font-size: 0.95rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    outline: none;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.form-check-input:checked {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* ========================================
+   TABLES - Unified Table Styles
+   ======================================== */
+
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.table thead th {
+    background: var(--gray-50);
+    color: var(--text-secondary);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    padding: 0.9rem 1rem;
+    border-bottom: 2px solid var(--gray-300);
+}
+
+.table tbody tr {
+    transition: background-color var(--transition-fast);
+}
+
+.table tbody tr:hover {
+    background: var(--gray-50);
+}
+
+.table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-top: 1px solid var(--gray-200);
+}
+
+/* ========================================
+   PAGINATION - Unified Pagination
+   ======================================== */
+
+.pagination {
+    gap: 0.5rem;
+}
+
+.page-item .page-link {
+    border-radius: var(--radius-md);
+    border: 2px solid var(--gray-300);
+    color: var(--primary);
+    font-weight: 600;
+    padding: 0.5rem 0.85rem;
+    transition: all var(--transition-fast);
+    margin: 0;
+}
+
+.page-item .page-link:hover {
+    background: var(--primary-light);
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.page-item.active .page-link {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: var(--white);
+    box-shadow: var(--shadow-primary);
+}
+
+.page-item.disabled .page-link {
+    background: var(--gray-100);
+    border-color: var(--gray-300);
+    color: var(--gray-400);
+    cursor: not-allowed;
+}
+
+/* ========================================
+   BREADCRUMBS
+   ======================================== */
+
+.breadcrumb {
+    background: transparent;
+    padding: 0.75rem 0;
+    margin: 0;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    content: "›";
+    color: var(--gray-500);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.breadcrumb-item a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--primary-hover);
+    text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+    color: var(--text-secondary);
+}
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+/* Text Colors */
+.text-primary-custom {
+    color: var(--primary) !important;
+}
+
+.text-success-custom {
+    color: var(--success) !important;
+}
+
+.text-muted-custom {
+    color: var(--text-muted) !important;
+}
+
+/* Background Colors */
+.bg-primary-light {
+    background-color: var(--primary-light) !important;
+}
+
+.bg-gray-50 {
+    background-color: var(--gray-50) !important;
+}
+
+/* Shadows */
+.shadow-sm-custom {
+    box-shadow: var(--shadow-sm);
+}
+
+.shadow-md-custom {
+    box-shadow: var(--shadow-md);
+}
+
+.shadow-lg-custom {
+    box-shadow: var(--shadow-lg);
+}
+
+/* Border Radius */
+.rounded-custom {
+    border-radius: var(--radius-md);
+}
+
+.rounded-lg-custom {
+    border-radius: var(--radius-lg);
+}
+
+/* ========================================
+   RESPONSIVE UTILITIES
+   ======================================== */
+
+@media (max-width: 768px) {
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .table {
+        font-size: 0.875rem;
+    }
+
+    .table thead th,
+    .table tbody td {
+        padding: 0.6rem 0.8rem;
+    }
+}
+
+/* ========================================
+   ANIMATIONS
+   ======================================== */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(15px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+.animate-slide-in-left {
+    animation: slideInLeft 0.3s ease-out;
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--gray-100);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gray-400);
+    border-radius: var(--radius-md);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-500);
+}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ValiModern.Helpers;
 using ValiModern.Models.EF;
 using ValiModern.Models.ViewModels;
 
@@ -16,11 +17,9 @@ namespace ValiModern.Controllers
         public ActionResult Index(string category, string brand, string sort, string q, int? minPrice, int? maxPrice, string colors, string sizes, int page = 1)
         {
             int pageSize = 12;
+            
+            // Start with base query - NO eager loading yet to avoid loading unnecessary data
             var products = _db.Products
-                .Include(p => p.Category)
-                .Include(p => p.Brand)
-                .Include(p => p.Colors)
-                .Include(p => p.Sizes)
                 .Where(p => p.is_active)
                 .AsQueryable();
 
@@ -111,50 +110,16 @@ namespace ValiModern.Controllers
             var totalProducts = products.Count();
             var totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
 
+            // NOW apply eager loading only for the page we need
             var productList = products
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
 
-            // Build base query for available options based on current filters (excluding color/size filters)
-            var baseFilteredProducts = _db.Products
-                .Include(p => p.Category)
-                .Include(p => p.Brand)
-                .Include(p => p.Colors)
-                .Include(p => p.Sizes)
-                .Where(p => p.is_active)
-                .AsQueryable();
-
-            // Apply search filter
-            if (!string.IsNullOrWhiteSpace(q))
-            {
-                baseFilteredProducts = baseFilteredProducts.Where(p => p.name.ToLower().Contains(q.ToLower()) || p.description.ToLower().Contains(q.ToLower()));
-            }
-
-            // Apply category filter
-            if (!string.IsNullOrWhiteSpace(category))
-            {
-                baseFilteredProducts = baseFilteredProducts.Where(p => p.Category != null && p.Category.name == category);
-            }
-
-            // Apply brand filter
-            if (!string.IsNullOrWhiteSpace(brand))
-            {
-                baseFilteredProducts = baseFilteredProducts.Where(p => p.Brand != null && p.Brand.name == brand);
-            }
-
-            // Apply price filter
-            if (minPrice.HasValue)
-            {
-                baseFilteredProducts = baseFilteredProducts.Where(p => p.price >= minPrice.Value);
-            }
-            if (maxPrice.HasValue)
-            {
-                baseFilteredProducts = baseFilteredProducts.Where(p => p.price <= maxPrice.Value);
-            }
-
-            // Get distinct product IDs from base filtered products
-            var baseProductIds = baseFilteredProducts.Select(p => p.id).Distinct().ToList();
+            // Get distinct product IDs for filter options - more efficient
+            var baseProductIds = products.Select(p => p.id).ToList();
 
             // Get available colors based on filtered products (count distinct products, not color records)
             var availableColors = _db.Colors
@@ -194,6 +159,19 @@ namespace ValiModern.Controllers
                 })
                 .ToList();
 
+            // Use CacheHelper for categories and brands - they don't change often
+            var categoriesList = CacheHelper.GetOrSet(
+                CacheHelper.KEY_CATEGORIES,
+                () => _db.Categories.OrderBy(c => c.name).ToList(),
+                10
+            );
+            
+            var brandsList = CacheHelper.GetOrSet(
+                CacheHelper.KEY_BRANDS,
+                () => _db.Brands.OrderBy(b => b.name).ToList(),
+                10
+            );
+
             var vm = new ProductIndexVM
             {
                 Products = productList.Select(p => new ProductCardVM
@@ -207,8 +185,8 @@ namespace ValiModern.Controllers
                     brand_name = p.Brand?.name,
                     category_name = p.Category?.name
                 }).ToList(),
-                Categories = _db.Categories.OrderBy(c => c.name).ToList(),
-                Brands = _db.Brands.OrderBy(b => b.name).ToList(),
+                Categories = categoriesList,
+                Brands = brandsList,
                 AvailableColors = availableColors,
                 AvailableSizes = availableSizes,
                 CurrentCategory = category,
@@ -249,7 +227,7 @@ namespace ValiModern.Controllers
                 return RedirectToAction("Index");
             }
 
-            // Get related products (same category)
+            // Get related products (same category) - only select needed fields
             var relatedProducts = _db.Products
                 .Where(p => p.is_active && p.category_id == product.category_id && p.id != product.id)
                 .OrderByDescending(p => p.sold)

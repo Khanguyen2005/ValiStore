@@ -1,0 +1,226 @@
+﻿@model ValiModern.Models.ViewModels.ShipperOrderDetailsVM
+@{
+    ViewBag.Title = "Order Details";
+    Layout = "~/Views/Shared/_ShipperLayout.cshtml";
+}
+
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <h2 class="h4 fw-bold mb-0">
+                <i class="bi bi-box-seam me-2 text-success"></i>Order #@Model.OrderId Details
+            </h2>
+            <a href="@Url.Action("Index")" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i>Back to List
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Order Info -->
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="bi bi-info-circle me-2"></i>Order Information</h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm table-borderless mb-0">
+                    <tr>
+                        <td class="text-muted" style="width: 40%">Order ID:</td>
+                        <td><strong>#@Model.OrderId</strong></td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Order Date:</td>
+                        <td>@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Status:</td>
+                        <td><span class="badge bg-primary">@Model.Status</span></td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Total Amount:</td>
+                        <td><strong class="text-success">@Model.TotalAmount.ToString("N0") d</strong></td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Items:</td>
+                        <td>@Model.Items.Count item(s)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Info -->
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0"><i class="bi bi-person me-2"></i>Customer Information</h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm table-borderless mb-0">
+                    <tr>
+                        <td class="text-muted" style="width: 40%">Name:</td>
+                        <td><strong>@Model.CustomerName</strong></td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Email:</td>
+                        <td>@Model.CustomerEmail</td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Phone:</td>
+                        <td>
+                            <a href="tel:@Model.Phone" class="text-decoration-none">
+                                <i class="bi bi-telephone me-1"></i>@Model.Phone
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-muted">Address:</td>
+                        <td>@Model.ShippingAddress</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delivery Status -->
+    <div class="col-12">
+        <div class="card shadow-sm @(Model.DeliveredAt == null ? "border-warning border-2" : "border-success border-2")">
+            <div class="card-header @(Model.DeliveredAt == null ? "bg-warning" : "bg-success text-white")">
+                <h6 class="mb-0">
+                    <i class="bi bi-truck me-2"></i>Delivery Status
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <strong><i class="bi bi-calendar-check me-2"></i>Assigned At:</strong>
+                    <span>@Model.AssignedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+
+                @if (Model.DeliveredAt != null)
+                {
+                    <div class="alert alert-success mb-3">
+                        <strong><i class="bi bi-check-circle me-2"></i>Delivered At:</strong>
+                        <span>@Model.DeliveredAt.Value.ToString("dd/MM/yyyy HH:mm")</span>
+                        
+                        @if (!string.IsNullOrEmpty(Model.DeliveryNote))
+                        {
+                            <hr class="my-2" />
+                            <strong><i class="bi bi-sticky me-2"></i>Note:</strong>
+                            <div class="mt-1">@Model.DeliveryNote</div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <!-- Mark as Delivered Form -->
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle me-2"></i>This order has not been delivered yet.
+                    </div>
+
+                    <form method="post" action="@Url.Action("MarkDelivered", new { id = Model.OrderId })" id="deliveryForm">
+                        @Html.AntiForgeryToken()
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-sticky me-1"></i>Delivery Note (Optional)
+                            </label>
+                            <textarea name="deliveryNote" class="form-control" rows="3" 
+                                      placeholder="Any notes about the delivery (e.g., delivered to security, left at door, etc.)"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-success btn-lg w-100" onclick="return confirm('Confirm that you have delivered this order?')">
+                            <i class="bi bi-check-circle me-2"></i>Mark as Delivered
+                        </button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Items -->
+    <div class="col-12">
+        <div class="card shadow-sm">
+            <div class="card-header bg-light">
+                <h6 class="mb-0"><i class="bi bi-box me-2"></i>Order Items</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Image</th>
+                                <th>Product</th>
+                                <th>Color</th>
+                                <th>Size</th>
+                                <th>Qty</th>
+                                <th>Price</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Items)
+                            {
+                                <tr>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.ProductImageUrl))
+                                        {
+                                            <img src="@Url.Content("~" + item.ProductImageUrl)" alt="@item.ProductName" 
+                                                 class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;" />
+                                        }
+                                        else
+                                        {
+                                            <div class="bg-light d-flex align-items-center justify-content-center" 
+                                                 style="width: 60px; height: 60px;">
+                                                <i class="bi bi-image text-muted"></i>
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div>@item.ProductName</div>
+                                        <small class="text-muted">ID: @item.ProductId</small>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.ColorName))
+                                        {
+                                            <div class="d-flex align-items-center">
+                                                @if (!string.IsNullOrEmpty(item.ColorCode))
+                                                {
+                                                    <span class="d-inline-block me-2" 
+                                                          style="width: 20px; height: 20px; border-radius: 50%; background-color: @item.ColorCode; border: 1px solid #ddd;"></span>
+                                                }
+                                                <span>@item.ColorName</span>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(item.SizeName))
+                                        {
+                                            <span class="badge bg-secondary">@item.SizeName</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">N/A</span>
+                                        }
+                                    </td>
+                                    <td><strong>@item.Quantity</strong></td>
+                                    <td>@item.Price.ToString("N0") d</td>
+                                    <td><strong>@item.Subtotal.ToString("N0") d</strong></td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot class="table-light">
+                            <tr>
+                                <td colspan="6" class="text-end"><strong>Total:</strong></td>
+                                <td><strong class="text-success">@Model.TotalAmount.ToString("N0") d</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

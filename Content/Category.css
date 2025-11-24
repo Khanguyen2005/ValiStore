@@ -1,30 +1,33 @@
-/* Category Pages Styles */
+/* Category Pages Styles - Using Design System */
 
 /* Category Index Page */
 .category-card {
-    transition: all 0.3s ease;
+    transition: all var(--transition-base, 0.3s ease);
     cursor: pointer;
+    border-radius: var(--radius-lg, 14px);
 }
 
 .category-card:hover {
     transform: translateY(-10px);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
+    box-shadow: var(--shadow-lg, 0 10px 30px rgba(0,0,0,0.15)) !important;
+    border-color: var(--primary, #0d6efd);
 }
 
 .category-card:hover .category-icon i {
     transform: scale(1.2);
-    transition: transform 0.3s ease;
+    transition: transform var(--transition-base, 0.3s ease);
 }
 
 .category-icon {
     width: 100px;
     height: 100px;
     margin: 0 auto;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--primary-gradient, linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%));
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
 }
 
 .category-icon i {
@@ -33,12 +36,14 @@
 
 /* Category Products Page */
 .product-card {
-transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform var(--transition-base, 0.3s ease), box-shadow var(--transition-base, 0.3s ease);
+    border-radius: var(--radius-lg, 14px);
 }
 
 .product-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.15) !important;
+    box-shadow: var(--shadow-lg, 0 10px 25px rgba(0,0,0,0.15)) !important;
+    border-color: var(--primary, #0d6efd);
 }
 
 .product-image {
@@ -47,13 +52,35 @@ transition: transform 0.3s ease, box-shadow 0.3s ease;
     width: 100%;
 }
 
+/* FIX: Button consistency */
+.product-card .btn-primary {
+    background: var(--primary-gradient, linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%));
+    border: none;
+    /* C?n gi?a icon và text */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.product-card .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary, 0 6px 18px rgba(13, 110, 253, 0.25));
+    background: linear-gradient(135deg, #0b5ed7 0%, #3283e8 100%);
+}
+
+.product-card .btn-primary i {
+    font-size: 1rem;
+    line-height: 1;
+}
+
 /* Filter Sidebar */
 .color-swatch {
     display: inline-block;
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    border: 2px solid #ddd;
+    border: 2px solid var(--gray-300, #ddd);
 }
 
 .filter-options {
@@ -66,17 +93,17 @@ transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .filter-options::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--gray-100, #f1f1f1);
     border-radius: 10px;
 }
 
 .filter-options::-webkit-scrollbar-thumb {
-    background: #888;
+    background: var(--gray-500, #888);
     border-radius: 10px;
 }
 
 .filter-options::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: var(--gray-700, #555);
 }
 
 .sticky-top {
@@ -86,9 +113,9 @@ transition: transform 0.3s ease, box-shadow 0.3s ease;
 
 /* Breadcrumb */
 .breadcrumb {
-    background-color: #f8f9fa;
+    background-color: var(--gray-100, #f8f9fa);
     padding: 10px 15px;
-    border-radius: 5px;
+    border-radius: var(--radius-md, 10px);
 }
 
 /* Categories Dropdown in Navbar */
@@ -97,25 +124,69 @@ transition: transform 0.3s ease, box-shadow 0.3s ease;
     overflow-y: auto;
 }
 
-/* Pagination */
+/* Pagination - standardized square buttons */
 .pagination {
     margin-top: 2rem;
+    display: flex;
+    justify-content: center; /* FIX: C?n gi?a pagination */
+    gap: 0.5rem; /* FIX: Kho?ng cách ??ng nh?t */
+}
+
+.page-item { 
+    display:flex; 
 }
 
 .page-link {
-    color: #667eea;
-    border-color: #dee2e6;
+    width: 42px; /* FIX: Kích th??c vuông 42x42 */
+    height: 42px; /* FIX: Kích th??c vuông 42x42 */
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border: 2px solid var(--gray-300, #dee2e6);
+    border-radius: 12px; /* FIX: Bo tròn ??ng b? */
+    background: #fff;
+    color: var(--primary, #0d6efd);
+    transition: all var(--transition-fast, 0.15s);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    margin:0;
 }
 
-.page-link:hover {
-    color: #764ba2;
-    background-color: #f8f9fa;
-    border-color: #dee2e6;
+.page-link i { 
+    font-size: 1rem; 
+    line-height:1; 
+}
+
+.page-link:hover:not(.disabled) {
+    background: var(--primary-light, #e7f1ff);
+    border-color: var(--primary, #0d6efd);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(13,110,253,0.15);
 }
 
 .page-item.active .page-link {
-    background-color: #667eea;
-    border-color: #667eea;
+    background: var(--primary, #0d6efd);
+    color: #fff;
+    border-color: var(--primary, #0d6efd);
+    box-shadow: 0 8px 20px -4px rgba(13,110,253,0.3);
+    transform: translateY(-1px);
+}
+
+.page-item.disabled .page-link { 
+    opacity:.5; 
+    cursor:not-allowed; 
+    background-color: var(--gray-100, #f8f9fa);
+}
+
+@media (max-width:576px){ 
+    .page-link{ 
+        width:38px; 
+        height:38px; 
+        font-size:.85rem; 
+        border-radius: 10px;
+    } 
 }
 
 /* Empty State */
@@ -126,6 +197,6 @@ transition: transform 0.3s ease, box-shadow 0.3s ease;
 
 .empty-state i {
     font-size: 4rem;
-    color: #6c757d;
+    color: var(--gray-500, #6c757d);
     margin-bottom: 1rem;
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using ValiModern.Filters;
+using ValiModern.Helpers;
 using ValiModern.Models.EF;
 
 namespace ValiModern.Areas.Admin.Controllers
@@ -58,6 +59,10 @@ namespace ValiModern.Areas.Admin.Controllers
             }
             _db.Categories.Add(new Category { name = name });
             _db.SaveChanges();
+            
+            // Invalidate cache when category is created
+            CacheHelper.InvalidateCategoryCache();
+            
             TempData["Success"] = "Category created.";
             return RedirectToAction("Index");
         }
@@ -93,6 +98,10 @@ namespace ValiModern.Areas.Admin.Controllers
             cat.name = name;
             _db.Entry(cat).State = EntityState.Modified;
             _db.SaveChanges();
+            
+            // Invalidate cache when category is updated
+            CacheHelper.InvalidateCategoryCache();
+            
             TempData["Success"] = "Category updated.";
             return RedirectToAction("Index");
         }
@@ -106,6 +115,10 @@ namespace ValiModern.Areas.Admin.Controllers
             if (cat == null) return HttpNotFound();
             _db.Categories.Remove(cat);
             _db.SaveChanges();
+            
+            // Invalidate cache when category is deleted
+            CacheHelper.InvalidateCategoryCache();
+            
             TempData["Success"] = "Category deleted.";
             return RedirectToAction("Index");
         }

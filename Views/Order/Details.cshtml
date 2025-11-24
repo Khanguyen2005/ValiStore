@@ -23,6 +23,42 @@
         </a>
     </div>
 
+    <!-- Delivery Success Alert (shown only when shipper delivered) -->
+    @if (Model.ShowDeliveryNotification && Model.Status != "Completed")
+    {
+        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-4" role="alert">
+            <div class="d-flex align-items-start">
+                <i class="bi bi-check-circle-fill me-3 fs-3"></i>
+                <div class="flex-grow-1">
+                    <h5 class="alert-heading fw-bold mb-2">
+                        <i class="bi bi-truck me-2"></i>Your Order Has Been Delivered!
+                    </h5>
+                    <p class="mb-3">
+                        Great news! Your order was successfully delivered by our shipper 
+                        <strong>@(!string.IsNullOrEmpty(Model.ShipperName) ? Model.ShipperName : "N/A")</strong> 
+                        on <strong>@Model.DeliveredAt.Value.ToString("dd MMM yyyy 'at' HH:mm")</strong>.
+                    </p>
+                    @if (!string.IsNullOrEmpty(Model.DeliveryNote))
+                    {
+                        <div class="alert alert-light mb-3">
+                            <strong><i class="bi bi-sticky me-2"></i>Delivery Note:</strong>
+                            <p class="mb-0 mt-2">@Model.DeliveryNote</p>
+                        </div>
+                    }
+                    <hr class="my-3" />
+                    <p class="mb-3">
+                        <i class="bi bi-info-circle me-2"></i>
+                        If you have received your order, please confirm below to complete the transaction.
+                    </p>
+                    <button type="button" class="btn btn-success btn-lg px-4" data-bs-toggle="modal" data-bs-target="#confirmReceivedModal">
+                        <i class="bi bi-check2-circle me-2"></i>Confirm Received
+                    </button>
+                </div>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
     <div class="row g-4">
         <!-- Order Status & Info -->
         <div class="col-lg-8">
@@ -104,6 +140,12 @@
                                 @if (Model.Status == "Shipped" || Model.Status == "Completed")
                                 {
                                     <div class="timeline-date">@Model.UpdatedAt.ToString("dd MMM yyyy, HH:mm")</div>
+                                    if (Model.DeliveredAt.HasValue)
+                                    {
+                                        <div class="text-success small mt-1">
+                                            <i class="bi bi-check2 me-1"></i>Delivered: @Model.DeliveredAt.Value.ToString("dd MMM yyyy, HH:mm")
+                                        </div>
+                                    }
                                 }
                                 else
                                 {
@@ -216,15 +258,15 @@
                                         </td>
                                         <td class="text-center">
                                             <span class="fw-semibold">
-                                                @item.Price.ToString("N0") <span class="currency">&#8363;</span>
-                                                                                    </span>
+                                                @item.Price.ToString("N0") <span class="currency">d</span>
+                                            </span>
                                         </td>
                                         <td class="text-center">
-                                            <span class="badge bg-primary rounded-pill px-3 py-2">×@item.Quantity</span>
+                                            <span class="badge bg-primary rounded-pill px-3 py-2">x@item.Quantity</span>
                                         </td>
                                         <td class="text-end pe-4">
                                             <strong class="text-success fs-6">
-                                                @item.Subtotal.ToString("N0") <span class="currency">&#8363;</span>
+                                                @item.Subtotal.ToString("N0") <span class="currency">d</span>
                                             </strong>
                                         </td>
                                     </tr>
@@ -237,7 +279,7 @@
                                     </td>
                                     <td class="text-end pe-4 py-3">
                                         <strong class="text-success fs-4">
-                                            @Model.TotalAmount.ToString("N0") <span class="currency">&#8363;</span>
+                                            @Model.TotalAmount.ToString("N0") <span class="currency">d</span>
                                         </strong>
                                     </td>
                                 </tr>
@@ -318,7 +360,7 @@
                                 <div class="payment-details">
                                     <div class="d-flex justify-content-between mb-2">
                                         <span class="text-muted">Amount:</span>
-                                        <strong class="text-success fs-6">@payment.Amount.ToString("N0") ₫</strong>
+                                        <strong class="text-success fs-6">@payment.Amount.ToString("N0") d</strong>
                                     </div>
                                     
                                     @if (!string.IsNullOrEmpty(payment.TransactionId))
@@ -380,3 +422,65 @@
         </div>
     </div>
 </div>
+
+<!-- Confirm Received Modal -->
+<div class="modal fade" id="confirmReceivedModal" tabindex="-1" aria-labelledby="confirmReceivedModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-success text-white border-0">
+                <h5 class="modal-title fw-bold" id="confirmReceivedModalLabel">
+                    <i class="bi bi-check-circle me-2"></i>Confirm Order Received
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div class="text-center mb-4">
+                    <i class="bi bi-box-seam text-success" style="font-size: 4rem;"></i>
+                </div>
+                <h6 class="fw-bold mb-3 text-center">Have you received your order in good condition?</h6>
+                <p class="text-muted text-center mb-4">
+                    By confirming, you acknowledge that your order <strong>@Model.OrderCode</strong> 
+                    has been delivered successfully and you are satisfied with the products.
+                </p>
+                <div class="alert alert-info border-0 shadow-sm">
+                    <div class="d-flex align-items-start">
+                        <i class="bi bi-info-circle me-3 fs-4"></i>
+                        <div>
+                            <strong class="d-block mb-1">Please Note:</strong>
+                            <small>Once confirmed, this order will be marked as <strong>Completed</strong> and cannot be cancelled.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-light">
+                <button type="button" class="btn btn-outline-secondary px-4" data-bs-dismiss="modal">
+                    <i class="bi bi-x me-2"></i>Not Yet
+                </button>
+                @using (Html.BeginForm("ConfirmReceived", "Order", new { id = Model.OrderId }, FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-success px-4">
+                        <i class="bi bi-check2-circle me-2"></i>Yes, I Received It
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Auto show delivery notification modal if needed (optional)
+        @if (Model.ShowDeliveryNotification && Model.Status != "Completed")
+        {
+            <text>
+            $(document).ready(function() {
+                // Optional: Auto-show modal after 2 seconds
+                // setTimeout(function() {
+                //     $('#confirmReceivedModal').modal('show');
+                // }, 2000);
+            });
+            </text>
+        }
+    </script>
+}

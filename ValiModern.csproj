@@ -148,10 +148,13 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
+    <Compile Include="Controllers\ShipperController.cs" />
     <Compile Include="Filters\AuthorizeAdminAttribute.cs" />
+    <Compile Include="Filters\AuthorizeShipperAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\CacheHelper.cs" />
     <Compile Include="Helpers\PayPalClient.cs" />
     <Compile Include="Helpers\VnPayLibrary.cs" />
     <Compile Include="Models\EF\Banner.cs">
@@ -209,6 +212,7 @@
     <Compile Include="Models\ViewModels\CategoryViewModels.cs" />
     <Compile Include="Models\ViewModels\DashboardVM.cs" />
     <Compile Include="Models\ViewModels\HomeViewModels.cs" />
+    <Compile Include="Models\ViewModels\ShipperViewModels.cs" />
     <Compile Include="Models\ViewModels\UserOrderViewModels.cs" />
     <Compile Include="Models\ViewModels\VnPayResponseModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -235,7 +239,9 @@
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\Cart.css" />
     <Content Include="Content\Category.css" />
+    <Content Include="Content\Checkout.css" />
     <Content Include="Content\Contact.css" />
+    <Content Include="Content\customer-design-system.css" />
     <Content Include="Content\Home.css" />
     <Content Include="Content\Layout.css" />
     <Content Include="Content\OrderDetails.css" />
@@ -243,7 +249,11 @@
     <Content Include="Content\Product.css" />
     <Content Include="Content\ProductDetails.css" />
     <Content Include="Database\add_paypal_payment_method.sql" />
+    <Content Include="Database\add_product_sold_constraints.sql" />
+    <Content Include="Database\add_shipper_role.sql" />
+    <Content Include="Database\reset_product_sold_from_orders.sql" />
     <Content Include="Database\sample_category_data.sql" />
+    <Content Include="Database\sp_RecalculateProductSold.sql" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -300,9 +310,14 @@
     <Content Include="Areas\Admin\Views\Brand\Edit.cshtml" />
     <Content Include="Areas\Admin\Views\Order\Index.cshtml" />
     <Content Include="Areas\Admin\Views\Order\Details.cshtml" />
-    <Content Include="CATEGORY_FEATURE_GUIDE.md" />
-    <Content Include="CATEGORY_IMPLEMENTATION.md" />
-    <Content Include="MY_ORDERS_FEATURE_GUIDE.md" />
+    <Content Include="DOCS_SHIPPER_FEATURE.md" />
+    <Content Include="DOCS_FIX_NAVIGATION_PROPERTY.md" />
+    <Content Include="DOCS_FIX_DISPLAY_ERRORS.md" />
+    <Content Include="DOCS_SHIPPER_LAYOUT_AND_NOTIFICATION.md" />
+    <Content Include="DOCS_NO_FAKE_SOLD_DATA.md" />
+    <Content Include="DOCS_PERFORMANCE_OPTIMIZATION.md" />
+    <Content Include="DOCS_CUSTOMER_DESIGN_SYSTEM.md" />
+    <Content Include="DOCS_FIX_PARSER_ERROR_GLOBAL_ASAX.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\category-products.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
@@ -326,7 +341,7 @@
     <Content Include="Uploads\products\simplecarry-issac-2-s-navy-2-638984845321575110.jpg" />
     <Content Include="Uploads\products\vali-larita-rena-ah0624-20-s-green-15676-01750838850-638984862049741157.jpg" />
     <Content Include="Uploads\products\vali-larita-rena-ah0624-20-s-green-15676-11750838850-638984862322746670.jpg" />
-    <Content Include="ValiModernDB_Full.sql" />
+    <Content Include="Database\ValiModernDB_Full.sql" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -353,6 +368,17 @@
     <Content Include="Views\Category\Products.cshtml" />
     <Content Include="Views\Order\Index.cshtml" />
     <Content Include="Views\Order\Details.cshtml" />
+    <Content Include="Views\Shipper\Index.cshtml" />
+    <Content Include="Views\Shipper\Details.cshtml" />
+    <Content Include="Views\Shared\Unauthorized.cshtml" />
+    <Content Include="SUMMARY_SHIPPER_IMPLEMENTATION.md" />
+    <Content Include="Views\Shared\_ShipperLayout.cshtml" />
+    <Content Include="SUMMARY_CUSTOMER_DESIGN_SYSTEM.md" />
+    <Content Include="SUMMARY_DESIGN_CONSISTENCY_FIX.md" />
+    <Content Include="Views\Account\Index.cshtml" />
+    <Content Include="Views\Account\ChangePassword.cshtml" />
+    <Content Include="SUMMARY_PROFILE_VIEW_AND_ICON_SPACING.md" />
+    <Content Include="SUMMARY_ICON_CONSISTENCY_FIX.md" />
     <None Include="Web.config.AWS_BACKUP" />
     <None Include="Web.config.Debug.AWS_BACKUP">
       <DependentUpon>Web.config.AWS_BACKUP</DependentUpon>

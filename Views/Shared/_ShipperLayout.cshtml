@@ -1,0 +1,300 @@
+@using System.Security.Claims
+@using ValiModern.Models.EF
+@{
+    Layout = null;
+
+    // Get current shipper info
+    string shipperEmail = null;
+    string shipperName = null;
+    int shipperId = 0;
+    bool isAuthenticated = (User != null && User.Identity != null && User.Identity.IsAuthenticated);
+
+    if (isAuthenticated)
+    {
+        var claimsPrincipal = User as ClaimsPrincipal;
+        if (claimsPrincipal != null)
+        {
+            var emailClaim = claimsPrincipal.FindFirst(ClaimTypes.Email);
+            if (emailClaim != null)
+            {
+                shipperEmail = emailClaim.Value;
+            }
+
+            var nameClaim = claimsPrincipal.FindFirst(ClaimTypes.Name);
+            if (nameClaim != null)
+            {
+                shipperName = nameClaim.Value;
+            }
+
+            var idClaim = claimsPrincipal.FindFirst(ClaimTypes.NameIdentifier);
+            if (idClaim != null)
+            {
+                int.TryParse(idClaim.Value, out shipperId);
+            }
+        }
+    }
+
+    // Count pending deliveries
+    int pendingDeliveries = 0;
+    try
+    {
+        using (var db = new ValiModernDBEntities())
+        {
+            pendingDeliveries = db.Orders
+                .Count(o => o.shipper_id == shipperId && o.status == "Shipped" && o.delivered_at == null);
+        }
+    }
+    catch { }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - ValiModern Shipper</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css">
+
+    <!-- App CSS -->
+    <link href="~/Content/site.css" rel="stylesheet" />
+    
+    <style>
+        :root {
+            --shipper-primary: #10b981;
+            --shipper-dark: #059669;
+            --shipper-light: #d1fae5;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+
+        .shipper-navbar {
+            background: linear-gradient(135deg, var(--shipper-primary) 0%, var(--shipper-dark) 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 0.75rem 0;
+        }
+
+        .shipper-navbar .navbar-brand {
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: white !important;
+        }
+
+        .shipper-navbar .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            font-weight: 500;
+            padding: 0.5rem 1rem !important;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+
+        .shipper-navbar .nav-link:hover,
+        .shipper-navbar .nav-link.active {
+            background-color: rgba(255,255,255,0.15);
+            color: white !important;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #ef4444;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 0.15rem 0.4rem;
+            border-radius: 10px;
+            animation: pulse 2s infinite;
+        }
+
+        @@keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: white;
+            color: var(--shipper-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .user-avatar-large {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--shipper-light);
+            color: var(--shipper-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .user-dropdown {
+            min-width: 280px;
+            border: none;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .site-container {
+            min-height: calc(100vh - 200px);
+            padding: 2rem 0;
+        }
+
+        .footer {
+            background-color: #1e293b;
+            color: white;
+            padding: 1.5rem 0;
+            margin-top: 3rem;
+        }
+    </style>
+
+    @RenderSection("Styles", required: false)
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg shipper-navbar">
+        <div class="container">
+            <a href="@Url.Action("Index", "Shipper")" class="navbar-brand">
+                <i class="bi bi-truck me-2"></i>ValiModern Delivery
+            </a>
+            
+            <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#shipperNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="shipperNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "Shipper")" class="nav-link @(ViewContext.RouteData.Values["action"].ToString() == "Index" ? "active" : "")">
+                            <i class="bi bi-grid-3x3-gap me-1"></i>Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item position-relative">
+                        <a href="@Url.Action("Index", "Shipper", new { filter = "assigned" })" class="nav-link">
+                            <i class="bi bi-box-seam me-1"></i>Pending Deliveries
+                            @if (pendingDeliveries > 0)
+                            {
+                                <span class="notification-badge">@pendingDeliveries</span>
+                            }
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "Shipper", new { filter = "delivered" })" class="nav-link">
+                            <i class="bi bi-check-circle me-1"></i>Completed
+                        </a>
+                    </li>
+                </ul>
+
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="shipperMenu" role="button"
+                           data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="user-avatar me-2">
+                                @(!string.IsNullOrEmpty(shipperName) ? shipperName.Substring(0,1).ToUpper() : "S")
+                            </div>
+                            <span class="d-none d-lg-inline">@(shipperName ?? shipperEmail)</span>
+                        </a>
+
+                        <ul class="dropdown-menu dropdown-menu-end user-dropdown" aria-labelledby="shipperMenu">
+                            <li class="px-3 py-2 border-bottom">
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar-large me-3">
+                                        @(!string.IsNullOrEmpty(shipperName) ? shipperName.Substring(0,1).ToUpper() : "S")
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">@(shipperName ?? shipperEmail)</div>
+                                        <small class="text-muted">
+                                            <i class="bi bi-person-badge me-1"></i>Member
+                                        </small>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li>
+                                <a href="@Url.Action("Index", "Account")" class="dropdown-item">
+                                    <i class="bi bi-person-circle me-2"></i>Profile
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="@Url.Action("Index", "Shipper")" class="dropdown-item">
+                                    <i class="bi bi-bag-check me-2"></i>My Orders
+                                </a>
+                            </li>
+
+                            <li><hr class="dropdown-divider my-1" /></li>
+
+                            <li>
+                                @using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { @class = "m-0" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="dropdown-item text-danger">
+                                        <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                    </button>
+                                }
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container site-container">
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
+        @RenderBody()
+    </div>
+
+    <footer class="footer text-center">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-md-start">
+                    <p class="mb-0">&copy; @DateTime.Now.Year ValiModern Delivery System.</p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <small>Shipper Portal v1.0</small>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    @RenderSection("scripts", required: false)
+</body>
+</html>

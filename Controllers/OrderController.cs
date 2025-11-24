@@ -95,6 +95,7 @@ namespace ValiModern.Controllers
                 .Include(o => o.Order_Details.Select(od => od.Color))
                 .Include(o => o.Order_Details.Select(od => od.Size))
                 .Include(o => o.Payments)
+                .Include(o => o.User1) // User1 = Shipper
                 .FirstOrDefault(o => o.id == id && o.user_id == user.id);
 
             if (order == null)
@@ -114,6 +115,9 @@ namespace ValiModern.Controllers
                 ShippingAddress = order.shipping_address,
                 CreatedAt = order.created_at,
                 UpdatedAt = order.updated_at,
+                DeliveredAt = order.delivered_at,
+                DeliveryNote = order.delivery_note,
+                ShipperName = order.User1?.username, // User1 = Shipper
                 Items = order.Order_Details.Select(od => new UserOrderItemDetailVM
                 {
                     ProductId = od.product_id,
@@ -196,6 +200,45 @@ namespace ValiModern.Controllers
             _db.SaveChanges();
 
             TempData["Success"] = "Order cancelled successfully. Stock has been restored.";
+            return RedirectToAction("Details", new { id = id });
+        }
+
+        // POST: Order/ConfirmReceived/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ConfirmReceived(int id)
+        {
+            var email = User.Identity.Name;
+            var user = _db.Users.FirstOrDefault(u => u.email == email);
+
+            if (user == null)
+            {
+                TempData["Error"] = "User not found.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var order = _db.Orders.FirstOrDefault(o => o.id == id && o.user_id == user.id);
+
+            if (order == null)
+            {
+                TempData["Error"] = "Order not found or you don't have permission to access it.";
+                return RedirectToAction("Index");
+            }
+
+            // Only allow confirmation if order is Shipped and has been delivered by shipper
+            if (order.status != "Shipped" || !order.delivered_at.HasValue)
+            {
+                TempData["Error"] = "Order cannot be confirmed. It must be in Shipped status and delivered by shipper.";
+                return RedirectToAction("Details", new { id = id });
+            }
+
+            // Update order status to Completed
+            order.status = "Completed";
+            order.updated_at = DateTime.Now;
+
+            _db.SaveChanges();
+
+            TempData["Success"] = "Thank you! Order has been confirmed as received successfully.";
             return RedirectToAction("Details", new { id = id });
         }
 

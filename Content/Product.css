@@ -1,15 +1,15 @@
-/* Product Shop Page Styles */
+﻿/* Product Shop Page Styles - Using Design System */
 
-/* Hero Banner */
+/* Hero Banner - Sử dụng primary color thay vì purple */
 .shop-hero {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--primary-gradient, linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%));
     color: white;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow-md, 0 4px 6px rgba(0,0,0,0.1));
 }
 
-/* Filters Sidebar */
+/* Filters Sidebar - Sử dụng primary color */
 .filters-sidebar .card-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    background: var(--primary-gradient, linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%)) !important;
 }
 
 .filter-options {
@@ -22,17 +22,17 @@
 }
 
 .filter-options::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: var(--gray-100, #f1f1f1);
     border-radius: 10px;
 }
 
 .filter-options::-webkit-scrollbar-thumb {
-    background: #888;
+    background: var(--gray-500, #888);
     border-radius: 10px;
 }
 
 .filter-options::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: var(--gray-700, #555);
 }
 
 .color-swatch {
@@ -40,22 +40,22 @@
     width: 20px;
     height: 20px;
     border-radius: 50%;
-    border: 2px solid #ddd;
+    border: 2px solid var(--gray-300, #ddd);
     flex-shrink: 0;
 }
 
 .filter-list .list-group-item {
     padding: 0.5rem 0.75rem;
-    transition: all 0.2s ease;
+    transition: all var(--transition-fast, 0.2s ease);
 }
 
 .filter-list .list-group-item:hover {
-    background-color: #f8f9fa;
+    background-color: var(--gray-100, #f8f9fa);
     padding-left: 1rem;
 }
 
 .filter-list .list-group-item.active {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--primary-gradient, linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%));
     color: white;
     border-left: 3px solid #fff;
     font-weight: 600;
@@ -63,13 +63,15 @@
 
 /* Product Card */
 .product-card {
-    transition: all 0.3s ease;
+    transition: all var(--transition-base, 0.3s ease);
     overflow: hidden;
+    border-radius: var(--radius-lg, 14px);
 }
 
 .product-card:hover {
- transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.15) !important;
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg, 0 12px 30px rgba(0,0,0,0.15)) !important;
+    border-color: var(--primary, #0d6efd);
 }
 
 .product-image-wrapper {
@@ -77,7 +79,7 @@
     width: 100%;
     padding-top: 100%; /* 1:1 Aspect Ratio */
     overflow: hidden;
-    background: #f8f9fa;
+    background: var(--gray-50, #f8f9fa);
 }
 
 .product-image {
@@ -86,9 +88,9 @@
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain; /* Changed from cover to contain to prevent cropping */
-    padding: 10px; /* Add padding around image */
-    transition: transform 0.3s ease;
+    object-fit: contain;
+    padding: 10px;
+    transition: transform var(--transition-base, 0.3s ease);
 }
 
 .product-card:hover .product-image {
@@ -103,7 +105,7 @@
 }
 
 .discount-badge span {
- background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
     color: white;
     padding: 6px 12px;
     border-radius: 20px;
@@ -114,7 +116,7 @@
 
 .product-title {
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary, #333);
     height: 2.4em;
     overflow: hidden;
     display: -webkit-box;
@@ -133,48 +135,122 @@
 }
 
 .original-price {
-    color: #999;
+    color: var(--text-muted, #999);
     text-decoration: line-through;
     font-size: 0.9rem;
 }
 
 .current-price {
-    color: #dc3545;
+    color: var(--danger, #dc3545);
     font-size: 1.25rem;
     font-weight: bold;
 }
 
+/* FIX: Button View Details - Căn giữa icon và text */
+.product-card .btn-primary {
+    background: var(--primary-gradient, linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%));
+    border: none;
+    transition: all var(--transition-base, 0.3s ease);
+    /* Căn giữa icon và text */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.product-card .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary, 0 6px 18px rgba(13, 110, 253, 0.25));
+    background: linear-gradient(135deg, #0b5ed7 0%, #3283e8 100%);
+}
+
+.product-card .btn-primary i {
+    font-size: 1rem;
+    line-height: 1;
+}
+
 /* Products Header */
 .products-header {
-    border-left: 4px solid #667eea;
+    border-left: 4px solid var(--primary, #0d6efd);
 }
 
 /* Empty State */
 .empty-state i {
-    color: #dee2e6;
+    color: var(--gray-300, #dee2e6);
 }
 
-/* Pagination */
+/* =========================================
+   MODERN PAGINATION STYLES
+   ========================================= */
+
 .pagination {
-    margin-top: 2rem;
+    margin-top: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px; /* Khoảng cách giữa các nút */
 }
 
-.pagination .page-link {
-    color: #667eea;
-    border: 1px solid #dee2e6;
-    padding: 0.5rem 0.75rem;
-    transition: all 0.2s ease;
-}
+    .pagination .page-item {
+        display: flex;
+    }
 
-.pagination .page-link:hover {
-    background-color: #667eea;
-    color: white;
-    border-color: #667eea;
-}
+    .pagination .page-link {
+        width: 44px; /* Kích thước vuông vức */
+        height: 44px;
+        padding: 0 !important; /* Reset padding mặc định của bootstrap */
+        /* Flexbox căn giữa tuyệt đối icon/số */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* Font style */
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--gray-600, #495057);
+        background: #fff;
+        /* Loại bỏ border cứng, dùng shadow mềm */
+        border: none;
+        border-radius: 12px !important; /* Bo góc mềm mại */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Hiệu ứng nảy đàn hồi */
+    }
 
-.pagination .page-item.active .page-link {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
- border-color: #667eea;
+        /* Xử lý riêng cho ICON để nó nằm chính giữa */
+        .pagination .page-link i {
+            font-size: 1.4rem; /* Icon to hơn số một chút để cân đối */
+            line-height: 1; /* Triệt tiêu line-height thừa */
+            display: flex; /* Đảm bảo icon là flex container */
+        }
+
+        /* Hover State */
+        .pagination .page-link:hover:not(.disabled) {
+            color: var(--primary, #0d6efd);
+            background: #fff;
+            transform: translateY(-4px); /* Nảy lên */
+            box-shadow: 0 8px 24px rgba(13, 110, 253, 0.15);
+        }
+
+    /* Active State */
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%); /* Gradient xanh */
+        color: #fff;
+        box-shadow: 0 8px 20px -4px rgba(13, 110, 253, 0.4); /* Bóng đổ phát sáng */
+        transform: translateY(-2px);
+        z-index: 1;
+    }
+
+/* Responsive mobile */
+@media (max-width: 576px) {
+    .pagination {
+        gap: 5px;
+    }
+
+        .pagination .page-link {
+            width: 38px;
+            height: 38px;
+            font-size: 0.9rem;
+        }
 }
 
 /* Responsive */
@@ -187,25 +263,25 @@
         font-size: 2rem;
     }
 
-  .filters-sidebar .card {
+    .filters-sidebar .card {
         position: static !important;
     }
 }
 
 @media (max-width: 767px) {
     .product-image-wrapper {
-     padding-top: 75%; /* Make images slightly shorter on mobile */
+        padding-top: 100%;
     }
 
     .products-header {
         flex-direction: column;
         gap: 1rem;
-  align-items: flex-start !important;
+        align-items: flex-start !important;
     }
 
     .products-header .dropdown {
         width: 100%;
- }
+    }
 
     .products-header .dropdown button {
         width: 100%;

@@ -115,6 +115,76 @@
             </div>
         </div>
 
+        <!-- ===== SHIPPER INFORMATION ===== -->
+        @if (Model.Status == "Confirmed" || Model.Status == "Shipped" || ViewBag.CurrentShipperId != null)
+        {
+            <div class="col-12">
+                <div class="card border-primary">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0"><i class="bi bi-truck me-2"></i>Shipper Information</h6>
+                    </div>
+                    <div class="card-body">
+                        @if (ViewBag.CurrentShipperId != null)
+                        {
+                            <!-- Đã có shipper được gán -->
+                            <div class="alert alert-info mb-3">
+                                <strong><i class="bi bi-person-badge me-2"></i>Shipper:</strong> @ViewBag.CurrentShipperName<br />
+                                <strong><i class="bi bi-calendar-check me-2"></i>Assigned At:</strong> @(ViewBag.AssignedAt != null ? ((DateTime)ViewBag.AssignedAt).ToString("dd/MM/yyyy HH:mm") : "N/A")
+                                @if (ViewBag.DeliveredAt != null)
+                                {
+                                    <br />
+                                    <strong><i class="bi bi-check-circle me-2"></i>Delivered At:</strong> @(((DateTime)ViewBag.DeliveredAt).ToString("dd/MM/yyyy HH:mm"))
+                                    if (!string.IsNullOrEmpty(ViewBag.DeliveryNote))
+                                    {
+                                        <br />
+                                        <strong><i class="bi bi-sticky me-2"></i>Note:</strong> @ViewBag.DeliveryNote
+                                    }
+                                }
+                            </div>
+                            
+                            if (Model.Status == "Shipped" && ViewBag.DeliveredAt == null)
+                            {
+                                <form method="post" action="@Url.Action("UnassignShipper", new { id = Model.Id })" class="d-inline">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-warning btn-sm" onclick="return confirm('Bạn có chắc muốn hủy gán shipper này?')">
+                                        <i class="bi bi-x-circle me-1"></i>Unassign Shipper
+                                    </button>
+                                </form>
+                            }
+                        }
+                        else if (Model.Status == "Confirmed")
+                        {
+                            <!-- Chưa có shipper, hiển thị form để assign -->
+                            <form method="post" action="@Url.Action("AssignShipper", new { id = Model.Id })">
+                                @Html.AntiForgeryToken()
+                                <div class="row g-3 align-items-end">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Select Shipper</label>
+                                        <select name="shipperId" class="form-select" required>
+                                            <option value="">-- Choose a shipper --</option>
+                                            @if (ViewBag.Shippers != null)
+                                            {
+                                                foreach (var shipper in ViewBag.Shippers)
+                                                {
+                                                    <option value="@shipper.Value">@shipper.Text</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-person-plus"></i> Assign Shipper
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+        <!-- ===== END SHIPPER INFORMATION ===== -->
+
         <!-- Order Items -->
         <div class="col-12">
             <div class="card">

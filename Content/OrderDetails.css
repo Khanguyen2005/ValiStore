@@ -1,76 +1,104 @@
-﻿/* ========= Order Details - Refined Styles ========= */
-/* Replace your existing OrderDetails.css with this file */
-
-/* Variables for easy theming */
-:root {
-    --bg: #ffffff;
-    --muted: #6c757d;
-    --text: #212529;
-    --accent: #0d6efd; /* primary */
-    --success: #28a745;
-    --danger: #dc3545;
-    --card-radius: 12px;
-    --soft-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
-    --thin-line: #e9ecef;
-}
+﻿/* ========================================
+   ORDER DETAILS PAGE STYLES
+   Using Customer Design System
+   Primary Color: #0d6efd
+   ======================================== */
 
 /* Base */
 .container.my-5 {
     max-width: 1180px;
 }
 
-/* Card baseline */
+/* Card */
 .card {
-    border-radius: var(--card-radius);
-    background: var(--bg);
-    box-shadow: var(--soft-shadow);
-    border: 0;
+    border-radius: var(--radius-lg, 14px);
+    background: var(--white, #ffffff);
+    box-shadow: var(--shadow-md, 0 4px 12px rgba(0, 0, 0, 0.08));
+    border: 2px solid var(--gray-200, #e9ecef);
 }
 
-/* Card header */
 .card-header {
-    background: transparent;
-    border-bottom: 1px solid var(--thin-line);
+    background: var(--gray-50, #fafbfc);
+    border-bottom: 2px solid var(--gray-200, #e9ecef);
+    padding: 1.25rem 1.5rem;
 }
 
-/* Card body spacing */
 .card-body {
-    padding: 1.25rem !important;
+    padding: 1.5rem !important;
 }
 
 /* Header area */
 .order-details-header h2 {
-    color: var(--text);
+    color: var(--text-primary, #212529);
     letter-spacing: -0.2px;
     font-weight: 700;
 }
 
 .order-details-header .text-muted {
-    color: var(--muted);
+    color: var(--text-muted, #868e96);
     font-size: .95rem;
 }
 
 /* Buttons */
 .btn {
-    border-radius: 999px;
-    padding: .45rem .9rem;
-    transition: transform .18s ease, box-shadow .18s ease;
+    border-radius: var(--radius-pill, 999px);
+    padding: .55rem 1.1rem;
+    transition: transform var(--transition-fast, 0.15s ease), box-shadow var(--transition-fast, 0.15s ease);
+    font-weight: 600;
 }
 
-    .btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 22px rgba(13,110,253,0.12);
-    }
+.btn:hover {
+    transform: translateY(-3px);
+}
 
-/* Status badges - more compact and consistent */
+.btn-primary {
+    background: var(--primary-gradient, linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%));
+    border-color: transparent;
+    box-shadow: var(--shadow-primary, 0 6px 18px rgba(13, 110, 253, 0.15));
+}
+
+.btn-primary:hover {
+    box-shadow: 0 8px 22px rgba(13, 110, 253, 0.25);
+}
+
+.btn-outline-secondary {
+    border-width: 2px;
+}
+
+/* Status badges */
 .badge {
-    border-radius: 999px;
+    border-radius: var(--radius-pill, 999px);
     font-weight: 600;
-    padding: .45rem .9rem;
+    padding: .5rem 1rem;
     display: inline-flex;
     align-items: center;
-    gap: .45rem;
-    box-shadow: none;
+    gap: .5rem;
+    box-shadow: var(--shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.06));
+}
+
+.badge.bg-warning {
+    background: var(--warning, #ffc107) !important;
+    color: var(--gray-900, #212529) !important;
+}
+
+.badge.bg-info {
+    background: var(--info, #17a2b8) !important;
+    color: var(--white, #ffffff) !important;
+}
+
+.badge.bg-primary {
+    background: var(--primary, #0d6efd) !important;
+    color: var(--white, #ffffff) !important;
+}
+
+.badge.bg-success {
+    background: var(--success, #28a745) !important;
+    color: var(--white, #ffffff) !important;
+}
+
+.badge.bg-danger {
+    background: var(--danger, #dc3545) !important;
+    color: var(--white, #ffffff) !important;
 }
 
 /* Timeline */
@@ -86,17 +114,17 @@
     position: relative;
     margin-bottom: 28px;
     opacity: .45;
-    transition: opacity .25s ease, transform .25s ease;
+    transition: opacity var(--transition-base, 0.25s ease), transform var(--transition-base, 0.25s ease);
 }
 
-    .timeline-step.completed {
-        opacity: 1;
-        transform: none;
-    }
+.timeline-step.completed {
+    opacity: 1;
+    transform: none;
+}
 
-    .timeline-step:last-child {
-        margin-bottom: 0;
-    }
+.timeline-step:last-child {
+    margin-bottom: 0;
+}
 
 /* Vertical line */
 .order-timeline::before {
@@ -106,12 +134,9 @@
     top: 18px;
     bottom: 10px;
     width: 3px;
-    background: linear-gradient(#f1f3f5, #f1f3f5);
+    background: var(--gray-200, #e9ecef);
     border-radius: 2px;
     z-index: 0;
-}
-
-.timeline-step.completed ~ .timeline-step::before {
 }
 
 /* Icon */
@@ -119,24 +144,24 @@
     width: 46px;
     height: 46px;
     border-radius: 50%;
-    background: #fff;
+    background: var(--white, #ffffff);
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 3px solid var(--thin-line);
-    color: var(--muted);
+    border: 3px solid var(--gray-300, #dee2e6);
+    color: var(--text-muted, #868e96);
     font-size: 18px;
     flex-shrink: 0;
     z-index: 1;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
-    transition: all .22s ease;
+    box-shadow: var(--shadow-sm, 0 6px 18px rgba(0, 0, 0, 0.04));
+    transition: all var(--transition-base, 0.22s ease);
 }
 
 .timeline-step.completed .timeline-icon {
-    border-color: var(--accent);
-    background: rgba(13,110,253,0.06);
-    color: var(--accent);
-    box-shadow: 0 10px 26px rgba(13,110,253,0.08);
+    border-color: var(--primary, #0d6efd);
+    background: var(--primary-light, #e7f1ff);
+    color: var(--primary, #0d6efd);
+    box-shadow: var(--shadow-primary, 0 10px 26px rgba(13, 110, 253, 0.08));
 }
 
 /* Content */
@@ -146,13 +171,13 @@
 
 .timeline-title {
     font-weight: 700;
-    color: #343a40;
+    color: var(--text-primary, #212529);
     margin-bottom: 4px;
     font-size: 15px;
 }
 
 .timeline-date {
-    color: var(--muted);
+    color: var(--text-muted, #868e96);
     font-size: 13px;
 }
 
@@ -162,8 +187,8 @@
     height: 18px;
     border-radius: 50%;
     display: inline-block;
-    box-shadow: 0 0 0 1px #e9ecef;
-    border: 2px solid #fff;
+    box-shadow: 0 0 0 1px var(--gray-300, #dee2e6);
+    border: 2px solid var(--white, #ffffff);
 }
 
 /* Table adjustments */
@@ -174,123 +199,126 @@
     background: transparent;
 }
 
-    .table thead th {
-        background: #fafbfc;
-        border-bottom: 2px solid var(--thin-line);
-        font-weight: 700;
-        color: var(--muted);
-        font-size: 12px;
-        letter-spacing: .6px;
-        text-transform: uppercase;
-        padding: .9rem 1rem;
-    }
+.table thead th {
+    background: var(--gray-50, #fafbfc);
+    border-bottom: 2px solid var(--gray-300, #dee2e6);
+    font-weight: 700;
+    color: var(--text-secondary, #6c757d);
+    font-size: 12px;
+    letter-spacing: .6px;
+    text-transform: uppercase;
+    padding: .9rem 1rem;
+}
 
-    .table tbody td {
-        vertical-align: middle;
-        padding: .9rem 1rem;
-        border-top: 1px solid #f2f4f6;
-        background: #fff;
-    }
+.table tbody td {
+    vertical-align: middle;
+    padding: .9rem 1rem;
+    border-top: 1px solid var(--gray-200, #e9ecef);
+    background: var(--white, #ffffff);
+}
 
-    .table tbody tr:hover td {
-        background: #fbfcfe;
-    }
+.table tbody tr:hover td {
+    background: var(--gray-50, #fafbfc);
+}
 
-    /* Image cell */
-    .table tbody td.ps-4 img {
-        width: 72px;
-        height: 72px;
-        object-fit: cover;
-        border-radius: 8px;
-    }
+/* Image cell */
+.table tbody td.ps-4 img {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: var(--radius-md, 10px);
+    border: 2px solid var(--gray-200, #e9ecef);
+}
 
-    /* Product link */
-    .table tbody td a {
-        color: #222;
-        font-weight: 600;
-    }
+/* Product link */
+.table tbody td a {
+    color: var(--text-primary, #212529);
+    font-weight: 600;
+    transition: color var(--transition-fast, 0.15s ease);
+}
 
-        .table tbody td a:hover {
-            color: var(--accent);
-            text-decoration: none;
-        }
+.table tbody td a:hover {
+    color: var(--primary, #0d6efd);
+    text-decoration: none;
+}
 
 /* Price & Subtotal formatting */
 .text-success {
-    color: var(--success) !important;
+    color: var(--success, #28a745) !important;
 }
 
 .fs-6 {
     font-size: .95rem;
 }
 
-/* Align price to center/right */
-.table td.text-center {
-    text-align: center;
-}
-
-.table td.text-end {
-    text-align: right;
-}
-
 /* Qty badge */
 .badge.bg-primary {
-    background-color: var(--accent) !important;
-    color: #fff;
+    background-color: var(--primary, #0d6efd) !important;
+    color: var(--white, #ffffff);
     padding: .45rem .7rem;
-    border-radius: 999px;
+    border-radius: var(--radius-pill, 999px);
     font-weight: 700;
-    box-shadow: 0 6px 18px rgba(13,110,253,0.08);
+    box-shadow: var(--shadow-sm, 0 6px 18px rgba(13, 110, 253, 0.08));
 }
 
 /* Footer total row */
 tfoot tr td {
-    background: #fafbfd;
+    background: var(--gray-50, #fafbfc);
+    border-top: 2px solid var(--gray-300, #dee2e6);
+    padding: 1.25rem 1rem;
 }
 
 tfoot strong.fs-4 {
-    color: var(--success);
+    color: var(--success, #28a745);
     font-size: 1.55rem;
     letter-spacing: -0.5px;
+    font-weight: 800;
 }
 
 /* Payment card */
 .payment-item {
-    background: linear-gradient(180deg, #ffffff, #fbfdff);
-    border-radius: 10px;
+    background: var(--gray-50, #fafbfc);
+    border-radius: var(--radius-md, 10px);
     padding: 14px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.03);
+    box-shadow: var(--shadow-sm, 0 6px 18px rgba(0, 0, 0, 0.03));
+    border: 1px solid var(--gray-200, #e9ecef);
 }
 
 /* Payment method */
 .payment-method strong {
     font-weight: 700;
+    color: var(--text-primary, #212529);
 }
 
 /* Transaction code */
 code {
-    background: #f6f7fb;
+    background: var(--gray-100, #f8f9fa);
     padding: .25rem .45rem;
-    border-radius: 6px;
+    border-radius: var(--radius-sm, 6px);
     color: #e83e8c;
     font-size: 0.9rem;
+    font-family: 'Courier New', monospace;
 }
 
 /* Modal */
 #cancelOrderModal .modal-content {
-    border-radius: 14px;
+    border-radius: var(--radius-lg, 14px);
     overflow: hidden;
+    border: none;
+    box-shadow: var(--shadow-xl, 0 8px 24px rgba(0, 0, 0, 0.12));
 }
 
 #cancelOrderModal .modal-header {
-    border-radius: 14px 14px 0 0;
+    border-radius: var(--radius-lg, 14px) var(--radius-lg, 14px) 0 0;
+    background: var(--gray-50, #fafbfc);
+    border-bottom: 2px solid var(--gray-200, #e9ecef);
 }
 
 /* Info group */
 .info-group label {
     font-size: .78rem;
     font-weight: 700;
-    color: var(--muted);
+    color: var(--text-muted, #868e96);
     text-transform: uppercase;
     letter-spacing: .6px;
 }
@@ -298,7 +326,33 @@ code {
 .info-group .fw-bold {
     font-weight: 700;
     font-size: .98rem;
-    color: var(--text);
+    color: var(--text-primary, #212529);
+}
+
+/* Currency class alignment */
+.currency {
+    display: inline-block;
+    font-size: .92em;
+    line-height: 1;
+    transform: translateY(-0.08em);
+    margin-left: .4rem;
+    color: inherit;
+    vertical-align: middle;
+}
+
+/* Wrap number + currency to align nicely */
+.table td .fw-semibold,
+.table td .text-success,
+tfoot .text-success,
+.payment-details .text-success {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    line-height: 1;
+}
+
+tfoot .currency {
+    text-decoration: none;
 }
 
 /* Small screens: tidy up */
@@ -323,7 +377,7 @@ code {
     }
 }
 
-/* Mobile: make table horizontally scrollable instead of squashed */
+/* Mobile: make table horizontally scrollable */
 @media (max-width: 576px) {
     .container.my-5 {
         padding-left: .9rem;
@@ -351,17 +405,16 @@ code {
 
     .card {
         box-shadow: none !important;
-        border: 1px solid #e9ecef !important;
+        border: 1px solid var(--gray-300, #dee2e6) !important;
     }
 }
 
-/* subtle animations */
+/* Animations */
 @keyframes fadeInUp {
     from {
         opacity: 0;
         transform: translateY(8px);
     }
-
     to {
         opacity: 1;
         transform: none;
@@ -369,33 +422,5 @@ code {
 }
 
 .card {
-    animation: fadeInUp .28s ease both;
-}
-
-
-/* ===== Currency class alignment (RECOMMENDED) ===== */
-.currency {
-    display: inline-block;
-    font-size: .92em; /* nhỏ hơn số chính */
-    line-height: 1;
-    transform: translateY(-0.08em); /* nâng ký hiệu lên; chỉnh từ -0.06 đến -0.12 cho font bạn dùng */
-    margin-left: .4rem;
-    color: inherit;
-    vertical-align: middle;
-}
-
-/* Wrap number + currency to align nicely */
-.table td .fw-semibold,
-.table td .text-success,
-tfoot .text-success,
-.payment-details .text-success {
-    display: inline-flex;
-    align-items: center;
-    gap: .35rem;
-    line-height: 1;
-}
-
-/* Optionally reduce underline or code styling collision */
-tfoot .currency {
-    text-decoration: none;
+    animation: fadeInUp 0.28s ease both;
 }

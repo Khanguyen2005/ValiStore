@@ -1,0 +1,143 @@
+/* Checkout Page Styles - Using Design System */
+
+/* Card Headers */
+.checkout-page .card-header {
+    background: var(--gray-50, #fff);
+    border-bottom: 1px solid var(--gray-200, #e9ecef);
+    border-radius: var(--radius-lg, 14px) var(--radius-lg, 14px) 0 0;
+}
+
+.checkout-page .card-header.bg-primary {
+    background: var(--primary-gradient, linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%)) !important;
+    color: white;
+}
+
+/* Payment Method Radio Cards */
+.checkout-page .form-check {
+    transition: all var(--transition-fast, 0.2s);
+    cursor: pointer;
+}
+
+.checkout-page .form-check:hover {
+    border-color: var(--primary, #0d6efd) !important;
+    background-color: var(--primary-light, #f0f8ff);
+}
+
+.checkout-page .form-check-input:checked + .form-check-label {
+    background-color: var(--primary-light, #f0f8ff);
+    border-color: var(--primary, #0d6efd) !important;
+}
+
+.checkout-page .form-check-label {
+    cursor: pointer;
+}
+
+/* Order Items Scrollbar */
+.order-items {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.order-items::-webkit-scrollbar {
+    width: 6px;
+}
+
+.order-items::-webkit-scrollbar-track {
+    background: var(--gray-100, #f1f1f1);
+    border-radius: 10px;
+}
+
+.order-items::-webkit-scrollbar-thumb {
+    background: var(--gray-400, #ccc);
+    border-radius: 10px;
+}
+
+.order-items::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-500, #888);
+}
+
+/* Order Item Cards */
+.order-items .border-bottom {
+    border-bottom: 1px solid var(--gray-200, #e9ecef) !important;
+}
+
+.order-items img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: var(--radius-sm, 6px);
+}
+
+/* Buttons - FIX: ??ng b? v?i design system và c?n gi?a icon */
+.checkout-page .btn-primary {
+    background: var(--primary-gradient, linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%));
+    border: none;
+    /* C?n gi?a icon và text */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all var(--transition-base, 0.3s ease);
+}
+
+.checkout-page .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-primary, 0 6px 18px rgba(13, 110, 253, 0.25));
+    background: linear-gradient(135deg, #0b5ed7 0%, #3283e8 100%);
+}
+
+.checkout-page .btn-primary i {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.checkout-page .btn-outline-secondary {
+    border: 2px solid var(--secondary, #6c757d);
+    /* C?n gi?a icon và text */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+}
+
+.checkout-page .btn-outline-secondary:hover {
+    background: var(--secondary, #6c757d);
+    color: white;
+}
+
+/* Form Controls */
+.checkout-page .form-control {
+    border: 2px solid var(--gray-300, #dee2e6);
+    border-radius: var(--radius-md, 10px);
+    transition: all var(--transition-fast, 0.15s);
+}
+
+.checkout-page .form-control:focus {
+    border-color: var(--primary, #0d6efd);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.checkout-page .form-label {
+    font-weight: 600;
+    color: var(--text-primary, #212529);
+    margin-bottom: 0.5rem;
+}
+
+/* Sticky Summary Card */
+.checkout-page .position-sticky {
+    top: 20px;
+}
+
+/* Responsive */
+@media (max-width: 991.98px) {
+    .checkout-page .position-sticky {
+        position: relative !important;
+        top: 0 !important;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .order-items {
+        max-height: 200px;
+    }
+}

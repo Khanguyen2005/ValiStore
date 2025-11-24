@@ -1,11 +1,13 @@
 ﻿@using System.Security.Claims
 @using ValiModern.Models.ViewModels
 @using ValiModern.Models.EF
+@using ValiModern.Helpers
 @{
     Layout = null;
 
-    // tránh dùng ?. và ?? để tương thích với compiler cũ
+    // Check user role
     bool isAdmin = (User != null && User.IsInRole("admin"));
+    bool isShipper = false;
     string displayName = null;
     bool isAuthenticated = (User != null && User.Identity != null && User.Identity.IsAuthenticated);
 
@@ -21,14 +23,24 @@
     }
     catch { }
 
+    // Get display name and check role
     try
     {
         if (Session != null && Session["DisplayName"] != null)
         {
             displayName = Session["DisplayName"].ToString();
         }
+        
+        if (Session != null && Session["UserRole"] != null)
+        {
+            var userRole = Session["UserRole"].ToString();
+            isShipper = userRole == "shipper";
+        }
     }
-    catch { }
+    catch (Exception ex)
+    {
+        System.Diagnostics.Debug.WriteLine("[DEBUG] Error getting role: " + ex.Message);
+    }
 
     if (string.IsNullOrWhiteSpace(displayName) && isAuthenticated)
     {
@@ -45,14 +57,20 @@
         displayName = identityName;
     }
 
-    // Get categories for menu
+    // Get categories for menu - USE CACHE to avoid DB query on every request
     List<Category> categories = new List<Category>();
     try
     {
-        using (var db = new ValiModernDBEntities())
-        {
-            categories = db.Categories.OrderBy(c => c.name).ToList();
-        }
+        categories = CacheHelper.GetOrSet(
+            CacheHelper.KEY_LAYOUT_CATEGORIES,
+            () => {
+                using (var db = new ValiModernDBEntities())
+                {
+                    return db.Categories.OrderBy(c => c.name).ToList();
+                }
+            },
+            5 // Cache for 5 minutes
+        ) ?? new List<Category>();
     }
     catch { }
 }
@@ -65,15 +83,15 @@
     <title>@ViewBag.Title - ValiModern</title>
 
     <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 
-    <!-- App CSS -->
-    <link href="~/Content/site.css" rel="stylesheet" />
+    <!-- Design System & Layout CSS -->
+    <link href="~/Content/customer-design-system.css" rel="stylesheet" />
     <link href="~/Content/Layout.css" rel="stylesheet" />
 
     @RenderSection("Styles", required: false)
@@ -89,8 +107,12 @@
 
             <div class="collapse navbar-collapse" id="mainNavbar">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">@Html.ActionLink("Home", "Index", "Home", null, new { @class = "nav-link" })</li>
-                    <li class="nav-item">@Html.ActionLink("Shop", "Index", "Product", null, new { @class = "nav-link" })</li>
+                    <li class="nav-item">
+                        @Html.ActionLink("Home", "Index", "Home", null, new { @class = "nav-link" })
+                    </li>
+                    <li class="nav-item">
+                        @Html.ActionLink("Shop", "Index", "Product", null, new { @class = "nav-link" })
+                    </li>
 
                     <!-- Categories Dropdown -->
                     <li class="nav-item dropdown">
@@ -100,7 +122,7 @@
                         <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
                             <li>
                                 <a class="dropdown-item" href="@Url.Action("Index", "Category")">
-                                    <i class="bi bi-list-ul me-2"></i>All Categories
+                                    <i class="bi bi-list-ul"></i>All Categories
                                 </a>
                             </li>
                             @if (categories.Any())
@@ -110,7 +132,7 @@
                                 {
                                     <li>
                                         <a class="dropdown-item" href="@Url.Action("Products", "Category", new { id = category.id })">
-                                            <i class="bi bi-tag me-2"></i>@category.name
+                                            <i class="bi bi-tag"></i>@category.name
                                         </a>
                                     </li>
                                 }
@@ -118,14 +140,16 @@
                         </ul>
                     </li>
 
-                    <li class="nav-item">@Html.ActionLink("Contact", "Contact", "Home", null, new { @class = "nav-link" })</li>
+                    <li class="nav-item">
+                        @Html.ActionLink("Contact", "Contact", "Home", null, new { @class = "nav-link" })
+                    </li>
                 </ul>
 
                 <ul class="navbar-nav ms-auto align-items-center gap-2">
                     <!-- Cart with enhanced design -->
-                    <li class="nav-item">
-                        <a href="@Url.Action("Index", "Cart")" class="nav-link position-relative cart-icon-wrapper" title="Shopping Cart">
-                            <i class="bi bi-cart3 fs-5"></i>
+                    <li class="nav-item d-flex align-items-center">
+                        <a href="@Url.Action("Index", "Cart")" class="position-relative cart-icon-wrapper" title="Shopping Cart">
+                            <i class="bi bi-cart3"></i>
                             @if (cartCount > 0)
                             {
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge-pulse">
@@ -169,8 +193,19 @@
                                         <div>
                                             <div class="fw-semibold">@displayName</div>
                                             <small class="text-muted">
-                                                <i class="bi bi-@((isAdmin) ? "shield-check" : "person") me-1"></i>
-                                                @((isAdmin) ? "Administrator" : "Member")
+                                                <i class="bi bi-@((isAdmin) ? "shield-check" : isShipper ? "truck" : "person") me-1"></i>
+                                                @if (isAdmin)
+                                                {
+                                                    <text>Administrator</text>
+                                                }
+                                                else if (isShipper)
+                                                {
+                                                    <text>Shipper</text>
+                                                }
+                                                else
+                                                {
+                                                    <text>Member</text>
+                                                }
                                             </small>
                                         </div>
                                     </div>
@@ -178,7 +213,7 @@
 
                                 <li>
                                     <a href="@Url.Action("Index", "Account")" class="dropdown-item">
-                                        <i class="bi bi-person-circle me-2"></i>Profile
+                                        <i class="bi bi-person-circle"></i>Profile
                                     </a>
                                 </li>
 
@@ -186,16 +221,27 @@
                                 {
                                     <li>
                                         <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" class="dropdown-item">
-                                            <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                                            <i class="bi bi-speedometer2"></i>Dashboard
                                         </a>
                                     </li>
                                 }
 
-                                <li>
-                                    <a href="@Url.Action("Index", "Order")" class="dropdown-item">
-                                        <i class="bi bi-bag-check me-2"></i>My Orders
-                                    </a>
-                                </li>
+                                @if (isShipper)
+                                {
+                                    <li>
+                                        <a href="@Url.Action("Index", "Shipper")" class="dropdown-item">
+                                            <i class="bi bi-truck"></i>My Deliveries
+                                        </a>
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li>
+                                        <a href="@Url.Action("Index", "Order")" class="dropdown-item">
+                                            <i class="bi bi-bag-check"></i>My Orders
+                                        </a>
+                                    </li>
+                                }
 
                                 <li><hr class="dropdown-divider my-1" /></li>
 
@@ -204,7 +250,7 @@
                                     {
                                         @Html.AntiForgeryToken()
                                         <button type="submit" class="dropdown-item text-danger">
-                                            <i class="bi bi-box-arrow-right me-2"></i>Logout
+                                            <i class="bi bi-box-arrow-right"></i>Logout
                                         </button>
                                     }
                                 </li>
@@ -220,21 +266,23 @@
         @if (TempData["Success"] != null)
         {
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i>@TempData["Success"]
+                <i class="bi bi-check-circle-fill"></i>
+                <div>@TempData["Success"]</div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         }
         @if (TempData["Error"] != null)
         {
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["Error"]
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                <div>@TempData["Error"]</div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         }
 
         @RenderBody()
 
-        <hr />
+        <hr class="my-4" />
         <footer class="footer text-center">
             <div class="container">
                 <div class="row align-items-center">
@@ -242,7 +290,7 @@
                         <p class="mb-0">&copy; @DateTime.Now.Year ValiModern. All rights reserved.</p>
                     </div>
                     <div class="col-md-6 text-md-end">
-                        <small>Made with <i class="bi bi-heart-fill text-danger"></i> — Bright, Fresh & Modern</small>
+                        <small>Made with <i class="bi bi-heart-fill text-danger"></i> by ValiModern Team</small>
                     </div>
                 </div>
             </div>

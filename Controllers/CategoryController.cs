@@ -13,6 +13,7 @@ namespace ValiModern.Controllers
         private readonly ValiModernDBEntities _db = new ValiModernDBEntities();
 
         // GET: Category
+        [OutputCache(Duration = 300, VaryByParam = "none")] // Cache 5 minutes
         public ActionResult Index()
         {
             var categories = _db.Categories
@@ -39,10 +40,9 @@ namespace ValiModern.Controllers
             }
 
             int pageSize = 12;
+            
+            // Start with base query - NO eager loading yet
             var products = _db.Products
-                .Include(p => p.Brand)
-                .Include(p => p.Colors)
-                .Include(p => p.Sizes)
                 .Where(p => p.is_active && p.category_id == id)
                 .AsQueryable();
 
@@ -114,30 +114,15 @@ namespace ValiModern.Controllers
             var totalProducts = products.Count();
             var totalPages = (int)Math.Ceiling(totalProducts / (double)pageSize);
 
+            // NOW apply eager loading only for the page we need
             var productList = products
+                .Include(p => p.Brand)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
 
-            // Build base query for available options (excluding color/size filters)
-            var baseFilteredProducts = _db.Products
-                .Include(p => p.Colors)
-                .Include(p => p.Sizes)
-                .Where(p => p.is_active && p.category_id == id)
-                .AsQueryable();
-
-            // Apply price filter to base query
-            if (minPrice.HasValue)
-            {
-                baseFilteredProducts = baseFilteredProducts.Where(p => p.price >= minPrice.Value);
-            }
-            if (maxPrice.HasValue)
-            {
-                baseFilteredProducts = baseFilteredProducts.Where(p => p.price <= maxPrice.Value);
-            }
-
-            // Get distinct product IDs from base filtered products
-            var baseProductIds = baseFilteredProducts.Select(p => p.id).Distinct().ToList();
+            // Get distinct product IDs for filter options - more efficient
+            var baseProductIds = products.Select(p => p.id).ToList();
 
             // Get all available colors for this category (count distinct products, not color records)
             var availableColors = _db.Colors

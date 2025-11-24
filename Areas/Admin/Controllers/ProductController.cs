@@ -93,7 +93,7 @@ namespace ValiModern.Areas.Admin.Controllers
                 original_price = vm.OriginalPrice,
                 price = vm.Price,
                 stock = vm.Stock,
-                sold = vm.Sold,
+                sold = 0,  // ? ALWAYS START FROM 0 - will be updated when orders are completed
                 category_id = vm.CategoryId,
                 brandId = vm.BrandId,
                 is_active = vm.IsActive,
@@ -178,7 +178,8 @@ namespace ValiModern.Areas.Admin.Controllers
             product.original_price = vm.OriginalPrice;
             product.price = vm.Price;
             product.stock = vm.Stock;
-            product.sold = vm.Sold;
+            // ? DON'T UPDATE SOLD - it's auto-calculated from completed orders
+            // product.sold is managed by CheckoutController and OrderController (cancel)
             product.category_id = vm.CategoryId;
             product.brandId = vm.BrandId;
             product.is_active = vm.IsActive;
