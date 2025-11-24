@@ -1,6 +1,6 @@
 ﻿/* ========================================
    LAYOUT - NAVBAR & GLOBAL STYLES
-   Uses Customer Design System Variables
+   Updated: Modern Spacing & Visual Hierarchy
    ======================================== */
 
 body {
@@ -9,138 +9,149 @@ body {
     color: #212529;
 }
 
-/* ===== Navbar - Primary Color Scheme ===== */
+/* ========================================
+   NAVBAR - MODERN STYLE
+   ======================================== */
 .navbar {
     background: linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%);
-    box-shadow: 0 4px 16px rgba(13, 110, 253, 0.2);
-    padding: 0.75rem 0;
-    border-bottom: 3px solid rgba(255, 255, 255, 0.2);
-    align-items: center; /* FIX: Đảm bảo các item được căn giữa theo chiều dọc */
+    padding: 0.85rem 0; /* Tăng chiều cao để thoáng hơn */
+    box-shadow: 0 4px 20px rgba(13, 110, 253, 0.25);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
 }
 
 .navbar-brand {
     font-weight: 800;
-    font-size: 1.65rem;
+    font-size: 1.75rem;
     color: #fff !important;
-    letter-spacing: 0.5px;
-    transition: transform 0.2s ease;
+    letter-spacing: -0.5px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
 }
 
-.navbar-brand:hover {
-    transform: scale(1.05);
-    color: #fff !important;
+    .navbar-brand:hover {
+        transform: scale(1.05);
+    }
+
+/* Nav Links - Pill Shape Hover Effect */
+.navbar .nav-link {
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.9) !important;
+    padding: 0.6rem 1.2rem !important; /* Vùng click rộng hơn */
+    border-radius: 50px; /* Bo tròn dạng viên thuốc */
+    transition: all 0.25s ease;
 }
 
-.nav-link {
-    font-weight: 600;
-    transition: all 0.2s ease;
-    padding: 0.5rem 1rem !important;
-    color: rgba(255, 255, 255, 0.95) !important;
-    border-radius: 8px;
-}
+    .navbar .nav-link i {
+        margin-right: 0.4rem;
+        font-size: 1.1em;
+        vertical-align: -2px;
+    }
 
-/* FIX: Icon spacing - Đồng nhất khoảng cách icon */
-/* Navbar Icons */
-.navbar .nav-link i {
-    margin-right: 0.5rem; /* Consistent spacing */
-}
+    .navbar .nav-link:hover {
+        color: #fff !important;
+        background: rgba(255, 255, 255, 0.15); /* Nền mờ khi hover */
+        transform: translateY(-1px);
+    }
 
-.nav-link:hover {
-    color: #fff !important;
-    background: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
-}
+    .navbar .nav-link.active {
+        background: rgba(255, 255, 255, 0.25);
+        color: #fff !important;
+        font-weight: 600;
+    }
 
-.nav-link.active {
-    background: rgba(255, 255, 255, 0.2);
-    color: #fff !important;
-}
-
-/* ===== Enhanced Cart Icon ===== */
-/* Tìm và thay thế đoạn .cart-icon-wrapper cũ bằng đoạn này */
-
+/* ========================================
+   CART ICON - ENHANCED
+   ======================================== */
 .cart-icon-wrapper {
     position: relative;
-    width: 42px;
-    height: 42px;
+    width: 44px; /* Tăng kích thước vùng click */
+    height: 44px;
     padding: 0 !important;
-    /* FIX 1: Dùng flex thay vì inline-flex để kiểm soát căn chỉnh tốt hơn */
+    /* Flexbox căn giữa tuyệt đối */
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.15);
-    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px; /* Bo góc vuông mềm (squircle) */
+    color: rgba(255, 255, 255, 0.95);
     transition: all 0.25s ease;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-    /* FIX 2: Bỏ margin-right ở đây vì bạn đã dùng gap-2 ở thẻ <ul> cha, tránh bị lệch khoảng cách ngang */
+    border: 1px solid rgba(255,255,255,0.1);
     margin-right: 0;
-    /* FIX 3: Reset line-height để không bị ảnh hưởng bởi class nav-link */
     line-height: 1;
-    color: rgba(255, 255, 255, 0.95); /* Đảm bảo màu icon đồng bộ */
 }
 
-    /* Thêm css để đảm bảo thẻ <a> không bị gạch chân hay đổi màu lạ */
+    .cart-icon-wrapper i {
+        font-size: 1.3rem;
+        line-height: 1;
+        margin: 0;
+    }
+
     .cart-icon-wrapper:hover {
-        background: rgba(255, 255, 255, 0.25);
+        background: #fff;
+        color: #0d6efd; /* Đổi màu icon sang xanh khi hover */
         transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0,0,0,0.12);
-        color: #fff; /* Màu khi hover */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
 .cart-badge-pulse {
-    top: -2px; /* FIX: Điều chỉnh vị trí badge */
-    right: -2px; /* FIX: Điều chỉnh vị trí badge */
-    transform: translate(0,0);
-    font-size: 11px;
+    top: -4px;
+    right: -4px;
     width: 20px;
     height: 20px;
+    font-size: 0.7rem;
     padding: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     border-radius: 50%;
-    border: 2px solid var(--primary);
+    border: 2px solid #3a8dff; /* Viền trùng màu nền navbar */
+    transform: translate(0,0);
 }
 
-/* ===== Enhanced User Avatar ===== */
-.user-avatar {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 1.1rem;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #fff;
-    border: 3px solid #fff;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    transition: all 0.3s ease;
-}
-
+/* ========================================
+   USER MENU - NEW PILL STYLE
+   ======================================== */
 .user-menu-trigger {
-    padding: 0.5rem 1rem !important;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    transition: all 0.3s ease;
-    color: rgba(255, 255, 255, 0.95) !important;
-}
-
-.user-menu-trigger:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    background: rgba(0, 0, 0, 0.15); /* Nền tối nhẹ */
+    border-radius: 50px; /* Bo tròn 2 đầu */
+    padding: 4px 12px 4px 4px !important; /* Padding lệch để chứa avatar */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.2s ease;
     color: #fff !important;
 }
 
-.user-menu-trigger:hover .user-avatar {
-    transform: scale(1.15) rotate(5deg);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
-    border-width: 4px;
-}
+    .user-menu-trigger:hover {
+        background: rgba(0, 0, 0, 0.25);
+        border-color: rgba(255, 255, 255, 0.3);
+        transform: translateY(0);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
 
+    /* User Avatar nhỏ trên thanh menu */
+    .user-menu-trigger .user-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.9rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+        border: 2px solid #fff;
+        box-shadow: none;
+        margin: 0;
+        transition: transform 0.3s ease;
+    }
+
+    .user-menu-trigger:hover .user-avatar {
+        transform: scale(1.05);
+    }
+
+/* User Avatar Lớn trong dropdown */
 .user-avatar-large {
     width: 56px;
     height: 56px;
@@ -155,84 +166,49 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
-/* ===== User Dropdown Menu ===== */
-.user-dropdown {
-    border-radius: 16px !important;
-    border: none !important;
-    min-width: 280px !important;
-    padding: 0 !important;
-    margin-top: 0.75rem !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
-}
-
-.user-dropdown .dropdown-item {
-    padding: 0.85rem 1.5rem;
-    transition: all 0.2s ease;
-    border-radius: 0;
-    font-weight: 500;
-    color: #212529;
-}
-
-/* User Menu Dropdown */
-.user-dropdown .dropdown-item i {
-    width: 20px;
-    margin-right: 0.75rem;
-    text-align: center;
-    font-size: 1rem;
-}
-
-.user-dropdown .dropdown-item:hover {
-    background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
-    padding-left: 2rem;
-    color: #0d6efd;
-}
-
-/* Badge spacing in user menu */
-.user-dropdown .dropdown-item small i {
-    margin-right: 0.35rem;
-}
-
-.user-dropdown .dropdown-item.text-danger:hover {
-    background: linear-gradient(90deg, #fff5f5 0%, #ffe5e5 100%);
-    color: #dc3545 !important;
-}
-
-/* ===== Categories Dropdown ===== */
+/* ========================================
+   DROPDOWNS (General & User)
+   ======================================== */
 .dropdown-menu {
     border-radius: 12px;
     border: none;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     padding: 0.5rem 0;
-    margin-top: 0.5rem;
+    margin-top: 10px !important; /* Tách rời navbar một chút */
+    animation: fadeInUp 0.2s ease-out;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .dropdown-item {
-    padding: 0.6rem 1.25rem;
+    padding: 0.7rem 1.25rem;
     transition: all 0.2s ease;
     color: #212529;
     font-weight: 500;
 }
 
-/* Category Dropdown Icons */
-.dropdown-menu .dropdown-item i.bi-tag,
-.dropdown-menu .dropdown-item i.bi-list-ul,
-.dropdown-menu .dropdown-item i.bi-grid {
-    width: 18px;
-    margin-right: 0.75rem;
-    display: inline-block;
-}
+    .dropdown-item:hover {
+        background: #f8f9fa;
+        color: #0d6efd;
+        padding-left: 1.5rem; /* Hiệu ứng trượt nhẹ */
+    }
 
-.dropdown-item:hover {
-    background: #f8f9fa;
-    color: #0d6efd;
-    padding-left: 1.75rem;
-}
-
-/* Dropdown Menu Icons */
+/* Icons alignment in dropdowns */
 .dropdown-menu .dropdown-item i {
-    width: 20px; /* Fixed width for alignment */
-    margin-right: 0.75rem; /* Consistent spacing */
+    width: 20px;
+    margin-right: 0.75rem;
     text-align: center;
+    display: inline-block;
 }
 
 .dropdown-divider {
@@ -240,21 +216,32 @@ body {
     border-color: #e9ecef;
 }
 
-/* ===== Auth Buttons ===== */
+/* User Dropdown specifics */
+.user-dropdown {
+    min-width: 260px;
+}
+
+    .user-dropdown .dropdown-item.text-danger:hover {
+        background: #fff5f5;
+        color: #dc3545 !important;
+    }
+
+/* ========================================
+   AUTH BUTTONS
+   ======================================== */
 .btn-outline-light {
-    border: 2px solid rgba(255, 255, 255, 0.7);
+    border: 2px solid rgba(255, 255, 255, 0.6);
     transition: all 0.3s ease;
     font-weight: 600;
     color: #fff;
 }
 
-.btn-outline-light:hover {
-    background: rgba(255, 255, 255, 0.25);
-    border-color: #fff;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
-    color: #fff;
-}
+    .btn-outline-light:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
 
 .btn-light {
     background: #fff;
@@ -264,105 +251,165 @@ body {
     transition: all 0.3s ease;
 }
 
-.btn-light:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
-    background: #f8f9fa;
-    color: #0b5ed7;
-}
+    .btn-light:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        background: #f8f9fa;
+    }
 
-/* ===== Alerts with Icons ===== */
+/* ========================================
+   ALERTS
+   ======================================== */
 .alert {
     border-radius: 12px;
     border: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .alert-success {
-    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-    color: #155724;
+    background: #d1e7dd;
+    color: #0f5132;
 }
 
 .alert-danger {
-    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-    color: #721c24;
+    background: #f8d7da;
+    color: #842029;
 }
 
 .alert i {
-    font-size: 1.1rem;
+    font-size: 1.25rem;
 }
 
-/* ===== Footer ===== */
+/* ========================================
+   FOOTER
+   ======================================== */
 footer {
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    background: #f8f9fa;
     border-top: 1px solid #dee2e6;
-    color: #495057;
-    padding: 1.5rem 0;
-    font-size: 0.95rem;
-    margin-top: 3rem;
+    color: #6c757d;
+    padding: 2rem 0;
+    font-size: 0.9rem;
+    margin-top: auto; /* Push footer to bottom */
 }
 
-footer .bi-heart-fill {
-    color: #ff5e5e;
-    animation: heartbeat 1.5s infinite;
-}
+    footer .bi-heart-fill {
+        color: #dc3545;
+        animation: heartbeat 1.5s infinite;
+    }
 
 @keyframes heartbeat {
     0%, 100% {
         transform: scale(1);
     }
+
     50% {
-        transform: scale(1.1);
+        transform: scale(1.15);
     }
 }
 
-/* ===== Page Container ===== */
+/* ========================================
+   PAGE CONTAINER
+   ======================================== */
 .site-container {
-    padding-top: 1.5rem;
-    padding-bottom: 2.5rem;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
     min-height: calc(100vh - 200px);
 }
 
-/* ===== Responsive ===== */
+/* ========================================
+   RESPONSIVE (MOBILE/TABLET)
+   ======================================== */
 @media (max-width: 991px) {
+    /* Navbar Collapse styling on mobile */
+    .navbar-collapse {
+        background: #ffffff;
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+
     .navbar-nav {
-        padding: 1rem 0;
+        padding: 0.5rem 0;
     }
 
-    .user-avatar {
-        width: 38px;
-        height: 38px;
-        font-size: 1rem;
+    /* Đổi màu text menu trên nền trắng mobile */
+    .navbar .nav-link {
+        color: #333 !important;
+        padding: 0.75rem 1rem !important;
+        border-radius: 8px;
     }
 
-    .cart-icon-wrapper i {
-        font-size: 1.5rem;
+        .navbar .nav-link:hover,
+        .navbar .nav-link.active {
+            background: #f0f7ff;
+            color: #0d6efd !important;
+            transform: none;
+        }
+
+        .navbar .nav-link i {
+            color: #0d6efd;
+        }
+
+    /* Cart icon trên mobile */
+    .cart-icon-wrapper {
+        background: rgba(255,255,255,0.2);
+        border: 1px solid rgba(255,255,255,0.3);
     }
 
-    .user-dropdown {
-        min-width: 240px !important;
+    /* User menu trigger trên mobile */
+    .user-menu-trigger {
+        background: transparent;
+        border: 1px solid #dee2e6;
+        color: #333 !important;
+        margin-top: 1rem;
+        width: 100%;
+        justify-content: flex-start;
+        padding: 0.75rem !important;
+        border-radius: 8px;
     }
-    
-    .navbar-brand {
-        font-size: 1.4rem;
+
+        .user-menu-trigger:hover {
+            background: #f8f9fa;
+            color: #0d6efd !important;
+        }
+
+        .user-menu-trigger .user-avatar {
+            background: #0d6efd;
+            border-color: #0d6efd;
+        }
+
+    /* Nút Login/Register trên mobile */
+    .navbar-nav.ms-auto .nav-item {
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-outline-light {
+        color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+        .btn-outline-light:hover {
+            background: #0d6efd;
+            color: #fff;
+        }
+
+    .btn-light {
+        background: #0d6efd;
+        color: #fff;
+        border-color: #0d6efd;
     }
 }
 
 @media (max-width: 576px) {
     .navbar-brand {
-        font-size: 1.25rem;
+        font-size: 1.4rem;
     }
-    
-    .nav-link {
-        padding: 0.4rem 0.8rem !important;
+
+    .site-container {
+        padding-top: 1rem;
     }
-}
-
-/* ===== Smooth Transitions ===== */
-a {
-    transition: color 0.2s ease;
-}
-
-button {
-    transition: all 0.2s ease;
 }

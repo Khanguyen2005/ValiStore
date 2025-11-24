@@ -1,28 +1,128 @@
-/* ========================================
+﻿/* ========================================
    Home Page Styles - ValiModern
    ======================================== */
 
-/* Banner Carousel Styles */
+/* ========================================
+   MODERN BANNER STYLES
+   ======================================== */
+
+/* Wrapper tổng của banner */
 .home-banner-wrapper {
     overflow: hidden;
-    background: #f8f9fa;
+    background: #ffffff; /* Nền trắng để hòa với ảnh banner */
+    border-radius: 16px; /* Bo góc mềm mại */
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08); /* Đổ bóng nhẹ tạo chiều sâu */
+    position: relative;
 }
 
+/* Khung chứa ảnh - Định hình tỷ lệ */
 .home-banner-frame {
     position: relative;
     width: 100%;
-    padding-top: 50%; /* FIX: T?ng t? 42% l�n 50% ?? kh�ng b? c?t banner */
+    /* Tỷ lệ 2.35:1 (Cinematic) cho Desktop - Giúp banner không bị quá cao */
+    padding-top: 42.5%;
     overflow: hidden;
+    background-color: #fff;
 }
 
+/* Ảnh banner */
 .home-banner-img {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain; /* FIX: ??i t? cover sang contain ?? hi?n th? full banner */
+    /* Dùng contain để ĐẢM BẢO KHÔNG CẮT CHỮ trong ảnh */
+    object-fit: contain;
     object-position: center;
+    transition: transform 0.5s ease;
+}
+
+/* Hiệu ứng zoom nhẹ khi hover vào banner */
+.home-banner-wrapper:hover .home-banner-img {
+    transform: scale(1.02);
+}
+
+/* Custom Navigation Buttons (Mũi tên trái phải) */
+.custom-control {
+    width: 5%;
+    opacity: 0; /* Ẩn mặc định */
+    transition: all 0.3s ease;
+}
+
+.custom-carousel:hover .custom-control {
+    opacity: 1; /* Hiện khi hover vào slider */
+}
+
+.control-icon {
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+}
+
+.custom-control:hover .control-icon {
+    background: var(--primary, #0d6efd);
+    color: white;
+    transform: scale(1.1);
+}
+
+/* Custom Indicators (Dấu chấm chuyển slide) */
+.custom-indicators {
+    margin-bottom: 1rem;
+}
+
+    .custom-indicators button {
+        width: 10px !important;
+        height: 10px !important;
+        border-radius: 50%;
+        background-color: rgba(0,0,0,0.2) !important;
+        border: 2px solid transparent !important;
+        margin: 0 6px !important;
+        transition: all 0.3s ease;
+        opacity: 1 !important;
+    }
+
+        .custom-indicators button.active {
+            background-color: var(--primary, #0d6efd) !important;
+            transform: scale(1.3);
+            box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.2);
+        }
+
+/* Responsive Styles */
+
+/* Tablet */
+@media (max-width: 991px) {
+    .home-banner-frame {
+        padding-top: 50%; /* Tăng chiều cao một chút trên tablet */
+    }
+
+    .custom-control {
+        opacity: 1; /* Luôn hiện nút điều hướng trên tablet/mobile */
+    }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+    .home-banner-frame {
+        padding-top: 65%; /* Tỷ lệ cao hơn trên mobile để thấy rõ sản phẩm */
+    }
+
+    .home-banner-wrapper {
+        border-radius: 12px;
+    }
+
+    .control-icon {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
 }
 
 /* Category Section */
@@ -170,7 +270,7 @@
     font-size: 0.75rem;
 }
 
-/* FIX: ??ng nh?t m�u button v?i design system */
+/* FIX: Đồng nhất màu button với design system */
 .home-product-card .btn-primary {
     background: var(--primary-gradient, linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%));
     border: none;
@@ -178,7 +278,7 @@
     border-radius: 6px;
     font-size: 0.8rem;
     padding: 0.4rem 0.5rem;
-    /* FIX: C?n gi?a icon v?i text */
+    /* FIX: Căn giữa icon với text */
     display: inline-flex;
     align-items: center;
     justify-content: center;

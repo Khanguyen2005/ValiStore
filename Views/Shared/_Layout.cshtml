@@ -98,28 +98,28 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container">
-            @Html.ActionLink("ValiModern", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            @Html.ActionLink("ValiModern", "Index", "Home", new { area = "" }, new { @class = "navbar-brand me-4" })
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="mainNavbar">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0 gap-1 gap-lg-2 align-items-lg-center">
                     <li class="nav-item">
-                        @Html.ActionLink("Home", "Index", "Home", null, new { @class = "nav-link" })
+                        @Html.ActionLink("Home", "Index", "Home", null, new { @class = "nav-link px-3" })
                     </li>
                     <li class="nav-item">
-                        @Html.ActionLink("Shop", "Index", "Product", null, new { @class = "nav-link" })
+                        @Html.ActionLink("Shop", "Index", "Product", null, new { @class = "nav-link px-3" })
                     </li>
-
-                    <!-- Categories Dropdown -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle px-3" href="#" id="categoriesDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="bi bi-grid me-1"></i>Categories
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
+                            @* Copy lại phần dropdown menu cũ vào đây *@
                             <li>
                                 <a class="dropdown-item" href="@Url.Action("Index", "Category")">
                                     <i class="bi bi-list-ul"></i>All Categories
@@ -139,14 +139,12 @@
                             }
                         </ul>
                     </li>
-
                     <li class="nav-item">
-                        @Html.ActionLink("Contact", "Contact", "Home", null, new { @class = "nav-link" })
+                        @Html.ActionLink("Contact", "Contact", "Home", null, new { @class = "nav-link px-3" })
                     </li>
                 </ul>
 
-                <ul class="navbar-nav ms-auto align-items-center gap-2">
-                    <!-- Cart with enhanced design -->
+                <ul class="navbar-nav ms-auto align-items-center gap-3">
                     <li class="nav-item d-flex align-items-center">
                         <a href="@Url.Action("Index", "Cart")" class="position-relative cart-icon-wrapper" title="Shopping Cart">
                             <i class="bi bi-cart3"></i>
@@ -154,7 +152,6 @@
                             {
                                 <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge-pulse">
                                     @cartCount
-                                    <span class="visually-hidden">items in cart</span>
                                 </span>
                             }
                         </a>
@@ -163,28 +160,24 @@
                     @if (!isAuthenticated)
                     {
                         <li class="nav-item">
-                            <a class="btn btn-outline-light btn-sm rounded-pill px-3" href="@Url.Action("Login", "Account")">
-                                <i class="bi bi-box-arrow-in-right me-1"></i>Login
-                            </a>
+                            <a class="btn btn-outline-light btn-sm rounded-pill px-4 fw-bold" href="@Url.Action("Login", "Account")">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-light btn-sm rounded-pill px-3" href="@Url.Action("Register", "Account")">
-                                <i class="bi bi-person-plus me-1"></i>Register
-                            </a>
+                            <a class="btn btn-light btn-sm rounded-pill px-4 fw-bold text-primary" href="@Url.Action("Register", "Account")">Register</a>
                         </li>
                     }
                     else
                     {
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle d-flex align-items-center user-menu-trigger" href="#" id="accountMenu" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false" title="Account">
-                                <div class="user-avatar me-2">
+                            <a class="nav-link p-0 d-flex align-items-center user-menu-trigger" href="#" id="accountMenu" role="button" data-bs-toggle="dropdown">
+                                <div class="user-avatar shadow-sm">
                                     @(!string.IsNullOrEmpty(displayName) ? displayName.Substring(0,1).ToUpper() : "U")
                                 </div>
-                                <span class="d-none d-lg-inline">@displayName</span>
+                                <span class="d-none d-lg-block ms-2 me-3 fw-semibold">@displayName</span>
+                                <i class="bi bi-chevron-down small opacity-75 me-2"></i>
                             </a>
-
                             <ul class="dropdown-menu dropdown-menu-end user-dropdown shadow-lg" aria-labelledby="accountMenu">
+                                @* Copy lại nội dung dropdown user cũ *@
                                 <li class="px-3 py-2 border-bottom">
                                     <div class="d-flex align-items-center">
                                         <div class="user-avatar-large me-3">
@@ -192,66 +185,21 @@
                                         </div>
                                         <div>
                                             <div class="fw-semibold">@displayName</div>
-                                            <small class="text-muted">
-                                                <i class="bi bi-@((isAdmin) ? "shield-check" : isShipper ? "truck" : "person") me-1"></i>
-                                                @if (isAdmin)
-                                                {
-                                                    <text>Administrator</text>
-                                                }
-                                                else if (isShipper)
-                                                {
-                                                    <text>Shipper</text>
-                                                }
-                                                else
-                                                {
-                                                    <text>Member</text>
-                                                }
-                                            </small>
+                                            <small class="text-muted">Member</small>
                                         </div>
                                     </div>
                                 </li>
-
-                                <li>
-                                    <a href="@Url.Action("Index", "Account")" class="dropdown-item">
-                                        <i class="bi bi-person-circle"></i>Profile
-                                    </a>
-                                </li>
-
+                                <li><a href="@Url.Action("Index", "Account")" class="dropdown-item"><i class="bi bi-person-circle"></i>Profile</a></li>
                                 @if (isAdmin)
                                 {
-                                    <li>
-                                        <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" class="dropdown-item">
-                                            <i class="bi bi-speedometer2"></i>Dashboard
-                                        </a>
-                                    </li>
-                                }
-
-                                @if (isShipper)
-                                {
-                                    <li>
-                                        <a href="@Url.Action("Index", "Shipper")" class="dropdown-item">
-                                            <i class="bi bi-truck"></i>My Deliveries
-                                        </a>
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li>
-                                        <a href="@Url.Action("Index", "Order")" class="dropdown-item">
-                                            <i class="bi bi-bag-check"></i>My Orders
-                                        </a>
-                                    </li>
-                                }
-
+                                    <li><a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" class="dropdown-item"><i class="bi bi-speedometer2"></i>Dashboard</a></li>
+}
                                 <li><hr class="dropdown-divider my-1" /></li>
-
                                 <li>
                                     @using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { @class = "m-0" }))
                                     {
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class="bi bi-box-arrow-right"></i>Logout
-                                        </button>
+                                        <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right"></i>Logout</button>
                                     }
                                 </li>
                             </ul>
