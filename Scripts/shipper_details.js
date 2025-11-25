@@ -153,34 +153,36 @@ function openChat() {
     // Load initial messages from server
     loadMessages();
     
-    // Join SignalR chat room
-    if (window.ChatSignalR && ChatSignalR.isConnected()) {
+    // Only join SignalR room if order is not completed
+    if (!window.IS_COMPLETED && window.ChatSignalR && ChatSignalR.isConnected()) {
         ChatSignalR.joinOrderChat(window.ORDER_ID);
+        
+        // Setup message received handler
+        window.onChatMessageReceived = function(messageData) {
+            // Only update if this is for current order
+            if (messagesContainer && $('#chatModal').hasClass('show')) {
+                addMessageToUI(messageData);
+            }
+        };
     }
-    
-    // Setup message received handler
-    window.onChatMessageReceived = function(messageData) {
-        // Only update if this is for current order
-        if (messagesContainer && $('#chatModal').hasClass('show')) {
-            addMessageToUI(messageData);
-        }
-    };
     
     // Cleanup when modal closes
     modalElement.addEventListener('hidden.bs.modal', function() {
-        // Leave SignalR room
-        if (window.ChatSignalR) {
+        // Leave SignalR room only if we joined
+        if (!window.IS_COMPLETED && window.ChatSignalR) {
             ChatSignalR.leaveOrderChat(window.ORDER_ID);
         }
         window.onChatMessageReceived = null;
         messagesContainer = null;
     }, { once: true });
     
-    // Enter key to send
-    const chatInput = document.getElementById('chatInput');
-    if (chatInput) {
-        chatInput.removeEventListener('keypress', handleChatKeypress);
-        chatInput.addEventListener('keypress', handleChatKeypress);
+    // Enter key to send (only if not completed)
+    if (!window.IS_COMPLETED) {
+        const chatInput = document.getElementById('chatInput');
+        if (chatInput) {
+            chatInput.removeEventListener('keypress', handleChatKeypress);
+            chatInput.addEventListener('keypress', handleChatKeypress);
+        }
     }
 }
 
@@ -265,6 +267,12 @@ function scrollToBottom(element) {
 
 // Send message via SignalR
 function sendMessage() {
+    // Check if order is completed
+    if (window.IS_COMPLETED) {
+        alert('This order is completed. You cannot send new messages.');
+        return;
+    }
+    
     const input = document.getElementById('chatInput');
     if (!input) return;
     

@@ -355,6 +355,8 @@
     <Content Include="Docs\FIX_1MIN.md" />
     <Content Include="Docs\FIX_Chat_Not_Connected.md" />
     <Content Include="Docs\FINAL_CHECKLIST_SignalR.md" />
+    <Content Include="Docs\FEATURE_Chat_ReadOnly_Mode.md" />
+    <Content Include="Docs\COMPLETED_Chat_ReadOnly.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\category-products.js" />
     <Content Include="Scripts\chat-signalr.js" />

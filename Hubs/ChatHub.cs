@@ -100,6 +100,14 @@ namespace ValiModern.Hubs
                     return;
                 }
 
+                // CHECK: Prevent sending messages if order is completed
+                if (order.status == "Completed")
+                {
+                    await Clients.Caller.onError("This order is completed. Chat is closed.");
+                    System.Diagnostics.Debug.WriteLine($"[ChatHub] Rejected message for completed order #{orderId}");
+                    return;
+                }
+
                 bool isCustomer = order.user_id == userId.Value;
                 bool isShipper = order.shipper_id == userId.Value;
 
