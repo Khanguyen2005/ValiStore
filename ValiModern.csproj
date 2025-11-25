@@ -275,13 +275,6 @@
     <Content Include="Content\Product.css" />
     <Content Include="Content\ProductDetails.css" />
     <Content Include="Content\shipper_layout.css" />
-    <Content Include="Database\add_paypal_payment_method.sql" />
-    <Content Include="Database\add_product_sold_constraints.sql" />
-    <Content Include="Database\add_shipper_role.sql" />
-    <Content Include="Database\migrate_existing_users_to_role_system.sql" />
-    <Content Include="Database\reset_product_sold_from_orders.sql" />
-    <Content Include="Database\sample_category_data.sql" />
-    <Content Include="Database\sp_RecalculateProductSold.sql" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -340,36 +333,7 @@
     <Content Include="Areas\Admin\Views\Order\Details.cshtml" />
     <Content Include="Areas\Admin\Views\Order\ShipperDeliveries.cshtml" />
     <Content Include="Areas\Admin\Views\ShipperManagement\Index.cshtml" />
-    <Content Include="Docs\ShipperBackendGuide.md" />
-    <Content Include="Docs\ShipperBackendUpgrade.md" />
-    <Content Include="Docs\ShipperNewFeatures.md" />
-    <Content Include="Docs\ShipperQuickSetup.md" />
-    <Content Include="Docs\DeliveryProgressAnimation.md" />
-    <Content Include="Docs\ChatRealtimeImprovement.md" />
-    <Content Include="Docs\SignalRRealtimeChatUpgrade.md" />
-    <Content Include="Docs\SignalRSetupGuide.md" />
     <Content Include="RestoreSignalR.ps1" />
-    <Content Include="Docs\QUICKFIX_SignalR_References.md" />
-    <Content Include="Docs\IMPLEMENTATION_SUMMARY.md" />
-    <Content Include="Docs\QUICKSTART_3MIN.md" />
-    <Content Include="Docs\FINAL_FIX_SignalR.md" />
-    <Content Include="Docs\FIX_1MIN.md" />
-    <Content Include="Docs\FIX_Chat_Not_Connected.md" />
-    <Content Include="Docs\FINAL_CHECKLIST_SignalR.md" />
-    <Content Include="Docs\FEATURE_Chat_ReadOnly_Mode.md" />
-    <Content Include="Docs\COMPLETED_Chat_ReadOnly.md" />
-    <Content Include="Docs\FEATURE_Login_Register_Modal.md" />
-    <Content Include="Docs\QUICKFIX_Login_Modal.md" />
-    <Content Include="Docs\DEBUG_Login_Modal.md" />
-    <Content Include="Docs\FIX_RememberMe_Checkbox.md" />
-    <Content Include="Docs\REMOVED_Old_Login_Views.md" />
-    <Content Include="Docs\PERFORMANCE_OPTIMIZATION.md" />
-    <Content Include="Docs\OPTIMIZATION_COMPLETE.md" />
-    <Content Include="Docs\QUICK_START_OPTIMIZATION.md" />
-    <Content Include="Docs\ADMIN_OPTIMIZATION_COMPLETE.md" />
-    <Content Include="Docs\COLD_START_OPTIMIZATION.md" />
-    <Content Include="Docs\FINAL_ADMIN_CHECK.md" />
-    <Content Include="Docs\FEATURE_Product_Carousel.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\category-products.js" />
     <Content Include="Scripts\chat-signalr.js" />
@@ -397,8 +361,6 @@
     <Content Include="Uploads\products\simplecarry-issac-2-s-navy-2-638984845321575110.jpg" />
     <Content Include="Uploads\products\vali-larita-rena-ah0624-20-s-green-15676-01750838850-638984862049741157.jpg" />
     <Content Include="Uploads\products\vali-larita-rena-ah0624-20-s-green-15676-11750838850-638984862322746670.jpg" />
-    <Content Include="Database\ValiModernDB_Full.sql" />
-    <Content Include="Database\vali_db_script.sql" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -430,13 +392,6 @@
     <Content Include="Views\Account\ChangePassword.cshtml" />
     <Content Include="Views\Shipper\History.cshtml" />
     <Content Include="Views\Shipper\Details_Enhanced.cshtml" />
-    <None Include="Web.config.AWS_BACKUP" />
-    <None Include="Web.config.Debug.AWS_BACKUP">
-      <DependentUpon>Web.config.AWS_BACKUP</DependentUpon>
-    </None>
-    <None Include="Web.config.Release.AWS_BACKUP">
-      <DependentUpon>Web.config.AWS_BACKUP</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
