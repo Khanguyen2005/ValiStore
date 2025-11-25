@@ -254,10 +254,15 @@
 </div>
 
 @section scripts {
+<!-- SignalR Scripts -->
+@Scripts.Render("~/bundles/signalr")
+<script src="~/signalr/hubs"></script>
+<script src="~/Scripts/chat-signalr.js"></script>
 <script src="~/Scripts/shipper_details.js"></script>
 <script>
     // Globals
     var ORDER_ID = @Model.OrderId;
+    var USER_ID = @(User.Identity.IsAuthenticated ? User.Identity.Name : "null");
     var ASSIGNED_AT = '@Model.AssignedAt.ToString("yyyy-MM-ddTHH:mm:ss")';
     var DELIVERY_ADDRESS = '@Html.Raw(Model.ShippingAddress.Replace("'", "\\'"))';
     var IS_DELIVERED = @Model.IsDelivered.ToString().ToLower();

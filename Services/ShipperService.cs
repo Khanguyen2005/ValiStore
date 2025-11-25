@@ -4,7 +4,6 @@ using System.Data.Entity;
 using System.Linq;
 using ValiModern.Models.EF;
 using ValiModern.Models.ViewModels;
-using ValiModern.Helpers;
 
 namespace ValiModern.Services
 {
@@ -223,25 +222,25 @@ namespace ValiModern.Services
             // Validation
             if (order == null)
             {
-                ShipperLogger.LogWarning($"Attempt to mark non-existent order #{orderId}", shipperId);
+                System.Diagnostics.Debug.WriteLine($"[ShipperService] Attempt to mark non-existent order #{orderId} by shipper #{shipperId}");
                 return OperationResult.Failure("Order not found.");
             }
 
             if (order.shipper_id != shipperId)
             {
-                ShipperLogger.LogWarning($"Unauthorized attempt to mark order #{orderId} by shipper #{shipperId}", shipperId);
+                System.Diagnostics.Debug.WriteLine($"[ShipperService] Unauthorized attempt to mark order #{orderId} by shipper #{shipperId}");
                 return OperationResult.Failure("You do not have permission to mark this order.");
             }
 
             if (order.status != "Shipped")
             {
-                ShipperLogger.LogWarning($"Attempt to mark order #{orderId} with invalid status: {order.status}", shipperId);
+                System.Diagnostics.Debug.WriteLine($"[ShipperService] Attempt to mark order #{orderId} with invalid status: {order.status}");
                 return OperationResult.Failure($"Order status is '{order.status}'. Only 'Shipped' orders can be marked as delivered.");
             }
 
             if (order.delivered_at != null)
             {
-                ShipperLogger.LogWarning($"Attempt to mark already delivered order #{orderId}", shipperId);
+                System.Diagnostics.Debug.WriteLine($"[ShipperService] Attempt to mark already delivered order #{orderId}");
                 return OperationResult.Failure("Order has already been marked as delivered.");
             }
 
@@ -261,14 +260,13 @@ namespace ValiModern.Services
                 _db.SaveChanges();
                 
                 // Log successful delivery
-                ShipperLogger.LogDelivery(orderId, shipperId, "Marked as Delivered", 
-                    string.IsNullOrEmpty(deliveryNote) ? null : $"Note: {deliveryNote}");
+                System.Diagnostics.Debug.WriteLine($"[ShipperService] Order #{orderId} marked as delivered by shipper #{shipperId}");
                 
                 return OperationResult.Success("Successfully marked as delivered! Order is waiting for customer confirmation.");
             }
             catch (Exception ex)
             {
-                ShipperLogger.LogError($"Failed to mark order #{orderId} as delivered", ex, shipperId);
+                System.Diagnostics.Debug.WriteLine($"[ShipperService] Failed to mark order #{orderId} as delivered: {ex.Message}");
                 return OperationResult.Failure("Error saving delivery status: " + ex.Message);
             }
         }

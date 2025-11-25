@@ -126,9 +126,12 @@ function removePhoto(index) {
     }
 }
 
-// Chat System
+// ==============================================================
+// REALTIME CHAT WITH SIGNALR (No more polling!)
+// ==============================================================
+
 let chatModal;
-let chatRefreshInterval;
+let messagesContainer;
 
 function openChat() {
     if (!window.ORDER_ID) {
@@ -142,72 +145,125 @@ function openChat() {
         return;
     }
     
+    messagesContainer = document.getElementById('chatMessages');
+    
     chatModal = new bootstrap.Modal(modalElement);
     chatModal.show();
     
+    // Load initial messages from server
     loadMessages();
     
-    // Refresh messages every 3 seconds
-    chatRefreshInterval = setInterval(loadMessages, 3000);
+    // Join SignalR chat room
+    if (window.ChatSignalR && ChatSignalR.isConnected()) {
+        ChatSignalR.joinOrderChat(window.ORDER_ID);
+    }
     
-    // Clear interval when modal closes
-    modalElement.addEventListener('hidden.bs.modal', function() {
-        if (chatRefreshInterval) {
-            clearInterval(chatRefreshInterval);
+    // Setup message received handler
+    window.onChatMessageReceived = function(messageData) {
+        // Only update if this is for current order
+        if (messagesContainer && $('#chatModal').hasClass('show')) {
+            addMessageToUI(messageData);
         }
-    });
+    };
+    
+    // Cleanup when modal closes
+    modalElement.addEventListener('hidden.bs.modal', function() {
+        // Leave SignalR room
+        if (window.ChatSignalR) {
+            ChatSignalR.leaveOrderChat(window.ORDER_ID);
+        }
+        window.onChatMessageReceived = null;
+        messagesContainer = null;
+    }, { once: true });
     
     // Enter key to send
     const chatInput = document.getElementById('chatInput');
     if (chatInput) {
-        chatInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        });
+        chatInput.removeEventListener('keypress', handleChatKeypress);
+        chatInput.addEventListener('keypress', handleChatKeypress);
     }
 }
 
+function handleChatKeypress(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        sendMessage();
+    }
+}
+
+// Load initial messages (called once when modal opens)
 function loadMessages() {
     if (!window.ORDER_ID) return;
     
-    fetch(`/Shipper/GetMessages?orderId=${window.ORDER_ID}`)
+    fetch('/Shipper/GetMessages?orderId=' + window.ORDER_ID)
         .then(response => {
             if (!response.ok) throw new Error('Failed to load messages');
             return response.json();
         })
         .then(messages => {
-            const container = document.getElementById('chatMessages');
-            if (!container) return;
+            if (!messagesContainer) return;
+            
+            messagesContainer.innerHTML = '';
             
             if (!messages || messages.length === 0) {
-                container.innerHTML = '<div class="text-center text-muted"><i class="bi bi-chat-dots fs-2"></i><p>No messages yet. Start the conversation!</p></div>';
-                return;
+                messagesContainer.innerHTML = '<div class="text-center text-muted"><i class="bi bi-chat-dots fs-2"></i><p>No messages yet. Start the conversation!</p></div>';
+            } else {
+                messages.forEach(msg => {
+                    addMessageToUI(msg);
+                });
+                scrollToBottom(messagesContainer);
             }
-            
-            container.innerHTML = '';
-            messages.forEach(msg => {
-                const div = document.createElement('div');
-                div.className = `chat-message ${msg.isSent ? 'sent' : 'received'}`;
-                div.innerHTML = `
-                    <div>${escapeHtml(msg.message)}</div>
-                    <div class="chat-message-time">${msg.time}</div>
-                `;
-                container.appendChild(div);
-            });
-            
-            // Scroll to bottom
-            container.scrollTop = container.scrollHeight;
         })
         .catch(error => {
             console.error('Error loading messages:', error);
-            const container = document.getElementById('chatMessages');
-            if (container) {
-                container.innerHTML = '<div class="text-center text-danger"><p>Failed to load messages</p></div>';
+            if (messagesContainer) {
+                messagesContainer.innerHTML = '<div class="text-center text-danger"><p>Failed to load messages</p></div>';
             }
         });
 }
 
+// Add message to UI (called for both initial load and realtime updates)
+function addMessageToUI(msg) {
+    if (!messagesContainer) return;
+    
+    var messageClass = msg.isSent ? 'sent' : 'received';
+    var messageHtml = '<div class="chat-message ' + messageClass + '">' +
+                      '<div>' + escapeHtml(msg.message) + '</div>' +
+                      '<div class="chat-message-time">' + msg.time + '</div>' +
+                      '</div>';
+    
+    // Check if user was at bottom before adding
+    var wasAtBottom = isScrolledToBottom(messagesContainer);
+    
+    // Remove empty state if exists
+    var emptyState = messagesContainer.querySelector('.text-center');
+    if (emptyState) {
+        messagesContainer.innerHTML = '';
+    }
+    
+    // Add new message
+    messagesContainer.insertAdjacentHTML('beforeend', messageHtml);
+    
+    // Auto-scroll if user was at bottom
+    if (wasAtBottom) {
+        scrollToBottom(messagesContainer);
+    }
+}
+
+// Helper: Check if scrolled to bottom
+function isScrolledToBottom(element) {
+    if (!element) return true;
+    return element.scrollHeight - element.scrollTop <= element.clientHeight + 50;
+}
+
+// Helper: Scroll to bottom
+function scrollToBottom(element) {
+    if (element) {
+        element.scrollTop = element.scrollHeight;
+    }
+}
+
+// Send message via SignalR
 function sendMessage() {
     const input = document.getElementById('chatInput');
     if (!input) return;
@@ -220,43 +276,42 @@ function sendMessage() {
         return;
     }
     
-    // Get CSRF token
-    const token = document.querySelector('input[name="__RequestVerificationToken"]');
+    // Check SignalR connection
+    if (!window.ChatSignalR || !ChatSignalR.isConnected()) {
+        alert('Chat is not connected. Please refresh the page.');
+        return;
+    }
     
-    fetch(`/Shipper/SendMessage`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'RequestVerificationToken': token ? token.value : ''
-        },
-        body: JSON.stringify({
-            orderId: window.ORDER_ID,
-            message: message
-        })
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Failed to send message');
-        return response.json();
-    })
-    .then(result => {
-        if (result.success) {
+    // Disable input during send
+    input.disabled = true;
+    
+    // Send via SignalR
+    ChatSignalR.sendMessage(window.ORDER_ID, message)
+        .done(function() {
+            // Success
             input.value = '';
-            loadMessages();
-        } else {
-            alert('Failed to send message: ' + (result.message || 'Unknown error'));
-        }
-    })
-    .catch(error => {
-        console.error('Error sending message:', error);
-        alert('Error sending message. Please try again.');
-    });
+            input.disabled = false;
+            input.focus();
+            
+            // Message will be added to UI via SignalR callback
+        })
+        .fail(function(error) {
+            console.error('Failed to send message:', error);
+            alert('Failed to send message. Please try again.');
+            input.disabled = false;
+        });
 }
 
 // Utility: Escape HTML to prevent XSS
 function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+    var map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return String(text).replace(/[&<>"']/g, function(m) { return map[m]; });
 }
 
 // Expose functions globally

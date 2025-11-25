@@ -539,8 +539,14 @@
 </div>
 
 @section Scripts {
+    <!-- SignalR Scripts -->
+    @Scripts.Render("~/bundles/signalr")
+    <script src="~/signalr/hubs"></script>
+    <script src="~/Scripts/chat-signalr.js"></script>
+    <script src="~/Scripts/customer-chat.js"></script>
     <script>
         var ORDER_ID = @Model.OrderId;
+        var USER_ID = @(User.Identity.IsAuthenticated ? User.Identity.Name : "null");
         var IS_COMPLETED = @(Model.Status == "Completed" ? "true" : "false");
         
         // Auto show delivery notification modal if needed (optional)
@@ -556,63 +562,18 @@
             </text>
         }
         
-        // Chat functionality
-        function loadMessages() {
-            $.get('@Url.Action("GetCustomerMessages", "Order")', { orderId: ORDER_ID }, function(data) {
-                var html = '';
-                if (data && data.length > 0) {
-                    data.forEach(function(msg) {
-                        var messageClass = msg.isSent ? 'customer-message' : 'shipper-message';
-                        var alignClass = msg.isSent ? 'text-end' : 'text-start';
-                        html += '<div class="mb-2 ' + alignClass + '">';
-                        html += '<div class="d-inline-block p-2 rounded ' + messageClass + '" style="max-width: 70%; ' + (msg.isSent ? 'background: #0dcaf0; color: white;' : 'background: #e9ecef;') + '">';
-                        html += '<div>' + msg.message + '</div>';
-                        html += '<small class="d-block" style="font-size: 0.75rem; opacity: 0.8;">' + msg.time + '</small>';
-                        html += '</div></div>';
-                    });
-                } else {
-                    html = '<div class="text-center text-muted py-4"><i class="bi bi-chat-dots fs-2 mb-2"></i><p>No messages yet' + (IS_COMPLETED ? '' : '. Start a conversation!') + '</p></div>';
-                }
-                $('#chatMessages').html(html);
-                $('#chatMessages').scrollTop($('#chatMessages')[0].scrollHeight);
-            }).fail(function() {
-                $('#chatMessages').html('<div class="text-center text-danger py-4"><i class="bi bi-exclamation-triangle fs-2 mb-2"></i><p>Failed to load messages</p></div>');
-            });
-        }
-        
-        function sendCustomerMessage() {
-            if (IS_COMPLETED) {
-                alert('This order is completed. You cannot send new messages.');
-                return;
-            }
-            
-            var message = $('#chatInput').val().trim();
-            if (!message) return;
-            
-            $.post('@Url.Action("SendCustomerMessage", "Order")', { orderId: ORDER_ID, message: message }, function(res) {
-                if (res.success) {
-                    $('#chatInput').val('');
-                    loadMessages();
-                } else {
-                    alert('Failed to send message: ' + (res.message || 'Unknown error'));
-                }
-            }).fail(function() {
-                alert('Network error. Please try again.');
-            });
-        }
-        
-        // Load messages when chat modal is opened
+        // Chat with SignalR
         $('#chatModal').on('shown.bs.modal', function() {
-            loadMessages();
+            CustomerChat.init(ORDER_ID, '@Model.Status', USER_ID);
         });
         
-        // Send on Enter key (only if not completed)
-        if (!IS_COMPLETED) {
-            $('#chatInput').on('keypress', function(e) {
-                if (e.which === 13) {
-                    sendCustomerMessage();
-                }
-            });
+        $('#chatModal').on('hidden.bs.modal', function() {
+            CustomerChat.cleanup(ORDER_ID);
+        });
+        
+        // Send message function (called from button)
+        function sendCustomerMessage() {
+            CustomerChat.sendMessage(ORDER_ID);
         }
     </script>
 }

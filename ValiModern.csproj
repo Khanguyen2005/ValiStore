@@ -52,7 +52,25 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.5.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.4.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.SignalR.Core.2.4.3\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.4.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.AspNet.SignalR.SystemWeb.2.4.3\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Owin, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Owin.4.2.2\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Owin.Host.SystemWeb.4.2.2\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.Owin.Security.4.2.2\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -141,8 +159,6 @@
     <Compile Include="Areas\Admin\Controllers\ShipperManagementController.cs" />
     <Compile Include="Areas\Admin\Controllers\SizeController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserController.cs" />
-    <Compile Include="Binders\DecimalModelBinder.cs" />
-    <Compile Include="Constants\ShipperConstants.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
@@ -159,8 +175,8 @@
     </Compile>
     <Compile Include="Helpers\CacheHelper.cs" />
     <Compile Include="Helpers\PayPalClient.cs" />
-    <Compile Include="Helpers\ShipperLogger.cs" />
     <Compile Include="Helpers\VnPayLibrary.cs" />
+    <Compile Include="Hubs\ChatHub.cs" />
     <Compile Include="Models\EF\Banner.cs">
       <DependentUpon>ValiModernModel.tt</DependentUpon>
     </Compile>
@@ -225,6 +241,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\PaletteService.cs" />
     <Compile Include="Services\ShipperService.cs" />
+    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Admin\ProductImages.css" />
@@ -256,13 +273,11 @@
     <Content Include="Content\OrderIndex.css" />
     <Content Include="Content\Product.css" />
     <Content Include="Content\ProductDetails.css" />
-    <Content Include="Content\shipper_details.css" />
     <Content Include="Content\shipper_layout.css" />
-    <Content Include="Database\add_chat_system.sql" />
     <Content Include="Database\add_paypal_payment_method.sql" />
     <Content Include="Database\add_product_sold_constraints.sql" />
-    <Content Include="Database\add_shipper_enhancements.sql" />
     <Content Include="Database\add_shipper_role.sql" />
+    <Content Include="Database\migrate_existing_users_to_role_system.sql" />
     <Content Include="Database\reset_product_sold_from_orders.sql" />
     <Content Include="Database\sample_category_data.sql" />
     <Content Include="Database\sp_RecalculateProductSold.sql" />
@@ -329,8 +344,21 @@
     <Content Include="Docs\ShipperNewFeatures.md" />
     <Content Include="Docs\ShipperQuickSetup.md" />
     <Content Include="Docs\DeliveryProgressAnimation.md" />
+    <Content Include="Docs\ChatRealtimeImprovement.md" />
+    <Content Include="Docs\SignalRRealtimeChatUpgrade.md" />
+    <Content Include="Docs\SignalRSetupGuide.md" />
+    <Content Include="RestoreSignalR.ps1" />
+    <Content Include="Docs\QUICKFIX_SignalR_References.md" />
+    <Content Include="Docs\IMPLEMENTATION_SUMMARY.md" />
+    <Content Include="Docs\QUICKSTART_3MIN.md" />
+    <Content Include="Docs\FINAL_FIX_SignalR.md" />
+    <Content Include="Docs\FIX_1MIN.md" />
+    <Content Include="Docs\FIX_Chat_Not_Connected.md" />
+    <Content Include="Docs\FINAL_CHECKLIST_SignalR.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\category-products.js" />
+    <Content Include="Scripts\chat-signalr.js" />
+    <Content Include="Scripts\customer-chat.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
     <Content Include="Scripts\jquery-3.7.0.slim.js" />
@@ -341,7 +369,6 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.8.3.js" />
-    <Content Include="Scripts\shipper_details.js" />
     <Content Include="Scripts\shipper_layout.js" />
     <Content Include="Uploads\brands\thuong-hieu-heys-1674809492-638984844049458671.jpg" />
     <Content Include="Uploads\brands\thuong-hieu-hydro-flask-1674802224-638984844289079222.jpg" />
@@ -389,7 +416,6 @@
     <Content Include="Views\Account\ChangePassword.cshtml" />
     <Content Include="Views\Shipper\History.cshtml" />
     <Content Include="Views\Shipper\Details_Enhanced.cshtml" />
-    <Content Include="Views\Shipper\NewDetails.cshtml" />
     <None Include="Web.config.AWS_BACKUP" />
     <None Include="Web.config.Debug.AWS_BACKUP">
       <DependentUpon>Web.config.AWS_BACKUP</DependentUpon>
@@ -400,6 +426,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Constants\" />
     <Folder Include="Uploads\banners\" />
     <Folder Include="Uploads\products\balo\" />
     <Folder Include="Uploads\products\phukien\" />
