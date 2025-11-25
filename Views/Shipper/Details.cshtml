@@ -40,7 +40,7 @@
                     </tr>
                     <tr>
                         <td class="text-muted">Total Amount:</td>
-                        <td><strong class="text-success">@Model.TotalAmount.ToString("N0") d</strong></td>
+                        <td><strong class="text-success">@Model.TotalAmount.ToString("N0") đ</strong></td>
                     </tr>
                     <tr>
                         <td class="text-muted">Items:</td>
@@ -207,15 +207,15 @@
                                         }
                                     </td>
                                     <td><strong>@item.Quantity</strong></td>
-                                    <td>@item.Price.ToString("N0") d</td>
-                                    <td><strong>@item.Subtotal.ToString("N0") d</strong></td>
+                                    <td>@item.Price.ToString("N0") đ</td>
+                                    <td><strong>@item.Subtotal.ToString("N0") đ</strong></td>
                                 </tr>
                             }
                         </tbody>
                         <tfoot class="table-light">
                             <tr>
                                 <td colspan="6" class="text-end"><strong>Total:</strong></td>
-                                <td><strong class="text-success">@Model.TotalAmount.ToString("N0") d</strong></td>
+                                <td><strong class="text-success">@Model.TotalAmount.ToString("N0") đ</strong></td>
                             </tr>
                         </tfoot>
                     </table>
