@@ -8,7 +8,7 @@ namespace ValiModern.Controllers
 {
     public class HomeController : Controller
     {
-        [OutputCache(Duration = 300, VaryByParam = "none")] // Cache 5 minutes
+        // Removed OutputCache because it cached user-specific layout (auth state), causing logged-in admin to see guest menu.
         public ActionResult Index()
         {
             var vm = new HomeIndexVM

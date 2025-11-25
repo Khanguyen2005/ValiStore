@@ -284,14 +284,66 @@ namespace ValiModern.Controllers
 
         // POST: /Account/Logout
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [Authorize] // Require authenticated user, remove anti-forgery to avoid mismatch when identity already cleared
         public ActionResult Logout()
+        {
+            // Preserve current auth state for debugging (optional)
+            bool wasAuth = (User != null && User.Identity != null && User.Identity.IsAuthenticated);
+
+            // Sign out (Forms auth cookie will be removed after response)
+            FormsAuthentication.SignOut();
+
+            // Clear session data
+            Session.Remove("DisplayName");
+            Session.Remove("UserRole");
+            Session.Remove("UserId");
+            Session.Clear();
+            Session.Abandon();
+
+            // Expire anti-forgery cookie if exists (prevent stale token reuse)
+            var antiCookie = Request.Cookies["__RequestVerificationToken"];
+            if (antiCookie != null)
+            {
+                antiCookie.Expires = DateTime.UtcNow.AddDays(-1);
+                Response.Cookies.Add(antiCookie);
+            }
+
+            // Expire forms auth cookie explicitly (defensive)
+            var authCookie = Request.Cookies[FormsAuthentication.FormsCookieName];
+            if (authCookie != null)
+            {
+                authCookie.Expires = DateTime.UtcNow.AddDays(-1);
+                Response.Cookies.Add(authCookie);
+            }
+
+            // Redirect to home (or Login page)
+            return RedirectToAction("Index", "Home");
+        }
+
+        // GET: /Account/Logout (Fallback for direct link)
+        [HttpGet]
+        [Authorize]
+        public ActionResult LogoutDirect()
         {
             FormsAuthentication.SignOut();
             Session.Remove("DisplayName");
             Session.Remove("UserRole");
             Session.Remove("UserId");
             Session.Clear();
+            Session.Abandon();
+
+            var antiCookie = Request.Cookies["__RequestVerificationToken"];
+            if (antiCookie != null)
+            {
+                antiCookie.Expires = DateTime.UtcNow.AddDays(-1);
+                Response.Cookies.Add(antiCookie);
+            }
+            var authCookie = Request.Cookies[FormsAuthentication.FormsCookieName];
+            if (authCookie != null)
+            {
+                authCookie.Expires = DateTime.UtcNow.AddDays(-1);
+                Response.Cookies.Add(authCookie);
+            }
             return RedirectToAction("Index", "Home");
         }
 

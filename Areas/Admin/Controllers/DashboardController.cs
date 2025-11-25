@@ -69,25 +69,30 @@ namespace ValiModern.Areas.Admin.Controllers
                         OrderDate = o.order_date
                     }).ToList(),
 
-                // Top products by revenue - Optimize query
-                TopProducts = (from product in _db.Products.AsNoTracking()
-                              where product.is_active
-                              let productRevenue = _db.Order_Details
-                                  .AsNoTracking()
-                                  .Where(od => od.product_id == product.id && od.Order.status == "Completed")
-                                  .Sum(od => (long?)od.quantity * od.price) ?? 0
-                              where productRevenue > 0  // Only show products with actual revenue
-                              orderby productRevenue descending
-                              select new TopProductVM
-                              {
-                                  Id = product.id,
-                                  Name = product.name,
-                                  ImageUrl = product.image_url,
-                                  Sold = product.sold,  // Use Product.sold (includes default + actual)
-                                  Revenue = (decimal)productRevenue  // Revenue from Completed orders only
-                              })
-                              .Take(5)
-                              .ToList()
+                // Top products by revenue - FIX: Simplified query without nested AsNoTracking
+                TopProducts = _db.Products
+                    .AsNoTracking()
+                    .Where(p => p.is_active)
+                    .Select(p => new
+                    {
+                        Product = p,
+                        Revenue = _db.Order_Details
+                            .Where(od => od.product_id == p.id && od.Order.status == "Confirmed")
+                            .Sum(od => (long?)od.quantity * od.price) ?? 0
+                    })
+                    .Where(x => x.Revenue > 0)
+                    .OrderByDescending(x => x.Revenue)
+                    .Take(5)
+                    .AsEnumerable() // Switch to client-side evaluation
+                    .Select(x => new TopProductVM
+                    {
+                        Id = x.Product.id,
+                        Name = x.Product.name,
+                        ImageUrl = x.Product.image_url,
+                        Sold = x.Product.sold,
+                        Revenue = (decimal)x.Revenue
+                    })
+                    .ToList()
             };
 
             return View(vm);

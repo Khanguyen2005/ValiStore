@@ -5,13 +5,21 @@
 @{
     Layout = null;
 
-    // Check user role
-    bool isAdmin = (User != null && User.IsInRole("admin"));
+    // Check authentication state
+    bool isAuthenticated = (User != null && User.Identity != null && User.Identity.IsAuthenticated);
+    
+    // DEBUG: Write to browser console (C# 5.0 compatible)
+    string userExists = (User != null ? "exists" : "null");
+    string identityExists = (User != null && User.Identity != null ? "exists" : "null");
+    string isAuthStr = (User != null && User.Identity != null ? User.Identity.IsAuthenticated.ToString() : "null");
+    var debugInfo = string.Format("Auth: {0}, User: {1}, Identity: {2}, IsAuth: {3}", isAuthenticated, userExists, identityExists, isAuthStr);
+    
+    // Initialize variables
+    bool isAdmin = false;
     bool isShipper = false;
     string displayName = null;
-    bool isAuthenticated = (User != null && User.Identity != null && User.Identity.IsAuthenticated);
 
-    // Get cart count from session
+    // Get cart count from session (always allowed, even for guests)
     int cartCount = 0;
     try
     {
@@ -23,38 +31,63 @@
     }
     catch { }
 
-    // Get display name and check role
-    try
+    // Process user data ONLY if authenticated
+    if (isAuthenticated)
     {
-        if (Session != null && Session["DisplayName"] != null)
-        {
-            displayName = Session["DisplayName"].ToString();
-        }
+        // Set admin role
+        isAdmin = User.IsInRole("admin");
         
-        if (Session != null && Session["UserRole"] != null)
+        try
         {
-            var userRole = Session["UserRole"].ToString();
-            isShipper = userRole == "shipper";
-        }
-    }
-    catch (Exception ex)
-    {
-        System.Diagnostics.Debug.WriteLine("[DEBUG] Error getting role: " + ex.Message);
-    }
-
-    if (string.IsNullOrWhiteSpace(displayName) && isAuthenticated)
-    {
-        var identityName = (User.Identity != null ? User.Identity.Name : string.Empty) ?? string.Empty;
-        var claimsPrincipal = User as ClaimsPrincipal;
-        if (claimsPrincipal != null)
-        {
-            var emailClaim = claimsPrincipal.FindFirst(ClaimTypes.Email);
-            if (emailClaim != null && !string.IsNullOrWhiteSpace(emailClaim.Value))
+            // Get display name from session
+            if (Session != null && Session["DisplayName"] != null)
             {
-                identityName = emailClaim.Value;
+                displayName = Session["DisplayName"].ToString();
+            }
+            
+            // Get role from session
+            if (Session != null && Session["UserRole"] != null)
+            {
+                var userRole = Session["UserRole"].ToString();
+                isShipper = userRole == "shipper";
             }
         }
-        displayName = identityName;
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine("[DEBUG] Error getting session data: " + ex.Message);
+        }
+
+        // Fallback: If session doesn't have displayName, get from User.Identity
+        if (string.IsNullOrWhiteSpace(displayName) && User.Identity != null)
+        {
+            displayName = User.Identity.Name;
+            
+            // Try to get email from claims
+            var claimsPrincipal = User as ClaimsPrincipal;
+            if (claimsPrincipal != null)
+            {
+                var emailClaim = claimsPrincipal.FindFirst(ClaimTypes.Email);
+                if (emailClaim != null && !string.IsNullOrWhiteSpace(emailClaim.Value))
+                {
+                    displayName = emailClaim.Value;
+                }
+            }
+            
+            // Store back to session for next request
+            if (!string.IsNullOrWhiteSpace(displayName))
+            {
+                try
+                {
+                    Session["DisplayName"] = displayName;
+                    // Also set role in session based on User.IsInRole
+                    if (isAdmin)
+                    {
+                        Session["UserRole"] = "admin";
+                    }
+                }
+                catch { }
+            }
+        }
     }
 
     // Get categories for menu - USE CACHE to avoid DB query on every request
@@ -70,7 +103,11 @@
                 }
             },
             5 // Cache for 5 minutes
-        ) ?? new List<Category>();
+        );
+        if (categories == null)
+        {
+            categories = new List<Category>();
+        }
     }
     catch { }
 }
@@ -95,6 +132,14 @@
     <link href="~/Content/Layout.css" rel="stylesheet" />
 
     @RenderSection("Styles", required: false)
+    
+    <!-- DEBUG Script -->
+    <script>
+        console.log('@debugInfo');
+        console.log('isAuthenticated: @isAuthenticated.ToString().ToLower()');
+        console.log('isAdmin: @isAdmin.ToString().ToLower()');
+        console.log('displayName: @(displayName ?? "null")');
+    </script>
 </head>
 
 <body>
@@ -119,7 +164,6 @@
                             <i class="bi bi-grid me-1"></i>Categories
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="categoriesDropdown">
-                            @* Copy lại phần dropdown menu cũ vào đây *@
                             <li>
                                 <a class="dropdown-item" href="@Url.Action("Index", "Category")">
                                     <i class="bi bi-list-ul"></i>All Categories
@@ -177,7 +221,6 @@
                                 <i class="bi bi-chevron-down small opacity-75 me-2"></i>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end user-dropdown shadow-lg" aria-labelledby="accountMenu">
-                                @* Copy lại nội dung dropdown user cũ *@
                                 <li class="px-3 py-2 border-bottom">
                                     <div class="d-flex align-items-center">
                                         <div class="user-avatar-large me-3">
@@ -190,10 +233,17 @@
                                     </div>
                                 </li>
                                 <li><a href="@Url.Action("Index", "Account")" class="dropdown-item"><i class="bi bi-person-circle"></i>Profile</a></li>
+                                <li><a href="@Url.Action("Index", "Order")" class="dropdown-item"><i class="bi bi-box-seam"></i>My Orders</a></li>
                                 @if (isAdmin)
                                 {
+                                    <li><hr class="dropdown-divider my-1" /></li>
                                     <li><a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" class="dropdown-item"><i class="bi bi-speedometer2"></i>Dashboard</a></li>
-}
+                                }
+                                @if (isShipper)
+                                {
+                                    <li><hr class="dropdown-divider my-1" /></li>
+                                    <li><a href="@Url.Action("Index", "Shipper")" class="dropdown-item"><i class="bi bi-truck"></i>My Deliveries</a></li>
+                                }
                                 <li><hr class="dropdown-divider my-1" /></li>
                                 <li>
                                     @using (Html.BeginForm("Logout", "Account", FormMethod.Post, new { @class = "m-0" }))
@@ -216,7 +266,7 @@
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 <i class="bi bi-check-circle-fill"></i>
                 <div>@TempData["Success"]</div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         }
         @if (TempData["Error"] != null)
@@ -224,7 +274,7 @@
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <i class="bi bi-exclamation-triangle-fill"></i>
                 <div>@TempData["Error"]</div>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         }
 
