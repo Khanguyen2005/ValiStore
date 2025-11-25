@@ -19,6 +19,8 @@ namespace ValiModern.Models.EF
         {
             this.Orders = new HashSet<Order>();
             this.Orders1 = new HashSet<Order>();
+            this.Messages = new HashSet<Message>();
+            this.Messages1 = new HashSet<Message>();
         }
     
         public int id { get; set; }
@@ -36,5 +38,9 @@ namespace ValiModern.Models.EF
         public virtual ICollection<Order> Orders { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Order> Orders1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Message> Messages { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Message> Messages1 { get; set; }
     }
 }

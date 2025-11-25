@@ -28,6 +28,10 @@
         <AssociationConnector Association="ValiModernDBModel.FK_PImages_Products" ManuallyRouted="false" />
         <AssociationConnector Association="ValiModernDBModel.FK_Sizes_Products" ManuallyRouted="false" />
         <AssociationConnector Association="ValiModernDBModel.FK_Orders_Shipper" />
+        <EntityTypeShape EntityType="ValiModernDBModel.Message" Width="1.5" PointX="7.5" PointY="15.125" />
+        <AssociationConnector Association="ValiModernDBModel.FK_Messages_Order" />
+        <AssociationConnector Association="ValiModernDBModel.FK_Messages_Receiver" />
+        <AssociationConnector Association="ValiModernDBModel.FK_Messages_Sender" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

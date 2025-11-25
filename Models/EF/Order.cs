@@ -19,6 +19,7 @@ namespace ValiModern.Models.EF
         {
             this.Order_Details = new HashSet<Order_Details>();
             this.Payments = new HashSet<Payment>();
+            this.Messages = new HashSet<Message>();
         }
     
         public int id { get; set; }
@@ -34,6 +35,8 @@ namespace ValiModern.Models.EF
         public Nullable<System.DateTime> assigned_at { get; set; }
         public Nullable<System.DateTime> delivered_at { get; set; }
         public string delivery_note { get; set; }
+        public Nullable<int> shipper_unread_messages { get; set; }
+        public Nullable<int> customer_unread_messages { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Order_Details> Order_Details { get; set; }
@@ -41,5 +44,7 @@ namespace ValiModern.Models.EF
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Payment> Payments { get; set; }
         public virtual User User1 { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Message> Messages { get; set; }
     }
 }

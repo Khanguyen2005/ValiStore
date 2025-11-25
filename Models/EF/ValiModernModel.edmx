@@ -37,6 +37,18 @@
           <Property Name="name" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="color_code" Type="nvarchar" MaxLength="20" />
         </EntityType>
+        <EntityType Name="Messages">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="order_id" Type="int" Nullable="false" />
+          <Property Name="sender_id" Type="int" Nullable="false" />
+          <Property Name="receiver_id" Type="int" Nullable="false" />
+          <Property Name="message" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="is_read" Type="bit" />
+          <Property Name="created_at" Type="datetime" />
+        </EntityType>
         <EntityType Name="Order_Details">
           <Key>
             <PropertyRef Name="id" />
@@ -67,6 +79,8 @@
           <Property Name="assigned_at" Type="datetime2" Precision="0" />
           <Property Name="delivered_at" Type="datetime2" Precision="0" />
           <Property Name="delivery_note" Type="nvarchar" MaxLength="500" />
+          <Property Name="shipper_unread_messages" Type="int" />
+          <Property Name="customer_unread_messages" Type="int" />
         </EntityType>
         <EntityType Name="Payments">
           <Key>
@@ -140,6 +154,44 @@
             </Principal>
             <Dependent Role="Colors">
               <PropertyRef Name="product_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Messages_Order">
+          <End Role="Orders" Type="Self.Orders" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Orders">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Messages">
+              <PropertyRef Name="order_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Messages_Receiver">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Messages">
+              <PropertyRef Name="receiver_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Messages_Sender">
+          <End Role="Users" Type="Self.Users" Multiplicity="1" />
+          <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Messages">
+              <PropertyRef Name="sender_id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -288,6 +340,7 @@
           <EntitySet Name="Brands" EntityType="Self.Brands" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Categories" EntityType="Self.Categories" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Colors" EntityType="Self.Colors" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Messages" EntityType="Self.Messages" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Order_Details" EntityType="Self.Order_Details" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Orders" EntityType="Self.Orders" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Payments" EntityType="Self.Payments" Schema="dbo" store:Type="Tables" />
@@ -298,6 +351,18 @@
           <AssociationSet Name="FK_Colors_Products" Association="Self.FK_Colors_Products">
             <End Role="Products" EntitySet="Products" />
             <End Role="Colors" EntitySet="Colors" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Messages_Order" Association="Self.FK_Messages_Order">
+            <End Role="Orders" EntitySet="Orders" />
+            <End Role="Messages" EntitySet="Messages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Messages_Receiver" Association="Self.FK_Messages_Receiver">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Messages" EntitySet="Messages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Messages_Sender" Association="Self.FK_Messages_Sender">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Messages" EntitySet="Messages" />
           </AssociationSet>
           <AssociationSet Name="FK_OD_Colors" Association="Self.FK_OD_Colors">
             <End Role="Colors" EntitySet="Colors" />
@@ -422,6 +487,9 @@
           <Property Name="delivered_at" Type="DateTime" Precision="0" />
           <Property Name="delivery_note" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="User1" Relationship="ValiModernDBModel.FK_Orders_Shipper" FromRole="Order" ToRole="User" />
+          <Property Name="shipper_unread_messages" Type="Int32" />
+          <Property Name="customer_unread_messages" Type="Int32" />
+          <NavigationProperty Name="Messages" Relationship="ValiModernDBModel.FK_Messages_Order" FromRole="Order" ToRole="Message" />
         </EntityType>
         <EntityType Name="Payment">
           <Key>
@@ -495,6 +563,8 @@
           <Property Name="password" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="role" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="Orders1" Relationship="ValiModernDBModel.FK_Orders_Shipper" FromRole="User" ToRole="Order" />
+          <NavigationProperty Name="Messages" Relationship="ValiModernDBModel.FK_Messages_Receiver" FromRole="User" ToRole="Message" />
+          <NavigationProperty Name="Messages1" Relationship="ValiModernDBModel.FK_Messages_Sender" FromRole="User" ToRole="Message" />
         </EntityType>
         <Association Name="FK_Products_Brands">
           <End Role="Brands" Type="Self.Brand" Multiplicity="1" />
@@ -698,6 +768,19 @@
             <End Role="User" EntitySet="Users" />
             <End Role="Order" EntitySet="Orders" />
           </AssociationSet>
+          <EntitySet Name="Messages" EntityType="ValiModernDBModel.Message" />
+          <AssociationSet Name="FK_Messages_Order" Association="ValiModernDBModel.FK_Messages_Order">
+            <End Role="Order" EntitySet="Orders" />
+            <End Role="Message" EntitySet="Messages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Messages_Receiver" Association="ValiModernDBModel.FK_Messages_Receiver">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Message" EntitySet="Messages" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Messages_Sender" Association="ValiModernDBModel.FK_Messages_Sender">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Message" EntitySet="Messages" />
+          </AssociationSet>
         </EntityContainer>
         <Association Name="FK_Orders_Shipper">
           <End Type="ValiModernDBModel.User" Role="User" Multiplicity="0..1" />
@@ -708,6 +791,59 @@
             </Principal>
             <Dependent Role="Order">
               <PropertyRef Name="shipper_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="Message">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="order_id" Type="Int32" Nullable="false" />
+          <Property Name="sender_id" Type="Int32" Nullable="false" />
+          <Property Name="receiver_id" Type="Int32" Nullable="false" />
+          <Property Name="message1" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="is_read" Type="Boolean" />
+          <Property Name="created_at" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="Order" Relationship="ValiModernDBModel.FK_Messages_Order" FromRole="Message" ToRole="Order" />
+          <NavigationProperty Name="User" Relationship="ValiModernDBModel.FK_Messages_Receiver" FromRole="Message" ToRole="User" />
+          <NavigationProperty Name="User1" Relationship="ValiModernDBModel.FK_Messages_Sender" FromRole="Message" ToRole="User" />
+        </EntityType>
+        <Association Name="FK_Messages_Order">
+          <End Type="ValiModernDBModel.Order" Role="Order" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="ValiModernDBModel.Message" Role="Message" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Order">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Message">
+              <PropertyRef Name="order_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Messages_Receiver">
+          <End Type="ValiModernDBModel.User" Role="User" Multiplicity="1" />
+          <End Type="ValiModernDBModel.Message" Role="Message" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Message">
+              <PropertyRef Name="receiver_id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Messages_Sender">
+          <End Type="ValiModernDBModel.User" Role="User" Multiplicity="1" />
+          <End Type="ValiModernDBModel.Message" Role="Message" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="id" />
+            </Principal>
+            <Dependent Role="Message">
+              <PropertyRef Name="sender_id" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -770,6 +906,8 @@
           <EntitySetMapping Name="Orders">
             <EntityTypeMapping TypeName="ValiModernDBModel.Order">
               <MappingFragment StoreEntitySet="Orders">
+                <ScalarProperty Name="customer_unread_messages" ColumnName="customer_unread_messages" />
+                <ScalarProperty Name="shipper_unread_messages" ColumnName="shipper_unread_messages" />
                 <ScalarProperty Name="delivery_note" ColumnName="delivery_note" />
                 <ScalarProperty Name="delivered_at" ColumnName="delivered_at" />
                 <ScalarProperty Name="assigned_at" ColumnName="assigned_at" />
@@ -849,6 +987,19 @@
                 <ScalarProperty Name="address" ColumnName="address" />
                 <ScalarProperty Name="created_at" ColumnName="created_at" />
                 <ScalarProperty Name="updated_at" ColumnName="updated_at" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Messages">
+            <EntityTypeMapping TypeName="ValiModernDBModel.Message">
+              <MappingFragment StoreEntitySet="Messages">
+                <ScalarProperty Name="created_at" ColumnName="created_at" />
+                <ScalarProperty Name="is_read" ColumnName="is_read" />
+                <ScalarProperty Name="message1" ColumnName="message" />
+                <ScalarProperty Name="receiver_id" ColumnName="receiver_id" />
+                <ScalarProperty Name="sender_id" ColumnName="sender_id" />
+                <ScalarProperty Name="order_id" ColumnName="order_id" />
+                <ScalarProperty Name="id" ColumnName="id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

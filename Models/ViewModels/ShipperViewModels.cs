@@ -17,6 +17,9 @@ namespace ValiModern.Models.ViewModels
         
         // Backwards compatibility
         public int PendingCount => AssignedCount;
+
+        // Statistics
+        public ShipperStatsVM Stats { get; set; }
     }
 
     // ViewModel cho t?ng ??n hàng trong danh sách shipper
@@ -38,6 +41,15 @@ namespace ValiModern.Models.ViewModels
         public int ProductCount { get; set; } // S? s?n ph?m khác nhau (lines)
         public bool IsDelivered => DeliveredAt.HasValue;
         public string CustomerName { get; set; }
+        
+        // NEW: Delivery duration
+        public TimeSpan DeliveryDuration => DeliveredAt.HasValue 
+            ? (DeliveredAt.Value - AssignedAt) 
+            : (DateTime.Now - AssignedAt);
+        
+        // NEW: Coordinates for mapping
+        public decimal? Latitude { get; set; }
+        public decimal? Longitude { get; set; }
     }
 
     // ViewModel cho chi ti?t ??n hàng c?a shipper
@@ -67,6 +79,18 @@ namespace ValiModern.Models.ViewModels
         // New derived properties for consistency
         public int ProductCount => Items?.Count ?? 0;
         public int TotalQuantity => Items?.Sum(i => i.Quantity) ?? 0;
+        
+        // NEW: Delivery photos
+        public List<string> DeliveryPhotoUrls { get; set; } = new List<string>();
+        
+        // NEW: Coordinates
+        public decimal? Latitude { get; set; }
+        public decimal? Longitude { get; set; }
+        
+        // NEW: Delivery duration
+        public TimeSpan DeliveryDuration => DeliveredAt.HasValue 
+            ? (DeliveredAt.Value - AssignedAt) 
+            : (DateTime.Now - AssignedAt);
     }
 
     public class ShipperOrderItemDetailVM
@@ -88,6 +112,7 @@ namespace ValiModern.Models.ViewModels
     {
         public int OrderId { get; set; }
         public string DeliveryNote { get; set; }
+        public List<string> PhotoUrls { get; set; } = new List<string>();
     }
 
     // ViewModel cho l?ch s? giao hàng c?a shipper (pagination)
@@ -101,5 +126,31 @@ namespace ValiModern.Models.ViewModels
         
         public bool HasPreviousPage => CurrentPage > 1;
         public bool HasNextPage => CurrentPage < TotalPages;
+    }
+
+    // ViewModel cho th?ng kê shipper
+    public class ShipperStatsVM
+    {
+        public int TotalPending { get; set; }
+        public int TotalDeliveredToday { get; set; }
+        public int TotalDeliveredThisMonth { get; set; }
+        public int TotalCompletedAllTime { get; set; }
+        public long TotalEarningsThisMonth { get; set; }
+        
+        // Calculated properties
+        public decimal AverageDeliveryValue => TotalCompletedAllTime > 0 
+            ? (decimal)TotalEarningsThisMonth / TotalDeliveredThisMonth 
+            : 0;
+            
+        // NEW: Average delivery time
+        public double AverageDeliveryTimeHours { get; set; }
+    }
+
+    // NEW: ViewModel for nearby orders (route optimization)
+    public class NearbyOrdersVM
+    {
+        public ShipperOrderItemVM CurrentOrder { get; set; }
+        public List<ShipperOrderItemVM> NearbyOrders { get; set; } = new List<ShipperOrderItemVM>();
+        public double RadiusKm { get; set; } = 5.0; // Default 5km radius
     }
 }
