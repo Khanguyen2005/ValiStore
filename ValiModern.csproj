@@ -369,10 +369,12 @@
     <Content Include="Docs\ADMIN_OPTIMIZATION_COMPLETE.md" />
     <Content Include="Docs\COLD_START_OPTIMIZATION.md" />
     <Content Include="Docs\FINAL_ADMIN_CHECK.md" />
+    <Content Include="Docs\FEATURE_Product_Carousel.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\category-products.js" />
     <Content Include="Scripts\chat-signalr.js" />
     <Content Include="Scripts\customer-chat.js" />
+    <Content Include="Scripts\home-slider.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
     <Content Include="Scripts\jquery-3.7.0.slim.js" />

@@ -111,7 +111,7 @@
 /* Mobile */
 @media (max-width: 576px) {
     .home-banner-frame {
-        padding-top: 65%; /* Tỷ lệ cao hơn trên mobile để thấy rõ sản phẩm */
+        padding-top: 65%; /* T tỷ lệ cao hơn trên mobile để thấy rõ sản phẩm */
     }
 
     .home-banner-wrapper {
@@ -301,28 +301,6 @@
     margin-top: 2.5rem;
 }
 
-/* Product Meta - Brand & Category Info (consistent with other views) */
-.product-meta {
-    font-size: 0.75rem;
-    line-height: 1.4;
-    color: var(--gray-600, #6c757d);
-    margin-bottom: 0.5rem;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-    align-items: center;
-}
-
-.product-meta span {
-    display: inline-flex;
-    align-items: center;
-}
-
-.product-meta i {
-    font-size: 0.65rem;
-    margin-right: 0.2rem;
-}
-
 .guide-card {
     transition: all 0.3s ease;
     cursor: pointer;
@@ -358,6 +336,198 @@
 
 .guide-overlay small {
     font-size: 0.85rem;
+}
+
+/* ========================================
+   NEW PRODUCT SLIDER STYLES
+   Slider nhảy từng sản phẩm
+   ======================================== */
+
+.product-slider-wrapper {
+    position: relative;
+    overflow: visible; /* FIX: Changed from hidden to visible for buttons */
+    padding: 0 60px; /* Increased space for controls */
+    margin: 0 -10px; /* Compensate for extra padding */
+}
+
+.product-slider-container {
+    overflow: hidden; /* Keep overflow hidden here */
+    margin: 0 -12px; /* Compensate for item gap */
+}
+
+.product-slider-track {
+    display: flex;
+    gap: 16px;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 4px 12px; /* Padding for shadows */
+}
+
+.product-slider-item {
+    flex: 0 0 calc(25% - 12px); /* 4 items per view on desktop */
+    min-width: 0; /* Allow flex shrink */
+}
+
+/* Product Slider Navigation Controls */
+.product-slider-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 10;
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+}
+
+.product-slider-control.product-slider-prev {
+    left: 0; /* FIX: Changed from -10px to 0 */
+}
+
+.product-slider-control.product-slider-next {
+    right: 0; /* FIX: Changed from -10px to 0 */
+}
+
+/* Show controls on hover - Desktop only */
+@media (min-width: 992px) {
+    .product-slider-wrapper:hover .product-slider-control {
+        opacity: 1;
+    }
+    
+    .product-slider-control.product-slider-prev:hover {
+        left: -5px; /* Slight move on hover */
+    }
+    
+    .product-slider-control.product-slider-next:hover {
+        right: -5px; /* Slight move on hover */
+    }
+}
+
+/* Always show on tablet/mobile */
+@media (max-width: 991px) {
+    .product-slider-control {
+        opacity: 0.9;
+    }
+    
+    .product-slider-wrapper {
+        padding: 0 50px; /* Adjusted for tablet */
+    }
+    
+    .product-slider-control.product-slider-prev {
+        left: 0;
+    }
+    
+    .product-slider-control.product-slider-next {
+        right: 0;
+    }
+}
+
+/* Control Icon - Same as Banner */
+.product-slider-control .control-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+    font-size: 1.25rem;
+}
+
+.product-slider-control:hover .control-icon {
+    background: var(--primary, #0d6efd);
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 6px 18px rgba(13, 110, 253, 0.3);
+}
+
+/* Infinite loop: Remove disabled state styling */
+.product-slider-control:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.product-slider-control:disabled:hover .control-icon {
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    transform: none;
+}
+
+/* ========================================
+   RESPONSIVE SLIDER ADJUSTMENTS
+   ======================================== */
+
+/* Tablet - 2 items per view */
+@media (max-width: 991px) {
+    .product-slider-item {
+        flex: 0 0 calc(50% - 8px); /* 2 items per view */
+    }
+    
+    .product-slider-track {
+        gap: 12px;
+    }
+}
+
+/* Mobile - 1 item per view */
+@media (max-width: 576px) {
+    .product-slider-wrapper {
+        padding: 0 45px; /* Space for buttons */
+    }
+    
+    .product-slider-item {
+        flex: 0 0 calc(100% - 8px); /* 1 item per view */
+    }
+    
+    .product-slider-track {
+        gap: 8px;
+    }
+    
+    .product-slider-control {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .product-slider-control .control-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .product-slider-control.product-slider-prev {
+        left: 0;
+    }
+    
+    .product-slider_control.product-slider-next {
+        right: 0;
+    }
+}
+
+/* Product Meta - Brand & Category Info (consistent with other views) */
+.product-meta {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--gray-600, #6c757d);
+    margin-bottom: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.product-meta span {
+    display: inline-flex;
+    align-items: center;
+}
+
+.product-meta i {
+    font-size: 0.65rem;
+    margin-right: 0.2rem;
 }
 
 /* Responsive Adjustments */
