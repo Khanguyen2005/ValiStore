@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -21,10 +22,19 @@ namespace ValiModern.Areas.Admin.Controllers
         public ActionResult Index(int? productId)
         {
             if (productId == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            
+            // Use Find for product (no need AsNoTracking, just checking existence)
             var product = _db.Products.Find(productId);
             if (product == null) return HttpNotFound();
-            var images = _db.Product_Images.Where(pi => pi.product_id == product.id)
-            .OrderBy(pi => pi.sort_order).ThenBy(pi => pi.id).ToList();
+            
+            // OPTIMIZE: Use AsNoTracking for image listing
+            var images = _db.Product_Images
+                .AsNoTracking()
+                .Where(pi => pi.product_id == product.id)
+                .OrderBy(pi => pi.sort_order)
+                .ThenBy(pi => pi.id)
+                .ToList();
+                
             ViewBag.Product = product;
             return View(images);
         }
@@ -51,7 +61,14 @@ namespace ValiModern.Areas.Admin.Controllers
                 TempData["Error"] = "Please select at least one image.";
                 return RedirectToAction("Create", new { productId });
             }
-            int maxSort = _db.Product_Images.Where(pi => pi.product_id == productId).Select(pi => (int?)pi.sort_order).Max() ?? 0;
+            
+            // OPTIMIZE: Get max sort order with AsNoTracking
+            int maxSort = _db.Product_Images
+                .AsNoTracking()
+                .Where(pi => pi.product_id == productId)
+                .Select(pi => (int?)pi.sort_order)
+                .Max() ?? 0;
+                
             var savedAny = false;
             foreach (var file in imageFiles)
             {
@@ -73,8 +90,8 @@ namespace ValiModern.Areas.Admin.Controllers
             _db.SaveChanges();
             if (savedAny)
             {
-                // ensure at least one main image
-                var hasMain = _db.Product_Images.Any(x => x.product_id == productId && x.is_main);
+                // OPTIMIZE: Check main image existence with AsNoTracking
+                var hasMain = _db.Product_Images.AsNoTracking().Any(x => x.product_id == productId && x.is_main);
                 if (!hasMain)
                 {
                     var first = _db.Product_Images.Where(x => x.product_id == productId).OrderBy(x => x.sort_order).FirstOrDefault();
@@ -107,7 +124,13 @@ namespace ValiModern.Areas.Admin.Controllers
                 return RedirectToAction("Index", new { productId });
             }
 
-            int maxSort = _db.Product_Images.Where(pi => pi.product_id == productId).Select(pi => (int?)pi.sort_order).Max() ?? 0;
+            // OPTIMIZE: Get max sort order with AsNoTracking
+            int maxSort = _db.Product_Images
+                .AsNoTracking()
+                .Where(pi => pi.product_id == productId)
+                .Select(pi => (int?)pi.sort_order)
+                .Max() ?? 0;
+                
             int uploadedCount = 0;
             var errors = new List<string>();
 
@@ -140,8 +163,8 @@ namespace ValiModern.Areas.Admin.Controllers
             {
                 _db.SaveChanges();
 
-                // Ensure at least one main image exists
-                var hasMain = _db.Product_Images.Any(x => x.product_id == productId && x.is_main);
+                // OPTIMIZE: Check main image existence with AsNoTracking
+                var hasMain = _db.Product_Images.AsNoTracking().Any(x => x.product_id == productId && x.is_main);
                 if (!hasMain)
                 {
                     var first = _db.Product_Images
@@ -228,8 +251,9 @@ namespace ValiModern.Areas.Admin.Controllers
             DeletePhysical(img.image_url);
             _db.Product_Images.Remove(img);
             _db.SaveChanges();
-            // ensure main still exists
-            var hasMain = _db.Product_Images.Any(x => x.product_id == productId && x.is_main);
+            
+            // OPTIMIZE: Check main image existence with AsNoTracking
+            var hasMain = _db.Product_Images.AsNoTracking().Any(x => x.product_id == productId && x.is_main);
             if (!hasMain)
             {
                 var first = _db.Product_Images.Where(x => x.product_id == productId).OrderBy(x => x.sort_order).FirstOrDefault();

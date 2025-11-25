@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ValiModern.Filters;
@@ -15,22 +16,40 @@ namespace ValiModern.Areas.Admin.Controllers
         // GET: Admin/ShipperManagement
         public ActionResult Index()
         {
-            // Get all shippers with their statistics
+            // OPTIMIZE: Use AsNoTracking and aggregate all stats in one query
             var shippers = _db.Users
+                .AsNoTracking()
                 .Where(u => u.role == "shipper")
                 .ToList();
 
-            var shipperStats = shippers.Select(s => new ShipperStatsVM
+            // OPTIMIZE: Aggregate all order stats in one query per shipper
+            var shipperStats = shippers.Select(s =>
             {
-                ShipperId = s.id,
-                ShipperName = s.username,
-                ShipperEmail = s.email,
-                ShipperPhone = s.phone,
-                TotalAssigned = _db.Orders.Count(o => o.shipper_id == s.id),
-                PendingDeliveries = _db.Orders.Count(o => o.shipper_id == s.id && o.status == "Shipped" && o.delivered_at == null),
-                DeliveredAwaitingConfirm = _db.Orders.Count(o => o.shipper_id == s.id && o.delivered_at != null && o.status == "Shipped"),
-                CompletedOrders = _db.Orders.Count(o => o.shipper_id == s.id && o.status == "Completed"),
-                CreatedAt = s.created_at
+                var stats = _db.Orders
+                    .AsNoTracking()
+                    .Where(o => o.shipper_id == s.id)
+                    .GroupBy(o => 1)
+                    .Select(g => new
+                    {
+                        TotalAssigned = g.Count(),
+                        PendingDeliveries = g.Count(o => o.status == "Shipped" && o.delivered_at == null),
+                        DeliveredAwaitingConfirm = g.Count(o => o.delivered_at != null && o.status == "Shipped"),
+                        CompletedOrders = g.Count(o => o.status == "Completed")
+                    })
+                    .FirstOrDefault();
+
+                return new ShipperStatsVM
+                {
+                    ShipperId = s.id,
+                    ShipperName = s.username,
+                    ShipperEmail = s.email,
+                    ShipperPhone = s.phone,
+                    TotalAssigned = stats?.TotalAssigned ?? 0,
+                    PendingDeliveries = stats?.PendingDeliveries ?? 0,
+                    DeliveredAwaitingConfirm = stats?.DeliveredAwaitingConfirm ?? 0,
+                    CompletedOrders = stats?.CompletedOrders ?? 0,
+                    CreatedAt = s.created_at
+                };
             }).OrderByDescending(s => s.CompletedOrders).ToList();
 
             return View(shipperStats);

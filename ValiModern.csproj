@@ -167,6 +167,7 @@
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
     <Compile Include="Controllers\ShipperController.cs" />
+    <Compile Include="Controllers\WarmUpController.cs" />
     <Compile Include="Filters\AuthorizeAdminAttribute.cs" />
     <Compile Include="Filters\AuthorizeShipperAttribute.cs" />
     <Compile Include="Filters\ShipperLayoutDataAttribute.cs" />
@@ -366,6 +367,8 @@
     <Content Include="Docs\OPTIMIZATION_COMPLETE.md" />
     <Content Include="Docs\QUICK_START_OPTIMIZATION.md" />
     <Content Include="Docs\ADMIN_OPTIMIZATION_COMPLETE.md" />
+    <Content Include="Docs\COLD_START_OPTIMIZATION.md" />
+    <Content Include="Docs\FINAL_ADMIN_CHECK.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\category-products.js" />
     <Content Include="Scripts\chat-signalr.js" />
