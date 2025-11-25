@@ -20,10 +20,6 @@
                class="btn @(ViewBag.Filter == "assigned" ? "btn-success" : "btn-outline-success")">
                 <i class="bi bi-box-seam me-1"></i>Pending (@Model.AssignedCount)
             </a>
-            <a href="@Url.Action("Index", new { filter = "delivered" })" 
-               class="btn @(ViewBag.Filter == "delivered" ? "btn-success" : "btn-outline-success")">
-                <i class="bi bi-check-circle me-1"></i>Completed (@Model.DeliveredCount)
-            </a>
         </div>
     </div>
 </div>
@@ -35,10 +31,6 @@
         @if (ViewBag.Filter == "assigned")
         {
             <text>No pending deliveries at the moment.</text>
-        }
-        else if (ViewBag.Filter == "delivered")
-        {
-            <text>No completed deliveries yet.</text>
         }
         else
         {

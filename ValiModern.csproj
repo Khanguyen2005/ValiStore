@@ -393,6 +393,7 @@
     <Content Include="SUMMARY_ADMIN_SHIPPER_MANAGEMENT.md" />
     <Content Include="SUMMARY_PROGRESS_BAR_FIX.md" />
     <Content Include="SUMMARY_ORDER_ID_FORMAT_FIX.md" />
+    <Content Include="SUMMARY_REMOVE_DUPLICATE_COMPLETED_FILTER.md" />
     <None Include="Web.config.AWS_BACKUP" />
     <None Include="Web.config.Debug.AWS_BACKUP">
       <DependentUpon>Web.config.AWS_BACKUP</DependentUpon>

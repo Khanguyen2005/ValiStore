@@ -14,7 +14,7 @@ namespace ValiModern.Controllers
         private readonly ValiModernDBEntities _db = new ValiModernDBEntities();
 
         // GET: Shipper/Delivery
-        public ActionResult Index(string filter = "assigned")
+        public ActionResult Index(string filter = "")
         {
             // User.Identity.Name now contains user ID
             int userId;
@@ -40,14 +40,9 @@ namespace ValiModern.Controllers
             // Calculate counts BEFORE filtering
             int totalCount = ordersQuery.Count();
             int assignedCount = ordersQuery.Count(o => o.delivered_at == null);
-            int deliveredCount = ordersQuery.Count(o => o.delivered_at != null);
 
             // L?c theo tr?ng thái
-            if (filter == "delivered")
-            {
-                ordersQuery = ordersQuery.Where(o => o.delivered_at != null);
-            }
-            else if (filter == "assigned")
+            if (filter == "assigned")
             {
                 ordersQuery = ordersQuery.Where(o => o.delivered_at == null);
             }
@@ -62,7 +57,7 @@ namespace ValiModern.Controllers
                 Orders = orders.Select(o => new ShipperOrderItemVM
                 {
                     OrderId = o.id,
-                    OrderCode = "#" + o.id.ToString("D6"),
+                    OrderCode = "#" + o.id,
                     OrderDate = o.order_date,
                     AssignedAt = o.assigned_at ?? DateTime.Now,
                     DeliveredAt = o.delivered_at,
@@ -75,7 +70,7 @@ namespace ValiModern.Controllers
                 }).ToList(),
                 TotalCount = totalCount,
                 AssignedCount = assignedCount,
-                DeliveredCount = deliveredCount,
+                DeliveredCount = 0, // Not used anymore
                 FilterStatus = filter
             };
 
@@ -118,7 +113,7 @@ namespace ValiModern.Controllers
             var vm = new ShipperOrderDetailsVM
             {
                 OrderId = order.id,
-                OrderCode = "#" + order.id.ToString("D6"),
+                OrderCode = "#" + order.id,
                 OrderDate = order.order_date,
                 AssignedAt = order.assigned_at ?? DateTime.Now,
                 DeliveredAt = order.delivered_at,
@@ -232,7 +227,7 @@ namespace ValiModern.Controllers
                 Orders = orders.Select(o => new ShipperOrderItemVM
                 {
                     OrderId = o.id,
-                    OrderCode = "#" + o.id.ToString("D6"),
+                    OrderCode = "#" + o.id,
                     OrderDate = o.order_date,
                     AssignedAt = o.assigned_at ?? DateTime.Now,
                     DeliveredAt = o.delivered_at,

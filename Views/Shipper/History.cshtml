@@ -72,7 +72,7 @@
                                         <td>
                                             <div>
                                                 <i class="bi bi-check-circle text-success me-1"></i>
-                                                @order.DeliveredAt?.ToString("dd/MM/yyyy HH:mm")
+                                                @(order.DeliveredAt.HasValue ? order.DeliveredAt.Value.ToString("dd/MM/yyyy HH:mm") : "Chưa giao")
                                             </div>
                                         </td>
                                         <td>

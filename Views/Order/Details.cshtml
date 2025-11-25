@@ -258,15 +258,15 @@
                                         </td>
                                         <td class="text-center">
                                             <span class="fw-semibold">
-                                                @item.Price.ToString("N0") <span class="currency">d</span>
+                                                @item.Price.ToString("N0") <span class="currency">đ</span>
                                             </span>
                                         </td>
                                         <td class="text-center">
-                                            <span class="badge bg-primary rounded-pill px-3 py-2">x@item.Quantity</span>
+                                            <span class="badge bg-primary rounded-pill px-3 py-2">@item.Quantity</span>
                                         </td>
                                         <td class="text-end pe-4">
                                             <strong class="text-success fs-6">
-                                                @item.Subtotal.ToString("N0") <span class="currency">d</span>
+                                                @item.Subtotal.ToString("N0") <span class="currency">đ</span>
                                             </strong>
                                         </td>
                                     </tr>
@@ -279,7 +279,7 @@
                                     </td>
                                     <td class="text-end pe-4 py-3">
                                         <strong class="text-success fs-4">
-                                            @Model.TotalAmount.ToString("N0") <span class="currency">d</span>
+                                            @Model.TotalAmount.ToString("N0") <span class="currency">đ</span>
                                         </strong>
                                     </td>
                                 </tr>
@@ -360,7 +360,7 @@
                                 <div class="payment-details">
                                     <div class="d-flex justify-content-between mb-2">
                                         <span class="text-muted">Amount:</span>
-                                        <strong class="text-success fs-6">@payment.Amount.ToString("N0") d</strong>
+                                        <strong class="text-success fs-6">@payment.Amount.ToString("N0") đ</strong>
                                     </div>
                                     
                                     @if (!string.IsNullOrEmpty(payment.TransactionId))
