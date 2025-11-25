@@ -301,6 +301,28 @@
     margin-top: 2.5rem;
 }
 
+/* Product Meta - Brand & Category Info (consistent with other views) */
+.product-meta {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: var(--gray-600, #6c757d);
+    margin-bottom: 0.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    align-items: center;
+}
+
+.product-meta span {
+    display: inline-flex;
+    align-items: center;
+}
+
+.product-meta i {
+    font-size: 0.65rem;
+    margin-right: 0.2rem;
+}
+
 .guide-card {
     transition: all 0.3s ease;
     cursor: pointer;

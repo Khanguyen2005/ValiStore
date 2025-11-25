@@ -18,27 +18,20 @@ namespace ValiModern.Controllers
             };
             using (var db = new ValiModernDBEntities())
             {
-                // Optimize: get banners
-                vm.Banners = db.Banners.OrderBy(b => b.id).ToList();
+                // OPTIMIZE: get banners with AsNoTracking
+                vm.Banners = db.Banners.AsNoTracking().OrderBy(b => b.id).ToList();
                 
-                // Optimize: get all categories and products in one go instead of N+1 queries
-                var categories = db.Categories.OrderBy(c => c.id).ToList();
+                // OPTIMIZE: get all categories with AsNoTracking
+                var categories = db.Categories.AsNoTracking().OrderBy(c => c.id).ToList();
                 
-                // Get all active products for these categories in ONE query
+                // Get all active products for these categories with brand & category info in ONE query
                 var categoryIds = categories.Select(c => c.id).ToList();
                 var allProducts = db.Products
+                    .AsNoTracking()
+                    .Include(p => p.Brand)
+                    .Include(p => p.Category)
                     .Where(p => p.is_active && categoryIds.Contains(p.category_id))
                     .OrderByDescending(p => p.sold)
-                    .Select(p => new {
-                        p.id,
-                        p.name,
-                        p.price,
-                        p.original_price,
-                        p.image_url,
-                        p.description,
-                        p.sold,
-                        p.category_id
-                    })
                     .ToList()
                     .GroupBy(p => p.category_id)
                     .ToDictionary(g => g.Key, g => g.Take(8).ToList());
@@ -55,7 +48,9 @@ namespace ValiModern.Controllers
                             original_price = p.original_price,
                             image_url = p.image_url,
                             description = p.description,
-                            sold = p.sold
+                            sold = p.sold,
+                            brand_name = p.Brand?.name,
+                            category_name = p.Category?.name
                         }).ToList()
                         : new System.Collections.Generic.List<ProductCardVM>();
                         
