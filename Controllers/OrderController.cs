@@ -238,6 +238,108 @@ namespace ValiModern.Controllers
             return RedirectToAction("Details", new { id = id });
         }
 
+        #region Customer Chat Methods
+
+        // GET: Order/GetCustomerMessages
+        [HttpGet]
+        public JsonResult GetCustomerMessages(int orderId)
+        {
+            try
+            {
+                int userId;
+                if (!int.TryParse(User.Identity.Name, out userId))
+                {
+                    return Json(new { success = false, message = "Unauthorized" }, JsonRequestBehavior.AllowGet);
+                }
+
+                // Verify customer owns this order
+                var order = _db.Orders.Find(orderId);
+                if (order == null || order.user_id != userId)
+                {
+                    return Json(new { success = false, message = "Order not found" }, JsonRequestBehavior.AllowGet);
+                }
+
+                // Get messages from database
+                var dbMessages = _db.Messages
+                    .Where(m => m.order_id == orderId)
+                    .OrderBy(m => m.created_at)
+                    .ToList();
+
+                // Format messages
+                var messages = dbMessages.Select(m => new
+                {
+                    isSent = m.sender_id == userId,
+                    message = m.message1,
+                    time = m.created_at.HasValue ? m.created_at.Value.ToString("HH:mm") : ""
+                }).ToList();
+
+                return Json(messages, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[Customer Chat] GetMessages Error: " + ex.Message);
+                return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        // POST: Order/SendCustomerMessage
+        [HttpPost]
+        public JsonResult SendCustomerMessage(int orderId, string message)
+        {
+            try
+            {
+                int userId;
+                if (!int.TryParse(User.Identity.Name, out userId))
+                {
+                    return Json(new { success = false, message = "Unauthorized" });
+                }
+
+                // Verify customer owns this order
+                var order = _db.Orders.Find(orderId);
+                if (order == null || order.user_id != userId)
+                {
+                    return Json(new { success = false, message = "Order not found" });
+                }
+
+                // Validate message
+                if (string.IsNullOrWhiteSpace(message) || message.Length > 500)
+                {
+                    return Json(new { success = false, message = "Invalid message" });
+                }
+
+                // Get shipper ID (receiver)
+                if (!order.shipper_id.HasValue)
+                {
+                    return Json(new { success = false, message = "No shipper assigned to this order" });
+                }
+
+                // Save message to database
+                var newMessage = new Message
+                {
+                    order_id = orderId,
+                    sender_id = userId,
+                    receiver_id = order.shipper_id.Value,
+                    message1 = message.Trim(),
+                    created_at = DateTime.Now,
+                    is_read = false
+                };
+
+                _db.Messages.Add(newMessage);
+                _db.SaveChanges();
+
+                System.Diagnostics.Debug.WriteLine("[Customer Chat] Message saved: Order " + orderId + ", Customer " + userId);
+
+                return Json(new { success = true, message = "Message sent successfully" });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[Customer Chat] SendMessage Error: " + ex.Message);
+                return Json(new { success = false, message = "Failed to send message" });
+            }
+        }
+
+        #endregion
+
         protected override void Dispose(bool disposing)
         {
             if (disposing) _db.Dispose();

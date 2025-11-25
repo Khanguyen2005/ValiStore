@@ -1,80 +1,100 @@
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ValiModern.Filters;
 using ValiModern.Models.EF;
 using ValiModern.Models.ViewModels;
+using ValiModern.Services;
 
 namespace ValiModern.Controllers
 {
     [AuthorizeShipper]
+    [ShipperLayoutData] // Inject layout data automatically
     public class ShipperController : Controller
     {
         private readonly ValiModernDBEntities _db = new ValiModernDBEntities();
+        private readonly ShipperService _shipperService;
 
-        // GET: Shipper/Delivery
-        public ActionResult Index(string filter = "")
+        public ShipperController()
         {
-            // User.Identity.Name now contains user ID
-            int userId;
-            if (!int.TryParse(User.Identity.Name, out userId))
+            _shipperService = new ShipperService(_db);
+        }
+
+        #region Helper Methods
+
+        /// <summary>
+        /// Get current shipper user ID from authentication
+        /// </summary>
+        private int? GetCurrentShipperId()
+        {
+            if (int.TryParse(User.Identity.Name, out int userId))
             {
-                TempData["Error"] = "Invalid user session.";
-                return RedirectToAction("Index", "Home");
+                return userId;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Validate current shipper and return user object
+        /// </summary>
+        private User GetCurrentShipper()
+        {
+            var userId = GetCurrentShipperId();
+            if (!userId.HasValue)
+            {
+                return null;
             }
 
-            var shipper = _db.Users.Find(userId);
+            var shipper = _shipperService.GetShipperByUserId(userId.Value);
             if (shipper == null || shipper.role != "shipper")
             {
-                TempData["Error"] = "You do not have permission to access this page.";
+                return null;
+            }
+
+            return shipper;
+        }
+
+        #endregion
+
+        // GET: Shipper/Index
+        public ActionResult Index(string filter = "", string search = "")
+        {
+            var shipper = GetCurrentShipper();
+            if (shipper == null)
+            {
+                TempData["Error"] = "Invalid shipper session.";
                 return RedirectToAction("Index", "Home");
             }
 
-            var ordersQuery = _db.Orders
-                .Include(o => o.User)
-                .Include(o => o.Order_Details)
-                .Where(o => o.shipper_id == shipper.id && o.status == "Shipped");
-
-            // Calculate counts BEFORE filtering
-            int totalCount = ordersQuery.Count();
-            int assignedCount = ordersQuery.Count(o => o.delivered_at == null);
-
-            // L?c theo tr?ng thái
-            if (filter == "assigned")
+            // Get orders using service
+            List<Order> orders;
+            if (!string.IsNullOrWhiteSpace(search))
             {
-                ordersQuery = ordersQuery.Where(o => o.delivered_at == null);
+                orders = _shipperService.SearchOrders(shipper.id, search, filter);
+                ViewBag.SearchTerm = search;
             }
-            // else: show all (no additional filter)
+            else
+            {
+                orders = _shipperService.GetShipperOrders(shipper.id, filter);
+            }
 
-            var orders = ordersQuery
-                .OrderByDescending(o => o.assigned_at)
-                .ToList();
+            // Get statistics
+            var stats = _shipperService.GetShipperStats(shipper.id);
+
+            // Calculate counts
+            int totalCount = orders.Count;
+            int assignedCount = orders.Count(o => o.delivered_at == null);
 
             var vm = new ShipperDeliveryListVM
             {
-                Orders = orders.Select(o => new ShipperOrderItemVM
-                {
-                    OrderId = o.id,
-                    OrderCode = "#" + o.id,
-                    OrderDate = o.order_date,
-                    AssignedAt = o.assigned_at ?? DateTime.Now,
-                    DeliveredAt = o.delivered_at,
-                    TotalAmount = o.total_amount,
-                    Phone = o.phone,
-                    ShippingAddress = o.shipping_address,
-                    Status = o.status,
-                    // Legacy total quantity
-                    ItemCount = o.Order_Details.Sum(od => od.quantity),
-                    // New explicit counts
-                    TotalQuantity = o.Order_Details.Sum(od => od.quantity),
-                    ProductCount = o.Order_Details.Select(od => od.product_id).Distinct().Count(),
-                    CustomerName = o.User?.username ?? "N/A"
-                }).ToList(),
+                Orders = orders.Select(o => _shipperService.MapToOrderItemVM(o)).ToList(),
                 TotalCount = totalCount,
                 AssignedCount = assignedCount,
-                DeliveredCount = 0, // Not used anymore
-                FilterStatus = filter
+                DeliveredCount = 0,
+                FilterStatus = filter,
+                Stats = stats
             };
 
             ViewBag.Filter = filter;
@@ -85,27 +105,14 @@ namespace ValiModern.Controllers
         // GET: Shipper/Details/5
         public ActionResult Details(int id)
         {
-            // User.Identity.Name now contains user ID
-            int userId;
-            if (!int.TryParse(User.Identity.Name, out userId))
+            var shipper = GetCurrentShipper();
+            if (shipper == null)
             {
-                TempData["Error"] = "Invalid user session.";
+                TempData["Error"] = "Invalid shipper session.";
                 return RedirectToAction("Index");
             }
 
-            var shipper = _db.Users.Find(userId);
-            if (shipper == null || shipper.role != "shipper")
-            {
-                TempData["Error"] = "You do not have permission to access this.";
-                return RedirectToAction("Index");
-            }
-
-            var order = _db.Orders
-                .Include(o => o.User)
-                .Include(o => o.Order_Details.Select(od => od.Product))
-                .Include(o => o.Order_Details.Select(od => od.Color))
-                .Include(o => o.Order_Details.Select(od => od.Size))
-                .FirstOrDefault(o => o.id == id && o.shipper_id == shipper.id);
+            var order = _shipperService.GetOrderDetails(id, shipper.id);
 
             if (order == null)
             {
@@ -113,33 +120,7 @@ namespace ValiModern.Controllers
                 return RedirectToAction("Index");
             }
 
-            var vm = new ShipperOrderDetailsVM
-            {
-                OrderId = order.id,
-                OrderCode = "#" + order.id,
-                OrderDate = order.order_date,
-                AssignedAt = order.assigned_at ?? DateTime.Now,
-                DeliveredAt = order.delivered_at,
-                DeliveryNote = order.delivery_note,
-                TotalAmount = order.total_amount,
-                Phone = order.phone,
-                ShippingAddress = order.shipping_address,
-                Status = order.status,
-                CustomerName = order.User?.username ?? "N/A",
-                CustomerEmail = order.User?.email ?? "N/A",
-                CustomerPhone = order.User?.phone ?? order.phone,
-                Items = order.Order_Details.Select(od => new ShipperOrderItemDetailVM
-                {
-                    ProductId = od.product_id,
-                    ProductName = od.Product?.name ?? "N/A",
-                    ProductImageUrl = od.Product?.image_url,
-                    Quantity = od.quantity,
-                    Price = od.price,
-                    ColorName = od.Color?.name,
-                    ColorCode = od.Color?.color_code,
-                    SizeName = od.Size?.name
-                }).ToList()
-            };
+            var vm = _shipperService.MapToOrderDetailsVM(order);
 
             return View(vm);
         }
@@ -149,102 +130,45 @@ namespace ValiModern.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult MarkDelivered(int id, string deliveryNote)
         {
-            // User.Identity.Name now contains user ID
-            int userId;
-            if (!int.TryParse(User.Identity.Name, out userId))
+            var shipper = GetCurrentShipper();
+            if (shipper == null)
             {
-                TempData["Error"] = "Invalid user session.";
+                TempData["Error"] = "Invalid shipper session.";
                 return RedirectToAction("Index");
             }
 
-            var shipper = _db.Users.Find(userId);
-            if (shipper == null || shipper.role != "shipper")
+            var result = _shipperService.MarkAsDelivered(id, shipper.id, deliveryNote);
+
+            if (result.IsSuccess)
             {
-                TempData["Error"] = "You do not have permission to perform this action.";
-                return RedirectToAction("Index");
+                TempData["Success"] = result.Message;
+            }
+            else
+            {
+                TempData["Error"] = result.Message;
             }
 
-            var order = _db.Orders.FirstOrDefault(o => o.id == id && o.shipper_id == shipper.id);
-
-            if (order == null)
-            {
-                TempData["Error"] = "Order not found.";
-                return RedirectToAction("Index");
-            }
-
-            if (order.delivered_at != null)
-            {
-                TempData["Error"] = "Order has already been marked as delivered.";
-                return RedirectToAction("Details", new { id });
-            }
-
-            // ?ánh d?u ?ã giao (GI? NGUYÊN STATUS = "Shipped")
-            // Admin ho?c customer s? xác nh?n Completed sau
-            order.delivered_at = DateTime.Now;
-            order.delivery_note = deliveryNote;
-            order.updated_at = DateTime.Now;
-
-            _db.SaveChanges();
-
-            TempData["Success"] = "Successfully marked as delivered! Order is waiting for customer confirmation.";
             return RedirectToAction("Details", new { id });
         }
 
-        // GET: Shipper/History - View completed delivery history
+        // GET: Shipper/History
         public ActionResult History(int page = 1, int pageSize = 20)
         {
-            // User.Identity.Name now contains user ID
-            int userId;
-            if (!int.TryParse(User.Identity.Name, out userId))
+            var shipper = GetCurrentShipper();
+            if (shipper == null)
             {
-                TempData["Error"] = "Invalid user session.";
+                TempData["Error"] = "Invalid shipper session.";
                 return RedirectToAction("Index", "Home");
             }
 
-            var shipper = _db.Users.Find(userId);
-            if (shipper == null || shipper.role != "shipper")
-            {
-                TempData["Error"] = "You do not have permission to access this page.";
-                return RedirectToAction("Index", "Home");
-            }
+            int totalCount;
+            var orders = _shipperService.GetDeliveryHistory(shipper.id, page, pageSize, out totalCount);
 
-            // Get all completed deliveries (delivered_at is not null AND status = "Completed")
-            var completedQuery = _db.Orders
-                .Include(o => o.User)
-                .Include(o => o.Order_Details)
-                .Where(o => o.shipper_id == shipper.id && 
-                           o.delivered_at != null && 
-                           o.status == "Completed")
-                .OrderByDescending(o => o.delivered_at);
-
-            int totalCount = completedQuery.Count();
             int totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
-            
-            var orders = completedQuery
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .ToList();
 
             var vm = new ShipperHistoryVM
             {
-                Orders = orders.Select(o => new ShipperOrderItemVM
-                {
-                    OrderId = o.id,
-                    OrderCode = "#" + o.id,
-                    OrderDate = o.order_date,
-                    AssignedAt = o.assigned_at ?? DateTime.Now,
-                    DeliveredAt = o.delivered_at,
-                    TotalAmount = o.total_amount,
-                    Phone = o.phone,
-                    ShippingAddress = o.shipping_address,
-                    Status = o.status,
-                    // Legacy total quantity
-                    ItemCount = o.Order_Details.Sum(od => od.quantity),
-                    // New explicit counts
-                    TotalQuantity = o.Order_Details.Sum(od => od.quantity),
-                    ProductCount = o.Order_Details.Select(od => od.product_id).Distinct().Count(),
-                    CustomerName = o.User?.username ?? "N/A"
-                }).ToList(),
+                Orders = orders.Select(o => _shipperService.MapToOrderItemVM(o)).ToList(),
                 CurrentPage = page,
                 TotalPages = totalPages,
                 TotalCount = totalCount,
@@ -254,9 +178,112 @@ namespace ValiModern.Controllers
             return View(vm);
         }
 
+        #region Chat Methods
+
+        // GET: Shipper/GetMessages - Load chat messages for an order
+        [HttpGet]
+        public JsonResult GetMessages(int orderId)
+        {
+            try
+            {
+                var shipper = GetCurrentShipper();
+                if (shipper == null)
+                {
+                    return Json(new { success = false, message = "Unauthorized" }, JsonRequestBehavior.AllowGet);
+                }
+
+                // Verify shipper owns this order
+                var order = _db.Orders.Find(orderId);
+                if (order == null || order.shipper_id != shipper.id)
+                {
+                    return Json(new { success = false, message = "Order not found" }, JsonRequestBehavior.AllowGet);
+                }
+
+                // Get messages from database
+                var dbMessages = _db.Messages
+                    .Where(m => m.order_id == orderId)
+                    .OrderBy(m => m.created_at)
+                    .ToList();
+
+                // Format in memory
+                var messages = dbMessages.Select(m => new
+                {
+                    isSent = m.sender_id == shipper.id,
+                    message = m.message1,
+                    time = m.created_at.HasValue ? m.created_at.Value.ToString("HH:mm") : ""
+                }).ToList();
+                
+                return Json(messages, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[Chat] GetMessages Error: " + ex.Message);
+                return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        // POST: Shipper/SendMessage - Send a chat message
+        [HttpPost]
+        public JsonResult SendMessage(int orderId, string message)
+        {
+            try
+            {
+                var shipper = GetCurrentShipper();
+                if (shipper == null)
+                {
+                    return Json(new { success = false, message = "Unauthorized" });
+                }
+
+                // Verify shipper owns this order
+                var order = _db.Orders.Find(orderId);
+                if (order == null || order.shipper_id != shipper.id)
+                {
+                    return Json(new { success = false, message = "Order not found" });
+                }
+
+                // Validate message
+                if (string.IsNullOrWhiteSpace(message) || message.Length > 500)
+                {
+                    return Json(new { success = false, message = "Invalid message" });
+                }
+
+                // Get customer ID from order
+                int customerId = order.user_id;
+
+                // Save message to database
+                var newMessage = new Message
+                {
+                    order_id = orderId,
+                    sender_id = shipper.id,
+                    receiver_id = customerId,
+                    message1 = message.Trim(),
+                    created_at = DateTime.Now,
+                    is_read = false
+                };
+
+                _db.Messages.Add(newMessage);
+                _db.SaveChanges();
+
+                System.Diagnostics.Debug.WriteLine("[Chat] Message saved: Order " + orderId + ", Shipper " + shipper.id);
+                
+                return Json(new { success = true, message = "Message sent successfully" });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine("[Chat] SendMessage Error: " + ex.Message);
+                return Json(new { success = false, message = "Failed to send message" });
+            }
+        }
+
+        #endregion
+
         protected override void Dispose(bool disposing)
         {
-            if (disposing) _db.Dispose();
+            if (disposing)
+            {
+                _shipperService?.Dispose();
+                _db?.Dispose();
+            }
             base.Dispose(disposing);
         }
     }
