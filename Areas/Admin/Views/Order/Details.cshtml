@@ -126,7 +126,7 @@
                     <div class="card-body">
                         @if (ViewBag.CurrentShipperId != null)
                         {
-                            <!-- Đã có shipper được gán -->
+                            <!-- Shipper assigned -->
                             <div class="alert alert-info mb-3">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
@@ -153,7 +153,7 @@
                             {
                                 <form method="post" action="@Url.Action("UnassignShipper", new { id = Model.Id })" class="d-inline">
                                     @Html.AntiForgeryToken()
-                                    <button type="submit" class="btn btn-warning btn-sm" onclick="return confirm('Bạn có chắc muốn hủy gán shipper này?')">
+                                    <button type="submit" class="btn btn-warning btn-sm" onclick="return confirm('Are you sure you want to unassign this shipper?')">
                                         <i class="bi bi-x-circle me-1"></i>Unassign Shipper
                                     </button>
                                 </form>
@@ -161,7 +161,7 @@
                         }
                         else if (Model.Status == "Confirmed")
                         {
-                            <!-- Chưa có shipper, hiển thị form để assign -->
+                            <!-- No shipper assigned, show form to assign -->
                             <form method="post" action="@Url.Action("AssignShipper", new { id = Model.Id })">
                                 @Html.AntiForgeryToken()
                                 <div class="row g-3 align-items-end">
@@ -343,23 +343,46 @@
                 <div class="card-body">
                     <form method="post" action="@Url.Action("UpdateStatus", new { id = Model.Id })">
                         @Html.AntiForgeryToken()
-                        <div class="row g-3 align-items-end">
-                            <div class="col-md-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
                                 <label class="form-label">New Status</label>
                                 <select name="status" class="form-select" required>
                                     <option value="">-- Select Status --</option>
-                                    <option value="Pending" @(Model.Status == "Pending" ? "selected" : "")>Pending</option>
-                                    <option value="Confirmed" @(Model.Status == "Confirmed" ? "selected" : "")>Confirmed</option>
-                                    <option value="Shipped" @(Model.Status == "Shipped" ? "selected" : "")>Shipped</option>
-                                    <option value="Completed" @(Model.Status == "Completed" ? "selected" : "")>Completed</option>
-                                    <option value="Cancelled" @(Model.Status == "Cancelled" ? "selected" : "")>Cancelled</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Confirmed">Confirmed</option>
+                                    <option value="Shipped">Shipped</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Cancelled">Cancelled</option>
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 d-flex align-items-end">
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-check-circle"></i> Update Status
+                                    <i class="bi bi-save"></i> Update Status
                                 </button>
                             </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Order -->
+        <div class="col-12">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h6 class="mb-0">Danger Zone</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="@Url.Action("Delete", new { id = Model.Id })" onsubmit="return confirm('Are you sure you want to delete this order? This action cannot be undone.')">
+                        @Html.AntiForgeryToken()
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>Delete this order</strong>
+                                <p class="text-muted mb-0 small">Once deleted, this order cannot be recovered. Stock will be restored.</p>
+                            </div>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Delete Order
+                            </button>
                         </div>
                     </form>
                 </div>

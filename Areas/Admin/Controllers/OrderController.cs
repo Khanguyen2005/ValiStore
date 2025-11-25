@@ -142,7 +142,7 @@ namespace ValiModern.Areas.Admin.Controllers
                 }).ToList()
             };
 
-            // L?y danh sách shipper ?? hi?n th? dropdown
+            // Get shipper list for dropdown
             ViewBag.Shippers = _db.Users
                 .Where(u => u.role == "shipper")
                 .OrderBy(u => u.username)
@@ -153,7 +153,7 @@ namespace ValiModern.Areas.Admin.Controllers
                 })
                 .ToList();
 
-            // Thông tin shipper hi?n t?i (n?u có) - User1 = Shipper
+            // Current shipper info (if assigned) - User1 = Shipper
             ViewBag.CurrentShipperId = order.shipper_id;
             ViewBag.CurrentShipperName = order.User1?.username; // User1 instead of Shipper
             ViewBag.AssignedAt = order.assigned_at;
@@ -222,30 +222,30 @@ namespace ValiModern.Areas.Admin.Controllers
             var order = _db.Orders.Find(id);
             if (order == null) return HttpNotFound();
 
-            // Kiem tra order phai o trang thai Confirmed moi duoc assign shipper
+            // Check order must be in Confirmed status to assign shipper
             if (order.status != "Confirmed")
             {
-                TempData["Error"] = "Chi co the gan shipper cho don hang da Confirmed.";
+                TempData["Error"] = "Can only assign shipper to Confirmed orders.";
                 return RedirectToAction("Details", new { id });
             }
 
-            // Kiem tra shipper co ton tai khong
+            // Check if shipper exists
             var shipper = _db.Users.Find(shipperId);
             if (shipper == null || shipper.role != "shipper")
             {
-                TempData["Error"] = "Shipper khong ton tai hoac khong hop le.";
+                TempData["Error"] = "Shipper does not exist or is invalid.";
                 return RedirectToAction("Details", new { id });
             }
 
-            // Gan shipper va cap nhat status
+            // Assign shipper and update status
             order.shipper_id = shipperId;
             order.assigned_at = DateTime.Now;
-            order.status = "Shipped"; // Tu dong chuyen sang Shipped khi assign
+            order.status = "Shipped"; // Auto change to Shipped when assigned
             order.updated_at = DateTime.Now;
 
             _db.SaveChanges();
 
-            TempData["Success"] = string.Format("Da gan don hang cho shipper {0}.", shipper.username);
+            TempData["Success"] = string.Format("Order assigned to shipper {0}.", shipper.username);
             return RedirectToAction("Details", new { id });
         }
 
@@ -259,21 +259,21 @@ namespace ValiModern.Areas.Admin.Controllers
 
             if (order.shipper_id == null)
             {
-                TempData["Error"] = "Don hang chua duoc gan shipper.";
+                TempData["Error"] = "Order has not been assigned to a shipper.";
                 return RedirectToAction("Details", new { id });
             }
 
-            // Huy gan shipper
+            // Unassign shipper
             order.shipper_id = null;
             order.assigned_at = null;
             order.delivered_at = null;
             order.delivery_note = null;
-            order.status = "Confirmed"; // Quay lai Confirmed
+            order.status = "Confirmed"; // Revert to Confirmed
             order.updated_at = DateTime.Now;
 
             _db.SaveChanges();
 
-            TempData["Success"] = "Da huy gan shipper.";
+            TempData["Success"] = "Shipper assignment removed.";
             return RedirectToAction("Details", new { id });
         }
 

@@ -403,6 +403,9 @@
     <Content Include="SUMMARY_CHECKOUT_ORDER_ID_FORMAT_FIX.md" />
     <Content Include="SUMMARY_CART_BADGE_COUNT_FIX.md" />
     <Content Include="SUMMARY_CART_PAGE_UI_FIXES.md" />
+    <Content Include="SUMMARY_VIETNAMESE_TO_ENGLISH_TRANSLATION.md" />
+    <Content Include="SUMMARY_PRODUCT_DETAILS_REDESIGN.md" />
+    <Content Include="SUMMARY_PRODUCT_DETAILS_BLUE_BUTTON_SOLD_FIX.md" />
     <None Include="Web.config.AWS_BACKUP" />
     <None Include="Web.config.Debug.AWS_BACKUP">
       <DependentUpon>Web.config.AWS_BACKUP</DependentUpon>
