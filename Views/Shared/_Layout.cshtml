@@ -360,11 +360,11 @@
     <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header bg-primary text-white border-0">
-                    <h5 class="modal-title" id="loginModalLabel">
+                <div class="modal-header bg-primary text-white border-0 justify-content-center position-relative">
+                    <h5 class="modal-title text-center w-100" id="loginModalLabel">
                         <i class="bi bi-box-arrow-in-right me-2"></i>Welcome Back
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <form id="loginForm">
@@ -406,8 +406,9 @@
                             </label>
                         </div>
                         
-                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-3" id="loginBtn">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-3 d-flex align-items-center justify-content-center" id="loginBtn">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>
+                            <span>Login</span>
                         </button>
                         
                         <div class="text-center">
@@ -428,11 +429,11 @@
     <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content border-0 shadow-lg">
-                <div class="modal-header bg-success text-white border-0">
-                    <h5 class="modal-title" id="registerModalLabel">
+                <div class="modal-header bg-success text-white border-0 justify-content-center position-relative">
+                    <h5 class="modal-title text-center w-100" id="registerModalLabel">
                         <i class="bi bi-person-plus me-2"></i>Create Account
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white position-absolute end-0 me-3" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-4">
                     <form id="registerForm">
@@ -469,8 +470,9 @@
                             <div class="invalid-feedback"></div>
                         </div>
                         
-                        <button type="submit" class="btn btn-success btn-lg w-100 mb-3" id="registerBtn">
-                            <i class="bi bi-person-plus me-2"></i>Create Account
+                        <button type="submit" class="btn btn-success btn-lg w-100 mb-3 d-flex align-items-center justify-content-center" id="registerBtn">
+                            <i class="bi bi-person-plus me-2"></i>
+                            <span>Create Account</span>
                         </button>
                         
                         <div class="text-center">
@@ -547,8 +549,8 @@
         console.log('[Login] Form submitted');
         console.log('[Login] Form data:', formData);
         
-        // Disable button
-        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Logging in...');
+        // Disable button with centered content
+        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span><span>Logging in...</span>');
         errorDiv.addClass('d-none');
         
         $.ajax({
@@ -566,14 +568,14 @@
                     console.log('[Login] Failed:', response.message);
                     // Show error
                     errorDiv.html('<i class="bi bi-exclamation-triangle me-2"></i>' + (response.message || 'Login failed')).removeClass('d-none');
-                    btn.prop('disabled', false).html('<i class="bi bi-box-arrow-in-right me-2"></i>Login');
+                    btn.prop('disabled', false).html('<i class="bi bi-box-arrow-in-right me-2"></i><span>Login</span>');
                 }
             },
             error: function(xhr, status, error) {
                 console.error('[Login] Ajax error:', status, error);
                 console.error('[Login] Response:', xhr.responseText);
                 errorDiv.html('<i class="bi bi-exclamation-triangle me-2"></i>An error occurred. Please try again.').removeClass('d-none');
-                btn.prop('disabled', false).html('<i class="bi bi-box-arrow-in-right me-2"></i>Login');
+                btn.prop('disabled', false).html('<i class="bi bi-box-arrow-in-right me-2"></i><span>Login</span>');
             }
         });
     });
@@ -598,8 +600,8 @@
             return;
         }
         
-        // Disable button
-        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Creating account...');
+        // Disable button with centered content
+        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span><span>Creating account...</span>');
         errorDiv.addClass('d-none');
         
         $.ajax({
@@ -613,12 +615,12 @@
                 } else {
                     // Show error
                     errorDiv.html('<i class="bi bi-exclamation-triangle me-2"></i>' + (response.message || 'Registration failed')).removeClass('d-none');
-                    btn.prop('disabled', false).html('<i class="bi bi-person-plus me-2"></i>Create Account');
+                    btn.prop('disabled', false).html('<i class="bi bi-person-plus me-2"></i><span>Create Account</span>');
                 }
             },
             error: function() {
                 errorDiv.html('<i class="bi bi-exclamation-triangle me-2"></i>An error occurred. Please try again.').removeClass('d-none');
-                btn.prop('disabled', false).html('<i class="bi bi-person-plus me-2"></i>Create Account');
+                btn.prop('disabled', false).html('<i class="bi bi-person-plus me-2"></i><span>Create Account</span>');
             }
         });
     });
