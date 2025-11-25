@@ -16,10 +16,16 @@ namespace ValiModern.Controllers
         // GET: Shipper/Delivery
         public ActionResult Index(string filter = "assigned")
         {
-            var email = User.Identity.Name;
-            var shipper = _db.Users.FirstOrDefault(u => u.email == email && u.role == "shipper");
+            // User.Identity.Name now contains user ID
+            int userId;
+            if (!int.TryParse(User.Identity.Name, out userId))
+            {
+                TempData["Error"] = "Invalid user session.";
+                return RedirectToAction("Index", "Home");
+            }
 
-            if (shipper == null)
+            var shipper = _db.Users.Find(userId);
+            if (shipper == null || shipper.role != "shipper")
             {
                 TempData["Error"] = "You do not have permission to access this page.";
                 return RedirectToAction("Index", "Home");
@@ -81,10 +87,16 @@ namespace ValiModern.Controllers
         // GET: Shipper/Details/5
         public ActionResult Details(int id)
         {
-            var email = User.Identity.Name;
-            var shipper = _db.Users.FirstOrDefault(u => u.email == email && u.role == "shipper");
+            // User.Identity.Name now contains user ID
+            int userId;
+            if (!int.TryParse(User.Identity.Name, out userId))
+            {
+                TempData["Error"] = "Invalid user session.";
+                return RedirectToAction("Index");
+            }
 
-            if (shipper == null)
+            var shipper = _db.Users.Find(userId);
+            if (shipper == null || shipper.role != "shipper")
             {
                 TempData["Error"] = "You do not have permission to access this.";
                 return RedirectToAction("Index");
@@ -139,10 +151,16 @@ namespace ValiModern.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult MarkDelivered(int id, string deliveryNote)
         {
-            var email = User.Identity.Name;
-            var shipper = _db.Users.FirstOrDefault(u => u.email == email && u.role == "shipper");
+            // User.Identity.Name now contains user ID
+            int userId;
+            if (!int.TryParse(User.Identity.Name, out userId))
+            {
+                TempData["Error"] = "Invalid user session.";
+                return RedirectToAction("Index");
+            }
 
-            if (shipper == null)
+            var shipper = _db.Users.Find(userId);
+            if (shipper == null || shipper.role != "shipper")
             {
                 TempData["Error"] = "You do not have permission to perform this action.";
                 return RedirectToAction("Index");
@@ -172,6 +190,66 @@ namespace ValiModern.Controllers
 
             TempData["Success"] = "Successfully marked as delivered! Order is waiting for customer confirmation.";
             return RedirectToAction("Details", new { id });
+        }
+
+        // GET: Shipper/History - View completed delivery history
+        public ActionResult History(int page = 1, int pageSize = 20)
+        {
+            // User.Identity.Name now contains user ID
+            int userId;
+            if (!int.TryParse(User.Identity.Name, out userId))
+            {
+                TempData["Error"] = "Invalid user session.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            var shipper = _db.Users.Find(userId);
+            if (shipper == null || shipper.role != "shipper")
+            {
+                TempData["Error"] = "You do not have permission to access this page.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Get all completed deliveries (delivered_at is not null AND status = "Completed")
+            var completedQuery = _db.Orders
+                .Include(o => o.User)
+                .Include(o => o.Order_Details)
+                .Where(o => o.shipper_id == shipper.id && 
+                           o.delivered_at != null && 
+                           o.status == "Completed")
+                .OrderByDescending(o => o.delivered_at);
+
+            int totalCount = completedQuery.Count();
+            int totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            
+            var orders = completedQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var vm = new ShipperHistoryVM
+            {
+                Orders = orders.Select(o => new ShipperOrderItemVM
+                {
+                    OrderId = o.id,
+                    OrderCode = "#" + o.id.ToString("D6"),
+                    OrderDate = o.order_date,
+                    AssignedAt = o.assigned_at ?? DateTime.Now,
+                    DeliveredAt = o.delivered_at,
+                    TotalAmount = o.total_amount,
+                    Phone = o.phone,
+                    ShippingAddress = o.shipping_address,
+                    Status = o.status,
+                    ItemCount = o.Order_Details.Sum(od => od.quantity),
+                    CustomerName = o.User?.username ?? "N/A"
+                }).ToList(),
+                CurrentPage = page,
+                TotalPages = totalPages,
+                TotalCount = totalCount,
+                PageSize = pageSize
+            };
+
+            return View(vm);
         }
 
         protected override void Dispose(bool disposing)

@@ -16,9 +16,15 @@ namespace ValiModern.Controllers
         [Authorize]
         public ActionResult Index()
         {
-            var email = User.Identity.Name;
-            var user = _db.Users.FirstOrDefault(u => u.email == email);
-            
+            // User.Identity.Name now contains user ID
+            int userId;
+            if (!int.TryParse(User.Identity.Name, out userId))
+            {
+                TempData["Error"] = "Invalid user session.";
+                return RedirectToAction("Login");
+            }
+
+            var user = _db.Users.Find(userId);
             if (user == null)
             {
                 TempData["Error"] = "User not found.";
@@ -52,9 +58,14 @@ namespace ValiModern.Controllers
                 return View("Index", model);
             }
 
-            var email = User.Identity.Name;
-            var user = _db.Users.FirstOrDefault(u => u.email == email);
-            
+            int userId;
+            if (!int.TryParse(User.Identity.Name, out userId))
+            {
+                TempData["Error"] = "Invalid user session.";
+                return RedirectToAction("Login");
+            }
+
+            var user = _db.Users.Find(userId);
             if (user == null)
             {
                 TempData["Error"] = "User not found.";
@@ -72,7 +83,9 @@ namespace ValiModern.Controllers
                 _db.SaveChanges();
                 
                 // Update session
-                Session["DisplayName"] = string.IsNullOrWhiteSpace(user.username) ? user.email : user.username;
+                Session["DisplayName"] = string.IsNullOrWhiteSpace(user.username) 
+                    ? (string.IsNullOrWhiteSpace(user.email) ? "User #" + user.id : user.email) 
+                    : user.username;
                 
                 TempData["Success"] = "Profile updated successfully!";
                 return RedirectToAction("Index");
@@ -102,9 +115,14 @@ namespace ValiModern.Controllers
                 return View(model);
             }
 
-            var email = User.Identity.Name;
-            var user = _db.Users.FirstOrDefault(u => u.email == email);
-            
+            int userId;
+            if (!int.TryParse(User.Identity.Name, out userId))
+            {
+                TempData["Error"] = "Invalid user session.";
+                return RedirectToAction("Login");
+            }
+
+            var user = _db.Users.Find(userId);
             if (user == null)
             {
                 TempData["Error"] = "User not found.";
@@ -176,11 +194,11 @@ namespace ValiModern.Controllers
             _db.Users.Add(user);
             _db.SaveChanges();
 
-            // Create auth ticket with role in UserData
+            // FIX: Store user.id in ticket.Name instead of email
             var role = user.is_admin ? "admin" : "member";
             var ticket = new FormsAuthenticationTicket(
                 1,
-                user.email,
+                user.id.ToString(), // CHANGED: Store ID instead of email
                 DateTime.Now,
                 DateTime.Now.AddMinutes(60),
                 false,
@@ -198,6 +216,8 @@ namespace ValiModern.Controllers
 
             // For UI only
             Session["DisplayName"] = string.IsNullOrWhiteSpace(user.username) ? user.email : user.username;
+            Session["UserId"] = user.id;
+            Session["UserRole"] = role;
 
             return RedirectToAction("Index", "Home");
         }
@@ -239,9 +259,10 @@ namespace ValiModern.Controllers
                 role = "shipper";
             }
 
+            // FIX: Store user.id in ticket.Name instead of email
             var ticket = new FormsAuthenticationTicket(
                 1,
-                user.email,
+                user.id.ToString(), // CHANGED: Store ID instead of email
                 DateTime.Now,
                 DateTime.Now.AddDays(model.RememberMe ? 14 : 1),
                 model.RememberMe,
@@ -262,7 +283,9 @@ namespace ValiModern.Controllers
             Response.Cookies.Add(cookie);
 
             // Store in session for UI
-            Session["DisplayName"] = string.IsNullOrWhiteSpace(user.username) ? user.email : user.username;
+            Session["DisplayName"] = string.IsNullOrWhiteSpace(user.username) 
+                ? (string.IsNullOrWhiteSpace(user.email) ? "User #" + user.id : user.email)
+                : user.username;
             Session["UserRole"] = role;
             Session["UserId"] = user.id;
 

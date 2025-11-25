@@ -138,6 +138,7 @@
     <Compile Include="Areas\Admin\Controllers\OrderController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductImagesController.cs" />
+    <Compile Include="Areas\Admin\Controllers\ShipperManagementController.cs" />
     <Compile Include="Areas\Admin\Controllers\SizeController.cs" />
     <Compile Include="Areas\Admin\Controllers\UserController.cs" />
     <Compile Include="Binders\DecimalModelBinder.cs" />
@@ -322,6 +323,11 @@
     <Content Include="DOCS_FIX_LOGOUT_ANTIFORGERY_ERROR.md" />
     <Content Include="DOCS_FIX_GHOST_AUTHENTICATION.md" />
     <Content Include="DOCS_FIX_USER_ROLES_AND_MY_ORDERS.md" />
+    <Content Include="DOCS_FIX_ANTIFORGERY_NAMEIDENTIFIER.md" />
+    <Content Include="Areas\Admin\Views\Order\ShipperDeliveries.cshtml" />
+    <Content Include="DOCS_SHIPPER_DELIVERY_HISTORY.md" />
+    <Content Include="ADMIN_SHIPPER_QUICK_GUIDE.md" />
+    <Content Include="Areas\Admin\Views\ShipperManagement\Index.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\category-products.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
@@ -382,6 +388,11 @@
     <Content Include="Views\Account\ChangePassword.cshtml" />
     <Content Include="SUMMARY_PROFILE_VIEW_AND_ICON_SPACING.md" />
     <Content Include="SUMMARY_ICON_CONSISTENCY_FIX.md" />
+    <Content Include="Views\Shipper\History.cshtml" />
+    <Content Include="SUMMARY_SHIPPER_DELIVERY_HISTORY.md" />
+    <Content Include="SUMMARY_ADMIN_SHIPPER_MANAGEMENT.md" />
+    <Content Include="SUMMARY_PROGRESS_BAR_FIX.md" />
+    <Content Include="SUMMARY_ORDER_ID_FORMAT_FIX.md" />
     <None Include="Web.config.AWS_BACKUP" />
     <None Include="Web.config.Debug.AWS_BACKUP">
       <DependentUpon>Web.config.AWS_BACKUP</DependentUpon>

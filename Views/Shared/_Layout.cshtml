@@ -8,12 +8,6 @@
     // Check authentication state
     bool isAuthenticated = (User != null && User.Identity != null && User.Identity.IsAuthenticated);
     
-    // DEBUG: Write to browser console (C# 5.0 compatible)
-    string userExists = (User != null ? "exists" : "null");
-    string identityExists = (User != null && User.Identity != null ? "exists" : "null");
-    string isAuthStr = (User != null && User.Identity != null ? User.Identity.IsAuthenticated.ToString() : "null");
-    var debugInfo = string.Format("Auth: {0}, User: {1}, Identity: {2}, IsAuth: {3}", isAuthenticated, userExists, identityExists, isAuthStr);
-    
     // Initialize variables
     bool isAdmin = false;
     bool isShipper = false;
@@ -57,32 +51,40 @@
             System.Diagnostics.Debug.WriteLine("[DEBUG] Error getting session data: " + ex.Message);
         }
 
-        // Fallback: If session doesn't have displayName, get from User.Identity
+        // Fallback: If session doesn't have displayName, rebuild from database
         if (string.IsNullOrWhiteSpace(displayName) && User.Identity != null)
         {
-            displayName = User.Identity.Name;
-            
-            // Try to get email from claims
-            var claimsPrincipal = User as ClaimsPrincipal;
-            if (claimsPrincipal != null)
-            {
-                var emailClaim = claimsPrincipal.FindFirst(ClaimTypes.Email);
-                if (emailClaim != null && !string.IsNullOrWhiteSpace(emailClaim.Value))
-                {
-                    displayName = emailClaim.Value;
-                }
-            }
-            
-            // Store back to session for next request
-            if (!string.IsNullOrWhiteSpace(displayName))
+            // User.Identity.Name now contains user ID
+            int userId;
+            if (int.TryParse(User.Identity.Name, out userId))
             {
                 try
                 {
-                    Session["DisplayName"] = displayName;
-                    // Also set role in session based on User.IsInRole
-                    if (isAdmin)
+                    using (var db = new ValiModernDBEntities())
                     {
-                        Session["UserRole"] = "admin";
+                        var user = db.Users.Find(userId);
+                        if (user != null)
+                        {
+                            displayName = string.IsNullOrWhiteSpace(user.username)
+                                ? (string.IsNullOrWhiteSpace(user.email) ? "User #" + user.id : user.email)
+                                : user.username;
+                            
+                            // Store back to session
+                            Session["DisplayName"] = displayName;
+                            Session["UserId"] = user.id;
+                            
+                            // Update role
+                            if (user.is_admin)
+                            {
+                                Session["UserRole"] = "admin";
+                                isAdmin = true;
+                            }
+                            else if (!string.IsNullOrEmpty(user.role) && user.role == "shipper")
+                            {
+                                Session["UserRole"] = "shipper";
+                                isShipper = true;
+                            }
+                        }
                     }
                 }
                 catch { }
@@ -110,6 +112,25 @@
         }
     }
     catch { }
+
+    // New: count delivered orders awaiting customer confirmation (status Shipped & delivered_at not null)
+    int deliveredAwaitingConfirm = 0;
+    if (isAuthenticated)
+    {
+        try
+        {
+            // User.Identity.Name now contains user ID
+            int userId;
+            if (int.TryParse(User.Identity.Name, out userId))
+            {
+                using (var db = new ValiModernDBEntities())
+                {
+                    deliveredAwaitingConfirm = db.Orders.Count(o => o.user_id == userId && o.status == "Shipped" && o.delivered_at != null);
+                }
+            }
+        }
+        catch { }
+    }
 }
 
 <!DOCTYPE html>
@@ -132,14 +153,6 @@
     <link href="~/Content/Layout.css" rel="stylesheet" />
 
     @RenderSection("Styles", required: false)
-    
-    <!-- DEBUG Script -->
-    <script>
-        console.log('@debugInfo');
-        console.log('isAuthenticated: @isAuthenticated.ToString().ToLower()');
-        console.log('isAdmin: @isAdmin.ToString().ToLower()');
-        console.log('displayName: @(displayName ?? "null")');
-    </script>
 </head>
 
 <body>
@@ -201,6 +214,16 @@
                         </a>
                     </li>
 
+                    @* Notification icon for delivered orders awaiting confirmation *@
+                    @if (isAuthenticated && deliveredAwaitingConfirm > 0)
+                    {
+                        <li class="nav-item d-flex align-items-center">
+                            <a href="@Url.Action("Index", "Order", new { status = "Shipped" })" class="notif-icon-wrapper text-decoration-none" title="Delivered orders awaiting your confirmation">
+                                <i class="bi bi-bell-fill"></i>
+                                <span class="notif-badge">@deliveredAwaitingConfirm</span>
+                            </a>
+                        </li>
+                    }
                     @if (!isAuthenticated)
                     {
                         <li class="nav-item">

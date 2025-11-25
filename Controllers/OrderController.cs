@@ -15,18 +15,17 @@ namespace ValiModern.Controllers
         // GET: Order
         public ActionResult Index(string status, int page = 1)
         {
-            var email = User.Identity.Name;
-            var user = _db.Users.FirstOrDefault(u => u.email == email);
-
-            if (user == null)
+            // User.Identity.Name now contains user ID
+            int userId;
+            if (!int.TryParse(User.Identity.Name, out userId))
             {
-                TempData["Error"] = "User not found.";
+                TempData["Error"] = "Invalid user session.";
                 return RedirectToAction("Index", "Home");
             }
 
             var ordersQuery = _db.Orders
                 .Include(o => o.Payments)
-                .Where(o => o.user_id == user.id)
+                .Where(o => o.user_id == userId)
                 .AsQueryable();
 
             // Filter by status
@@ -53,7 +52,7 @@ namespace ValiModern.Controllers
                 Orders = orders.Select(o => new UserOrderItemVM
                 {
                     OrderId = o.id,
-                    OrderCode = "#" + o.id.ToString("D6"),
+                    OrderCode = "#" + o.id,
                     OrderDate = o.order_date,
                     Status = o.status,
                     TotalAmount = o.total_amount,
@@ -68,12 +67,12 @@ namespace ValiModern.Controllers
             };
 
             // Count orders by status for filter buttons
-            ViewBag.AllCount = _db.Orders.Count(o => o.user_id == user.id);
-            ViewBag.PendingCount = _db.Orders.Count(o => o.user_id == user.id && o.status == "Pending");
-            ViewBag.ConfirmedCount = _db.Orders.Count(o => o.user_id == user.id && o.status == "Confirmed");
-            ViewBag.ShippedCount = _db.Orders.Count(o => o.user_id == user.id && o.status == "Shipped");
-            ViewBag.CompletedCount = _db.Orders.Count(o => o.user_id == user.id && o.status == "Completed");
-            ViewBag.CancelledCount = _db.Orders.Count(o => o.user_id == user.id && o.status == "Cancelled");
+            ViewBag.AllCount = _db.Orders.Count(o => o.user_id == userId);
+            ViewBag.PendingCount = _db.Orders.Count(o => o.user_id == userId && o.status == "Pending");
+            ViewBag.ConfirmedCount = _db.Orders.Count(o => o.user_id == userId && o.status == "Confirmed");
+            ViewBag.ShippedCount = _db.Orders.Count(o => o.user_id == userId && o.status == "Shipped");
+            ViewBag.CompletedCount = _db.Orders.Count(o => o.user_id == userId && o.status == "Completed");
+            ViewBag.CancelledCount = _db.Orders.Count(o => o.user_id == userId && o.status == "Cancelled");
 
             return View(vm);
         }
@@ -81,12 +80,11 @@ namespace ValiModern.Controllers
         // GET: Order/Details/5
         public ActionResult Details(int id)
         {
-            var email = User.Identity.Name;
-            var user = _db.Users.FirstOrDefault(u => u.email == email);
-
-            if (user == null)
+            // User.Identity.Name now contains user ID
+            int userId;
+            if (!int.TryParse(User.Identity.Name, out userId))
             {
-                TempData["Error"] = "User not found.";
+                TempData["Error"] = "Invalid user session.";
                 return RedirectToAction("Index", "Home");
             }
 
@@ -96,7 +94,7 @@ namespace ValiModern.Controllers
                 .Include(o => o.Order_Details.Select(od => od.Size))
                 .Include(o => o.Payments)
                 .Include(o => o.User1) // User1 = Shipper
-                .FirstOrDefault(o => o.id == id && o.user_id == user.id);
+                .FirstOrDefault(o => o.id == id && o.user_id == userId);
 
             if (order == null)
             {
@@ -107,7 +105,7 @@ namespace ValiModern.Controllers
             var vm = new UserOrderDetailsVM
             {
                 OrderId = order.id,
-                OrderCode = "#" + order.id.ToString("D6"),
+                OrderCode = "#" + order.id,
                 OrderDate = order.order_date,
                 Status = order.status,
                 TotalAmount = order.total_amount,
@@ -149,18 +147,17 @@ namespace ValiModern.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Cancel(int id)
         {
-            var email = User.Identity.Name;
-            var user = _db.Users.FirstOrDefault(u => u.email == email);
-
-            if (user == null)
+            // User.Identity.Name now contains user ID
+            int userId;
+            if (!int.TryParse(User.Identity.Name, out userId))
             {
-                TempData["Error"] = "User not found.";
+                TempData["Error"] = "Invalid user session.";
                 return RedirectToAction("Index", "Home");
             }
 
             var order = _db.Orders
                 .Include(o => o.Order_Details.Select(od => od.Product))
-                .FirstOrDefault(o => o.id == id && o.user_id == user.id);
+                .FirstOrDefault(o => o.id == id && o.user_id == userId);
 
             if (order == null)
             {
@@ -208,16 +205,15 @@ namespace ValiModern.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult ConfirmReceived(int id)
         {
-            var email = User.Identity.Name;
-            var user = _db.Users.FirstOrDefault(u => u.email == email);
-
-            if (user == null)
+            // User.Identity.Name now contains user ID
+            int userId;
+            if (!int.TryParse(User.Identity.Name, out userId))
             {
-                TempData["Error"] = "User not found.";
+                TempData["Error"] = "Invalid user session.";
                 return RedirectToAction("Index", "Home");
             }
 
-            var order = _db.Orders.FirstOrDefault(o => o.id == id && o.user_id == user.id);
+            var order = _db.Orders.FirstOrDefault(o => o.id == id && o.user_id == userId);
 
             if (order == null)
             {

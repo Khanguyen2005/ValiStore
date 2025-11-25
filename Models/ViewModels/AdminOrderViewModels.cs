@@ -19,6 +19,31 @@ namespace ValiModern.Models.ViewModels
         public int ItemCount { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public DateTime? AssignedAt { get; set; }
+        public DateTime? DeliveredAt { get; set; }
+    }
+
+    // ViewModel for viewing a specific shipper's deliveries
+    public class ShipperDeliveriesVM
+    {
+        public int ShipperId { get; set; }
+        public string ShipperName { get; set; }
+        public string ShipperEmail { get; set; }
+        public string ShipperPhone { get; set; }
+        
+        public List<OrderListItemVM> Orders { get; set; } = new List<OrderListItemVM>();
+        
+        public int TotalCount { get; set; }
+        public int CompletedCount { get; set; }
+        public int PendingCount { get; set; }
+        public int DeliveredCount { get; set; }
+        
+        public int CurrentPage { get; set; }
+        public int TotalPages { get; set; }
+        public int PageSize { get; set; }
+        
+        public bool HasPreviousPage => CurrentPage > 1;
+        public bool HasNextPage => CurrentPage < TotalPages;
     }
 
     public class OrderDetailsVM

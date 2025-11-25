@@ -19,9 +19,15 @@ namespace ValiModern.Filters
                 return false;
             }
 
-            // L?y email c?a user ?ang ??ng nh?p
-            var userEmail = httpContext.User.Identity.Name;
-            if (string.IsNullOrEmpty(userEmail))
+            // L?y user ID (User.Identity.Name now contains user ID)
+            var identityName = httpContext.User.Identity.Name;
+            if (string.IsNullOrEmpty(identityName))
+            {
+                return false;
+            }
+
+            int userId;
+            if (!int.TryParse(identityName, out userId))
             {
                 return false;
             }
@@ -29,7 +35,7 @@ namespace ValiModern.Filters
             // Ki?m tra role trong database
             using (var db = new ValiModernDBEntities())
             {
-                var user = db.Users.FirstOrDefault(u => u.email == userEmail);
+                var user = db.Users.Find(userId);
                 if (user == null)
                 {
                     return false;

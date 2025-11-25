@@ -183,7 +183,12 @@
                             <span class="badge bg-warning text-dark">@Model.PendingOrders</span>
                         </div>
                         <div class="progress" style="height: 20px;">
-                            <div class="progress-bar bg-warning" role="progressbar" style="width: @(Model.TotalOrders > 0 ? (Model.PendingOrders * 100.0 / Model.TotalOrders) : 0)%"></div>
+                            <div class="progress-bar bg-warning" role="progressbar" 
+                                 style="width: @((Model.TotalOrders > 0 ? (Model.PendingOrders * 100.0 / Model.TotalOrders) : 0).ToString("F1", System.Globalization.CultureInfo.InvariantCulture))%"
+                                 aria-valuenow="@Model.PendingOrders" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="@Model.TotalOrders">
+                            </div>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -192,7 +197,12 @@
                             <span class="badge bg-info">@Model.ConfirmedOrders</span>
                         </div>
                         <div class="progress" style="height: 20px;">
-                            <div class="progress-bar bg-info" role="progressbar" style="width: @(Model.TotalOrders > 0 ? (Model.ConfirmedOrders * 100.0 / Model.TotalOrders) : 0)%"></div>
+                            <div class="progress-bar bg-info" role="progressbar" 
+                                 style="width: @((Model.TotalOrders > 0 ? (Model.ConfirmedOrders * 100.0 / Model.TotalOrders) : 0).ToString("F1", System.Globalization.CultureInfo.InvariantCulture))%"
+                                 aria-valuenow="@Model.ConfirmedOrders" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="@Model.TotalOrders">
+                            </div>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -201,7 +211,12 @@
                             <span class="badge bg-primary">@Model.ShippedOrders</span>
                         </div>
                         <div class="progress" style="height: 20px;">
-                            <div class="progress-bar bg-primary" role="progressbar" style="width: @(Model.TotalOrders > 0 ? (Model.ShippedOrders * 100.0 / Model.TotalOrders) : 0)%"></div>
+                            <div class="progress-bar bg-primary" role="progressbar" 
+                                 style="width: @((Model.TotalOrders > 0 ? (Model.ShippedOrders * 100.0 / Model.TotalOrders) : 0).ToString("F1", System.Globalization.CultureInfo.InvariantCulture))%"
+                                 aria-valuenow="@Model.ShippedOrders" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="@Model.TotalOrders">
+                            </div>
                         </div>
                     </div>
                     <div class="mb-3">
@@ -210,7 +225,12 @@
                             <span class="badge bg-success">@Model.CompletedOrders</span>
                         </div>
                         <div class="progress" style="height: 20px;">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: @(Model.TotalOrders > 0 ? (Model.CompletedOrders * 100.0 / Model.TotalOrders) : 0)%"></div>
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: @((Model.TotalOrders > 0 ? (Model.CompletedOrders * 100.0 / Model.TotalOrders) : 0).ToString("F1", System.Globalization.CultureInfo.InvariantCulture))%"
+                                 aria-valuenow="@Model.CompletedOrders" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="@Model.TotalOrders">
+                            </div>
                         </div>
                     </div>
                     <div>
@@ -219,7 +239,12 @@
                             <span class="badge bg-danger">@Model.CancelledOrders</span>
                         </div>
                         <div class="progress" style="height: 20px;">
-                            <div class="progress-bar bg-danger" role="progressbar" style="width: @(Model.TotalOrders > 0 ? (Model.CancelledOrders * 100.0 / Model.TotalOrders) : 0)%"></div>
+                            <div class="progress-bar bg-danger" role="progressbar" 
+                                 style="width: @((Model.TotalOrders > 0 ? (Model.CancelledOrders * 100.0 / Model.TotalOrders) : 0).ToString("F1", System.Globalization.CultureInfo.InvariantCulture))%"
+                                 aria-valuenow="@Model.CancelledOrders" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="@Model.TotalOrders">
+                            </div>
                         </div>
                     </div>
                 </div>

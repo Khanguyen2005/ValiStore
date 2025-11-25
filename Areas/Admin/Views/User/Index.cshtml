@@ -82,6 +82,12 @@
                         </td>
                         <td>@u.created_at.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
                         <td class="text-end">
+                            @if (!string.IsNullOrEmpty(u.role) && u.role.ToLower() == "shipper")
+                            {
+                                <a class="btn btn-sm btn-outline-info" href="@Url.Action("ShipperDeliveries", "Order", new { id = u.id })" title="View deliveries">
+                                    <i class="bi bi-truck"></i>
+                                </a>
+                            }
                             <a class="btn btn-sm btn-outline-primary" href="@Url.Action("Edit", new { id = u.id })"><i class="bi bi-pencil"></i></a>
                             @using (Html.BeginForm("Delete", "User", FormMethod.Post, new { onsubmit = "return confirm('Delete this user?')" }))
                             {

@@ -413,3 +413,88 @@ footer {
         padding-top: 1rem;
     }
 }
+
+/* ========================================
+   NOTIFICATION (Delivered Orders) ICON
+   ======================================== */
+.notif-icon-wrapper {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 14px; /* slightly rounder than cart */
+    color: #fff;
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(2px);
+    transition: all .25s ease;
+    overflow: hidden;
+}
+.notif-icon-wrapper i {
+    font-size: 1.25rem;
+    line-height: 1;
+    position: relative;
+    z-index: 2;
+}
+.notif-icon-wrapper::before { /* subtle radial glow */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.35), transparent 70%);
+    opacity: 0;
+    transition: opacity .3s ease;
+}
+.notif-icon-wrapper:hover {
+    background: #fff;
+    color: #ff9800; /* orange highlight */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px -3px rgba(0,0,0,.25), 0 0 0 3px rgba(255,152,0,.35);
+}
+.notif-icon-wrapper:hover::before { opacity: 1; }
+
+/* Badge style specific for notifications (warning tone) */
+.notif-icon-wrapper .notif-badge {
+    position: absolute;
+    top: -4px;
+    left: 60%;
+    transform: translate(-50%,0);
+    min-width: 22px;
+    height: 22px;
+    padding: 0 4px;
+    font-size: .65rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#ffe082,#ffc107 60%,#ffb300);
+    color: #503800;
+    box-shadow: 0 2px 6px rgba(0,0,0,.25);
+    animation: notifPulse 1.8s infinite;
+    border: 2px solid #0d6efd; /* ring matches navbar */
+}
+@keyframes notifPulse {
+    0%,100% { transform: translate(-50%,0) scale(1); box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+    50% { transform: translate(-50%,0) scale(1.15); box-shadow: 0 4px 10px rgba(0,0,0,.35); }
+}
+
+/* Shake bell gently when hovering */
+.notif-icon-wrapper:hover i { animation: bellShake .6s; }
+@keyframes bellShake {
+    0% { transform: rotate(0); }
+    20% { transform: rotate(15deg); }
+    40% { transform: rotate(-12deg); }
+    60% { transform: rotate(8deg); }
+    80% { transform: rotate(-5deg); }
+    100% { transform: rotate(0); }
+}
+
+/* Mobile adjustments */
+@media (max-width: 991px) {
+    .notif-icon-wrapper { background: #0d6efd; border-color: #0d6efd; }
+    .notif-icon-wrapper:hover { background: #0b5ed7; color: #fff; box-shadow: none; transform: none; }
+    .notif-icon-wrapper .notif-badge { border-color: #fff; }
+}

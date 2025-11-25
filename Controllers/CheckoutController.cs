@@ -56,14 +56,18 @@ namespace ValiModern.Controllers
             // Pre-fill user info if logged in
             if (User.Identity.IsAuthenticated)
             {
-                var email = User.Identity.Name;
-                var user = _db.Users.FirstOrDefault(u => u.email == email);
-                if (user != null)
+                // User.Identity.Name now contains user ID
+                int userId;
+                if (int.TryParse(User.Identity.Name, out userId))
                 {
-                    vm.FullName = user.username;
-                    vm.Phone = user.phone;
-                    vm.Address = user.address;
-                    vm.Email = user.email;
+                    var user = _db.Users.Find(userId);
+                    if (user != null)
+                    {
+                        vm.FullName = user.username;
+                        vm.Phone = user.phone;
+                        vm.Address = user.address;
+                        vm.Email = user.email;
+                    }
                 }
             }
 
@@ -100,9 +104,15 @@ namespace ValiModern.Controllers
                 return View("Index", model);
             }
 
-            // Get user
-            var email = User.Identity.Name;
-            var user = _db.Users.FirstOrDefault(u => u.email == email);
+            // Get user - User.Identity.Name now contains user ID
+            int userId;
+            if (!int.TryParse(User.Identity.Name, out userId))
+            {
+                TempData["Error"] = "Invalid user session.";
+                return RedirectToAction("Index");
+            }
+
+            var user = _db.Users.Find(userId);
             if (user == null)
             {
                 TempData["Error"] = "User not found.";
@@ -492,9 +502,14 @@ namespace ValiModern.Controllers
                     return Json(new { error = "Cart is empty" });
                 }
 
-                var email = User.Identity.Name;
-                var user = _db.Users.FirstOrDefault(u => u.email == email);
+                // User.Identity.Name now contains user ID
+                int userId;
+                if (!int.TryParse(User.Identity.Name, out userId))
+                {
+                    return Json(new { error = "Invalid user session" });
+                }
 
+                var user = _db.Users.Find(userId);
                 if (user == null)
                 {
                     return Json(new { error = "User not found" });

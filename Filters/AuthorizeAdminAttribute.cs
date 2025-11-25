@@ -13,11 +13,17 @@ namespace ValiModern.Filters
                 return false;
 
             var identityName = httpContext.User.Identity.Name;
+            
+            // identityName now contains user ID
+            int userId;
+            if (!int.TryParse(identityName, out userId))
+                return false;
+
             try
             {
                 using (var db = new ValiModernDBEntities())
                 {
-                    var user = db.Users.FirstOrDefault(u => u.email == identityName || u.username == identityName);
+                    var user = db.Users.Find(userId);
                     if (user == null) return false;
                     return user.is_admin;
                 }

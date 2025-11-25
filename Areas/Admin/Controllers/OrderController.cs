@@ -326,6 +326,72 @@ namespace ValiModern.Areas.Admin.Controllers
             return RedirectToAction("Index");
         }
 
+        // GET: Admin/Order/ShipperDeliveries/5 - View all deliveries by a specific shipper
+        public ActionResult ShipperDeliveries(int? id, int page = 1, int pageSize = 20)
+        {
+            if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+            var shipper = _db.Users.Find(id);
+            if (shipper == null || shipper.role != "shipper")
+            {
+                TempData["Error"] = "Shipper not found.";
+                return RedirectToAction("Index");
+            }
+
+            // Get all orders assigned to this shipper
+            var ordersQuery = _db.Orders
+                .Include(o => o.User)
+                .Include(o => o.Order_Details)
+                .Where(o => o.shipper_id == id)
+                .OrderByDescending(o => o.assigned_at);
+
+            int totalCount = ordersQuery.Count();
+            int completedCount = ordersQuery.Count(o => o.status == "Completed");
+            int pendingCount = ordersQuery.Count(o => o.status == "Shipped" && o.delivered_at == null);
+            int deliveredCount = ordersQuery.Count(o => o.delivered_at != null && o.status == "Shipped");
+
+            int totalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            
+            var orders = ordersQuery
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var vm = new ShipperDeliveriesVM
+            {
+                ShipperId = shipper.id,
+                ShipperName = shipper.username,
+                ShipperEmail = shipper.email,
+                ShipperPhone = shipper.phone,
+                Orders = orders.Select(o => new OrderListItemVM
+                {
+                    Id = o.id,
+                    UserId = o.user_id,
+                    UserName = o.User?.username ?? "N/A",
+                    UserEmail = o.User?.email ?? "N/A",
+                    OrderDate = o.order_date,
+                    Status = o.status,
+                    TotalAmount = o.total_amount,
+                    Phone = o.phone,
+                    ShippingAddress = o.shipping_address,
+                    ItemCount = o.Order_Details.Count,
+                    CreatedAt = o.created_at,
+                    UpdatedAt = o.updated_at,
+                    AssignedAt = o.assigned_at,
+                    DeliveredAt = o.delivered_at
+                }).ToList(),
+                TotalCount = totalCount,
+                CompletedCount = completedCount,
+                PendingCount = pendingCount,
+                DeliveredCount = deliveredCount,
+                CurrentPage = page,
+                TotalPages = totalPages,
+                PageSize = pageSize
+            };
+
+            return View(vm);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing) _db.Dispose();

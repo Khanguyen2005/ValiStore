@@ -81,4 +81,17 @@ namespace ValiModern.Models.ViewModels
         public int OrderId { get; set; }
         public string DeliveryNote { get; set; }
     }
+
+    // ViewModel cho l?ch s? giao hàng c?a shipper (pagination)
+    public class ShipperHistoryVM
+    {
+        public List<ShipperOrderItemVM> Orders { get; set; } = new List<ShipperOrderItemVM>();
+        public int CurrentPage { get; set; }
+        public int TotalPages { get; set; }
+        public int TotalCount { get; set; }
+        public int PageSize { get; set; }
+        
+        public bool HasPreviousPage => CurrentPage > 1;
+        public bool HasNextPage => CurrentPage < TotalPages;
+    }
 }
