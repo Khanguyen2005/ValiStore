@@ -438,7 +438,7 @@ namespace ValiModern.Controllers
             var vm = new OrderConfirmationVM
             {
                 OrderId = order.id,
-                OrderCode = "#" + order.id.ToString("D6"),
+                OrderCode = "#" + order.id,  // Simple format: #70
                 TotalAmount = order.total_amount,
                 PaymentMethod = payment?.payment_method ?? "N/A",
                 Status = order.status,

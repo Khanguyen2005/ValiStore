@@ -251,7 +251,20 @@
                                         </div>
                                         <div>
                                             <div class="fw-semibold">@displayName</div>
-                                            <small class="text-muted">Member</small>
+                                            <small class="text-muted">
+                                                @if (isAdmin)
+                                                {
+                                                    <text>Administrator</text>
+                                                }
+                                                else if (isShipper)
+                                                {
+                                                    <text>Shipper</text>
+                                                }
+                                                else
+                                                {
+                                                    <text>Member</text>
+                                                }
+                                            </small>
                                         </div>
                                     </div>
                                 </li>

@@ -394,6 +394,13 @@
     <Content Include="SUMMARY_PROGRESS_BAR_FIX.md" />
     <Content Include="SUMMARY_ORDER_ID_FORMAT_FIX.md" />
     <Content Include="SUMMARY_REMOVE_DUPLICATE_COMPLETED_FILTER.md" />
+    <Content Include="SUMMARY_NAVBAR_ROLE_DISPLAY_FIX.md" />
+    <Content Include="SUMMARY_FIX_LAYOUT_HTML_SYNTAX_ERRORS.md" />
+    <Content Include="SUMMARY_FIX_DROPDOWN_ZINDEX_STICKY_SIDEBAR.md" />
+    <Content Include="SUMMARY_FIX_PRODUCT_FILTER_SIDEBAR_ZINDEX.md" />
+    <Content Include="SUMMARY_FIX_STICKY_SIDEBAR_NAVBAR_OVERLAP.md" />
+    <Content Include="SUMMARY_ORDER_PAGINATION_STYLE_MATCH.md" />
+    <Content Include="SUMMARY_CHECKOUT_ORDER_ID_FORMAT_FIX.md" />
     <None Include="Web.config.AWS_BACKUP" />
     <None Include="Web.config.Debug.AWS_BACKUP">
       <DependentUpon>Web.config.AWS_BACKUP</DependentUpon>

@@ -18,6 +18,9 @@ body {
     box-shadow: 0 4px 20px rgba(13, 110, 253, 0.25);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.3s ease;
+    position: sticky; /* Make navbar sticky */
+    top: 0;
+    z-index: 1030; /* Higher than sidebar (1020) */
 }
 
 .navbar-brand {
@@ -175,6 +178,7 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     padding: 0.5rem 0;
     margin-top: 10px !important; /* Tách rời navbar một chút */
+    z-index: 1030; /* Higher than sticky sidebar (1020) */
     animation: fadeInUp 0.2s ease-out;
 }
 

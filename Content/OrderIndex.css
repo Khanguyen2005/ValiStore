@@ -316,66 +316,85 @@
 
 /* --- Pagination (standardized square buttons) --- */
 .pagination {
-    display:flex;
-    justify-content: center; /* FIX: Căn giữa pagination */
-    gap:0.5rem; /* FIX: Khoảng cách đồng nhất */
+    margin-top: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px; /* Khoảng cách giữa các nút */
 }
 
-.pagination .page-item { 
-    display:flex; 
-}
+    .pagination .page-item {
+        display: flex;
+    }
 
-.pagination .page-link {
-    width:42px; /* FIX: Kích thước vuông 42x42 */
-    height:42px; /* FIX: Kích thước vuông 42x42 */
-    padding:0;
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:600;
-    font-size:.9rem;
-    border:2px solid var(--gray-300,#dee2e6);
-    border-radius:12px; /* FIX: Bo tròn đồng bộ */
-    background:#fff;
-    color:var(--primary,#0d6efd);
-    transition:all var(--transition-fast,0.15s);
-    box-shadow:0 2px 6px rgba(0,0,0,0.04);
-    margin:0;
-}
+    .pagination .page-link {
+        width: 44px; /* Kích thước vuông vức */
+        height: 44px;
+        padding: 0 !important; /* Reset padding mặc định của bootstrap */
+        /* Flexbox căn giữa tuyệt đối icon/số */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        /* Font style */
+        font-family: 'Inter', sans-serif;
+        font-weight: 600;
+        font-size: 1rem;
+        color: var(--gray-600, #495057);
+        background: #fff;
+        /* Loại bỏ border cứng, dùng shadow mềm */
+        border: none;
+        border-radius: 12px !important; /* Bo góc mềm mại */
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Hiệu ứng nảy đàn hồi */
+    }
 
-.pagination .page-link i { 
-    font-size:1rem; 
-    line-height:1; 
-}
+        /* Xử lý riêng cho ICON để nó nằm chính giữa */
+        .pagination .page-link i {
+            font-size: 1.4rem; /* Icon to hơn số một chút để cân đối */
+            line-height: 1; /* Triệt tiêu line-height thừa */
+            display: flex; /* Đảm bảo icon là flex container */
+        }
 
-.pagination .page-link:hover:not(.disabled) {
-    background:var(--primary-light,#e7f1ff);
-    border-color:var(--primary,#0d6efd);
-    transform:translateY(-2px);
-    box-shadow:0 6px 14px rgba(13,110,253,0.15);
-}
+        /* Hover State */
+        .pagination .page-link:hover:not(.disabled) {
+            color: var(--primary, #0d6efd);
+            background: #fff;
+            transform: translateY(-4px); /* Nảy lên */
+            box-shadow: 0 8px 24px rgba(13, 110, 253, 0.15);
+        }
 
-.pagination .page-item.active .page-link {
-    background:var(--primary,#0d6efd);
-    color:#fff;
-    border-color:var(--primary,#0d6efd);
-    box-shadow:0 8px 20px -4px rgba(13,110,253,0.3);
-    transform: translateY(-1px);
-}
+    /* Active State */
+    .pagination .page-item.active .page-link {
+        background: linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%); /* Gradient xanh */
+        color: #fff;
+        box-shadow: 0 8px 20px -4px rgba(13, 110, 253, 0.4); /* Bóng đổ phát sáng */
+        transform: translateY(-2px);
+        z-index: 1;
+    }
 
-.pagination .page-item.disabled .page-link { 
-    opacity:.5; 
-    cursor:not-allowed; 
-    background-color: var(--gray-100, #f8f9fa);
-}
+    /* Disabled State */
+    .pagination .page-item.disabled .page-link { 
+        opacity: .5; 
+        cursor: not-allowed; 
+        background-color: var(--gray-100, #f8f9fa);
+        color: var(--gray-400, #ced4da);
+    }
 
-@media (max-width:576px){ 
-    .pagination .page-link{ 
-        width:38px; 
-        height:38px; 
-        font-size:.85rem; 
-        border-radius: 10px;
-    } 
+/* Responsive mobile */
+@media (max-width: 576px) {
+    .pagination {
+        gap: 5px;
+    }
+
+        .pagination .page-link {
+            width: 38px;
+            height: 38px;
+            font-size: 0.9rem;
+        }
+
+        .pagination .page-link i {
+            font-size: 1.2rem;
+        }
 }
 
 /* --- Responsive --- */

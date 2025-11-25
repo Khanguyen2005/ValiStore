@@ -8,6 +8,14 @@
 }
 
 /* Filters Sidebar - Sử dụng primary color */
+.filters-sidebar {
+    position: sticky;
+    top: 90px; /* Must match navbar height + spacing */
+    z-index: 1020; /* Below dropdown (1030) and navbar (1030) */
+    max-height: calc(100vh - 110px); /* Viewport height - navbar height */
+    overflow-y: auto; /* Scroll if content too long */
+}
+
 .filters-sidebar .card-header {
     background: var(--primary-gradient, linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%)) !important;
 }
