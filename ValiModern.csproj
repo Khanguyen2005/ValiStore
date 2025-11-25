@@ -352,6 +352,7 @@
     <Content Include="Uploads\products\vali-larita-rena-ah0624-20-s-green-15676-01750838850-638984862049741157.jpg" />
     <Content Include="Uploads\products\vali-larita-rena-ah0624-20-s-green-15676-11750838850-638984862322746670.jpg" />
     <Content Include="Database\ValiModernDB_Full.sql" />
+    <Content Include="Database\vali_db_script.sql" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
