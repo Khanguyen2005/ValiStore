@@ -402,6 +402,7 @@
     <Content Include="SUMMARY_ORDER_PAGINATION_STYLE_MATCH.md" />
     <Content Include="SUMMARY_CHECKOUT_ORDER_ID_FORMAT_FIX.md" />
     <Content Include="SUMMARY_CART_BADGE_COUNT_FIX.md" />
+    <Content Include="SUMMARY_CART_PAGE_UI_FIXES.md" />
     <None Include="Web.config.AWS_BACKUP" />
     <None Include="Web.config.Debug.AWS_BACKUP">
       <DependentUpon>Web.config.AWS_BACKUP</DependentUpon>

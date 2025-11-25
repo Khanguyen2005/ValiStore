@@ -54,9 +54,14 @@
 .cart-title { 
     font-weight: 600; 
     color: var(--text-primary, #344767); 
-    white-space: nowrap; 
-    overflow: hidden; 
-    text-overflow: ellipsis; 
+    /* FIX: Allow text to wrap instead of truncating */
+    line-height: 1.4;
+    max-height: 2.8em; /* Show 2 lines max */
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    word-break: break-word;
 }
 
 .cart-attrs { 
@@ -128,14 +133,18 @@
 }
 
 /* FIX: Button styles v?i design system */
-.cart-page .btn-primary {
-    background: var(--primary-gradient, linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%));
-    border: none;
+.cart-page .btn-primary,
+.cart-page .btn-outline-secondary {
     /* C?n gi?a icon và text */
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.4rem;
+    gap: 0.5rem;
+}
+
+.cart-page .btn-primary {
+    background: var(--primary-gradient, linear-gradient(135deg, #0d6efd 0%, #3a8dff 100%));
+    border: none;
 }
 
 .cart-page .btn-primary:hover {
@@ -144,7 +153,8 @@
     background: linear-gradient(135deg, #0b5ed7 0%, #3283e8 100%);
 }
 
-.cart-page .btn-primary i {
+.cart-page .btn-primary i,
+.cart-page .btn-outline-secondary i {
     font-size: 1rem;
     line-height: 1;
 }
