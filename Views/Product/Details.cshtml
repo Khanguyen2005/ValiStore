@@ -12,17 +12,23 @@
 
 @section Styles {
     <link href="~/Content/ProductDetails.css" rel="stylesheet" />
+    <style>
+        /* Force override divider via CSS variable (Bootstrap 5) */
+        .product-detail-page ol.breadcrumb { --bs-breadcrumb-divider: '›'; }
+        /* Fallback in case variable not applied */
+        .product-detail-page .breadcrumb-item + .breadcrumb-item::before { content:'›' !important; }
+    </style>
 }
 
 <div class="container py-4 product-detail-page">
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-4">
-        <ol class="breadcrumb">
+        <ol class="breadcrumb" style="--bs-breadcrumb-divider:'›';">
             <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Home</a></li>
             <li class="breadcrumb-item"><a href="@Url.Action("Index", "Product")">Shop</a></li>
             @if (product.Category != null)
             {
-                <li class="breadcrumb-item"><a href="@Url.Action("Index", "Product", new { category = product.Category.name })">@product.Category.name</a></li>
+                <li class="breadcrumb-item"><a href="@Url.Action("Products", "Category", new { id = product.category_id })">@product.Category.name</a></li>
             }
             <li class="breadcrumb-item active" aria-current="page">@product.name</li>
         </ol>
@@ -284,13 +290,11 @@
             $('.add-to-cart-form').on('submit', function (e) {
                 let isValid = true;
 
-                // Check if color selection is required and selected
                 if ($('input[name="colorId"]').length && !$('input[name="colorId"]:checked').length) {
                     $('#colorError').removeClass('d-none');
                     isValid = false;
                 }
 
-                // Check if size selection is required and selected
                 if ($('input[name="sizeId"]').length && !$('input[name="sizeId"]:checked').length) {
                     $('#sizeError').removeClass('d-none');
                     isValid = false;
@@ -298,7 +302,6 @@
 
                 if (!isValid) {
                     e.preventDefault();
-                    // Scroll to first error
                     $('html, body').animate({
                         scrollTop: $('.invalid-feedback:not(.d-none)').first().offset().top - 120
                     }, 300);
