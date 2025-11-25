@@ -1,62 +1,14 @@
 @using System.Security.Claims
-@using ValiModern.Models.EF
 @{
     Layout = null;
 
-    // Get current shipper info
-    string shipperName = null;
-    int shipperId = 0;
+    // Get shipper info from ViewBag (injected by ShipperLayoutDataAttribute)
+    string shipperName = ViewBag.ShipperName as string ?? "Shipper";
+    int shipperId = ViewBag.ShipperId ?? 0;
+    int pendingDeliveries = ViewBag.PendingDeliveries ?? 0;
+    string pendingDisplay = ViewBag.PendingDisplay as string ?? "0";
+    
     bool isAuthenticated = (User != null && User.Identity != null && User.Identity.IsAuthenticated);
-
-    if (isAuthenticated)
-    {
-        // User.Identity.Name now contains user ID
-        int userId;
-        if (int.TryParse(User.Identity.Name, out userId))
-        {
-            shipperId = userId;
-            
-            // Get shipper name from database
-            try
-            {
-                using (var db = new ValiModernDBEntities())
-                {
-                    var shipper = db.Users.Find(userId);
-                    if (shipper != null)
-                    {
-                        shipperName = string.IsNullOrWhiteSpace(shipper.username)
-                            ? (string.IsNullOrWhiteSpace(shipper.email) ? "Shipper #" + shipper.id : shipper.email)
-                            : shipper.username;
-                    }
-                }
-            }
-            catch { }
-        }
-    }
-
-    // Count pending deliveries (orders assigned to shipper but not yet delivered)
-    int pendingDeliveries = 0;
-    string debugInfo = "";
-    try
-    {
-        using (var db = new ValiModernDBEntities())
-        {
-            debugInfo = string.Format("ShipperID: {0}, Name: {1}", shipperId, shipperName ?? "null");
-            
-            pendingDeliveries = db.Orders
-                .Count(o => o.shipper_id == shipperId && o.status == "Shipped" && o.delivered_at == null);
-                
-            debugInfo += string.Format(", Pending: {0}", pendingDeliveries);
-        }
-    }
-    catch (Exception ex) 
-    { 
-        debugInfo = "Error: " + ex.Message;
-    }
-
-    // Simple display value (cap 99+)
-    int cap = 99;
-    string pendingDisplay = pendingDeliveries > cap ? "99+" : pendingDeliveries.ToString();
 }
 
 <!DOCTYPE html>
@@ -131,14 +83,14 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="shipperMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <div class="user-avatar me-2">@(!string.IsNullOrEmpty(shipperName)?shipperName.Substring(0,1).ToUpper():"S")</div>
-                            <span class="d-none d-lg-inline">@(shipperName ?? "Shipper")</span>
+                            <span class="d-none d-lg-inline">@shipperName</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="shipperMenu">
                             <li class="px-3 py-2 border-bottom">
                                 <div class="d-flex align-items-center">
                                     <div class="user-avatar-large me-3">@(!string.IsNullOrEmpty(shipperName)?shipperName.Substring(0,1).ToUpper():"S")</div>
                                     <div>
-                                        <div class="fw-semibold">@(shipperName ?? "Shipper")</div>
+                                        <div class="fw-semibold">@shipperName</div>
                                         <small class="text-muted">Shipper</small>
                                     </div>
                                 </div>
@@ -212,9 +164,12 @@
     <script src="~/Scripts/shipper_layout.js"></script>
     
     <script>
-        console.log('Debug Info: @debugInfo');
-        console.log('Pending Deliveries: @pendingDeliveries');
-        console.log('Pending Display: @pendingDisplay');
+        // Shipper data for JavaScript
+        window.shipperData = {
+            id: @shipperId,
+            name: '@shipperName',
+            pendingCount: @pendingDeliveries
+        };
     </script>
 
     @RenderSection("scripts", required: false)

@@ -4,22 +4,103 @@
     Layout = "~/Views/Shared/_ShipperLayout.cshtml";
 }
 
+<!-- Statistics Cards -->
+@if(Model.Stats != null)
+{
+    <div class="row g-3 mb-4">
+        <div class="col-md-3 col-sm-6">
+            <div class="shipper-card bg-warning bg-opacity-10 border-warning">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted d-block">Pending</small>
+                        <h3 class="mb-0 fw-bold text-warning">@Model.Stats.TotalPending</h3>
+                    </div>
+                    <div class="fs-1 text-warning opacity-50">
+                        <i class="bi bi-box-seam"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="shipper-card bg-success bg-opacity-10 border-success">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted d-block">Delivered Today</small>
+                        <h3 class="mb-0 fw-bold text-success">@Model.Stats.TotalDeliveredToday</h3>
+                    </div>
+                    <div class="fs-1 text-success opacity-50">
+                        <i class="bi bi-calendar-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="shipper-card bg-info bg-opacity-10 border-info">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted d-block">This Month</small>
+                        <h3 class="mb-0 fw-bold text-info">@Model.Stats.TotalDeliveredThisMonth</h3>
+                    </div>
+                    <div class="fs-1 text-info opacity-50">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6">
+            <div class="shipper-card bg-primary bg-opacity-10 border-primary">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <small class="text-muted d-block">All Time</small>
+                        <h3 class="mb-0 fw-bold text-primary">@Model.Stats.TotalCompletedAllTime</h3>
+                    </div>
+                    <div class="fs-1 text-primary opacity-50">
+                        <i class="bi bi-trophy"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
 <div class="row mb-4">
     <div class="col-12">
         <h2 class="h4 fw-bold mb-3">
             <i class="bi bi-truck me-2 text-success"></i>My Delivery Orders
         </h2>
 
-        <!-- Filter Buttons -->
-        <div class="btn-group mb-3" role="group">
-            <a href="@Url.Action("Index", new { filter = "" })" 
-               class="btn @(string.IsNullOrEmpty(ViewBag.Filter) ? "btn-success" : "btn-outline-success")">
-                <i class="bi bi-grid-3x3-gap me-1"></i>All (@Model.TotalCount)
-            </a>
-            <a href="@Url.Action("Index", new { filter = "assigned" })" 
-               class="btn @(ViewBag.Filter == "assigned" ? "btn-success" : "btn-outline-success")">
-                <i class="bi bi-box-seam me-1"></i>Pending (@Model.AssignedCount)
-            </a>
+        <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+            <!-- Filter Buttons -->
+            <div class="btn-group" role="group">
+                <a href="@Url.Action("Index", new { filter = "" })" 
+                   class="btn @(string.IsNullOrEmpty(ViewBag.Filter) ? "btn-success" : "btn-outline-success")">
+                    <i class="bi bi-grid-3x3-gap me-1"></i>All (@Model.TotalCount)
+                </a>
+                <a href="@Url.Action("Index", new { filter = "assigned" })" 
+                   class="btn @(ViewBag.Filter == "assigned" ? "btn-success" : "btn-outline-success")">
+                    <i class="bi bi-box-seam me-1"></i>Pending (@Model.AssignedCount)
+                </a>
+            </div>
+
+            <!-- Search Box -->
+            <div class="ms-auto">
+                <form method="get" action="@Url.Action("Index")" class="d-flex gap-2">
+                    <input type="hidden" name="filter" value="@ViewBag.Filter" />
+                    <input type="text" name="search" class="form-control" 
+                           placeholder="Search by name, phone, address..." 
+                           value="@ViewBag.SearchTerm"
+                           style="min-width: 250px;" />
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i>
+                    </button>
+                    @if(!string.IsNullOrEmpty(ViewBag.SearchTerm as string))
+                    {
+                        <a href="@Url.Action("Index", new { filter = ViewBag.Filter })" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i>
+                        </a>
+                    }
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -28,7 +109,11 @@
 {
     <div class="alert alert-info">
         <i class="bi bi-info-circle me-2"></i>
-        @if (ViewBag.Filter == "assigned")
+        @if (!string.IsNullOrEmpty(ViewBag.SearchTerm as string))
+        {
+            <text>No orders found matching your search.</text>
+        }
+        else if (ViewBag.Filter == "assigned")
         {
             <text>No pending deliveries at the moment.</text>
         }
