@@ -17,7 +17,9 @@ namespace ValiModern.Areas.Admin.Controllers
         // GET: Admin/Order
         public ActionResult Index(string status, string q, string sort)
         {
+            // OPTIMIZE: Use AsNoTracking for read-only listing
             var orders = _db.Orders
+                .AsNoTracking()
                 .Include(o => o.User)
                 .Include(o => o.Order_Details)
                 .AsQueryable();
@@ -92,7 +94,9 @@ namespace ValiModern.Areas.Admin.Controllers
         {
             if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
+            // OPTIMIZE: Use AsNoTracking for read-only data
             var order = _db.Orders
+                .AsNoTracking()
                 .Include(o => o.User)
                 .Include(o => o.User1) // User1 = Shipper (EF generated navigation property)
                 .Include(o => o.Order_Details.Select(od => od.Product))
@@ -142,8 +146,9 @@ namespace ValiModern.Areas.Admin.Controllers
                 }).ToList()
             };
 
-            // Get shipper list for dropdown
+            // OPTIMIZE: Get shipper list with AsNoTracking
             ViewBag.Shippers = _db.Users
+                .AsNoTracking()
                 .Where(u => u.role == "shipper")
                 .OrderBy(u => u.username)
                 .Select(u => new SelectListItem
@@ -209,6 +214,13 @@ namespace ValiModern.Areas.Admin.Controllers
             order.status = status;
             order.updated_at = DateTime.Now;
             _db.SaveChanges();
+            
+            // OPTIMIZE: Invalidate cache if status changed to Shipped
+            if (status == "Shipped")
+            {
+                var cacheKey = "DeliveredOrders_User_" + order.user_id;
+                Helpers.CacheHelper.Remove(cacheKey);
+            }
 
             TempData["Success"] = $"Order status updated to '{status}'.";
             return RedirectToAction("Details", new { id });
@@ -229,13 +241,19 @@ namespace ValiModern.Areas.Admin.Controllers
                 return RedirectToAction("Details", new { id });
             }
 
-            // Check if shipper exists
-            var shipper = _db.Users.Find(shipperId);
-            if (shipper == null || shipper.role != "shipper")
+            // OPTIMIZE: Check shipper exists with AsNoTracking
+            var shipperExists = _db.Users.AsNoTracking().Any(u => u.id == shipperId && u.role == "shipper");
+            if (!shipperExists)
             {
                 TempData["Error"] = "Shipper does not exist or is invalid.";
                 return RedirectToAction("Details", new { id });
             }
+
+            // Get shipper name for message
+            var shipperName = _db.Users.AsNoTracking()
+                .Where(u => u.id == shipperId)
+                .Select(u => u.username)
+                .FirstOrDefault();
 
             // Assign shipper and update status
             order.shipper_id = shipperId;
@@ -245,7 +263,7 @@ namespace ValiModern.Areas.Admin.Controllers
 
             _db.SaveChanges();
 
-            TempData["Success"] = string.Format("Order assigned to shipper {0}.", shipper.username);
+            TempData["Success"] = string.Format("Order assigned to shipper {0}.", shipperName);
             return RedirectToAction("Details", new { id });
         }
 
@@ -272,6 +290,10 @@ namespace ValiModern.Areas.Admin.Controllers
             order.updated_at = DateTime.Now;
 
             _db.SaveChanges();
+            
+            // OPTIMIZE: Invalidate cache
+            var cacheKey = "DeliveredOrders_User_" + order.user_id;
+            Helpers.CacheHelper.Remove(cacheKey);
 
             TempData["Success"] = "Shipper assignment removed.";
             return RedirectToAction("Details", new { id });
@@ -288,6 +310,9 @@ namespace ValiModern.Areas.Admin.Controllers
                 .FirstOrDefault(o => o.id == id);
 
             if (order == null) return HttpNotFound();
+
+            // Store user ID for cache invalidation
+            int userId = order.user_id;
 
             // Restore stock if order wasn't cancelled
             if (order.status != "Cancelled")
@@ -321,6 +346,10 @@ namespace ValiModern.Areas.Admin.Controllers
             // Remove order
             _db.Orders.Remove(order);
             _db.SaveChanges();
+            
+            // OPTIMIZE: Invalidate cache
+            var cacheKey = "DeliveredOrders_User_" + userId;
+            Helpers.CacheHelper.Remove(cacheKey);
 
             TempData["Success"] = "Order deleted and stock restored.";
             return RedirectToAction("Index");
@@ -331,15 +360,17 @@ namespace ValiModern.Areas.Admin.Controllers
         {
             if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-            var shipper = _db.Users.Find(id);
+            // OPTIMIZE: Check shipper with AsNoTracking
+            var shipper = _db.Users.AsNoTracking().FirstOrDefault(u => u.id == id);
             if (shipper == null || shipper.role != "shipper")
             {
                 TempData["Error"] = "Shipper not found.";
                 return RedirectToAction("Index");
             }
 
-            // Get all orders assigned to this shipper
+            // OPTIMIZE: Get all orders with AsNoTracking
             var ordersQuery = _db.Orders
+                .AsNoTracking()
                 .Include(o => o.User)
                 .Include(o => o.Order_Details)
                 .Where(o => o.shipper_id == id)

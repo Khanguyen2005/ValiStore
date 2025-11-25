@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ValiModern.Models.EF;
@@ -41,7 +42,13 @@ namespace ValiModern.Controllers
         [HttpPost]
         public ActionResult AddToCart(int productId, int quantity = 1, int? colorId = null, int? sizeId = null)
         {
-            var product = _db.Products.Find(productId);
+            // OPTIMIZE: Use AsNoTracking and select only needed fields
+            var product = _db.Products
+                .AsNoTracking()
+                .Where(p => p.id == productId)
+                .Select(p => new { p.id, p.name, p.image_url, p.price })
+                .FirstOrDefault();
+                
             if (product == null)
             {
                 TempData["Error"] = "Product not found.";
@@ -52,9 +59,9 @@ namespace ValiModern.Controllers
 
             // Find if item already exists with same product/color/size
             var existingItem = cart.FirstOrDefault(i =>
-       i.ProductId == productId &&
-     i.ColorId == colorId &&
-       i.SizeId == sizeId);
+                i.ProductId == productId &&
+                i.ColorId == colorId &&
+                i.SizeId == sizeId);
 
             if (existingItem != null)
             {
@@ -62,8 +69,22 @@ namespace ValiModern.Controllers
             }
             else
             {
-                var color = colorId.HasValue ? _db.Colors.Find(colorId.Value) : null;
-                var size = sizeId.HasValue ? _db.Sizes.Find(sizeId.Value) : null;
+                // OPTIMIZE: Load color and size with AsNoTracking
+                var color = colorId.HasValue 
+                    ? _db.Colors
+                        .AsNoTracking()
+                        .Where(c => c.id == colorId.Value)
+                        .Select(c => new { c.name, c.color_code })
+                        .FirstOrDefault()
+                    : null;
+                    
+                var size = sizeId.HasValue 
+                    ? _db.Sizes
+                        .AsNoTracking()
+                        .Where(s => s.id == sizeId.Value)
+                        .Select(s => new { s.name })
+                        .FirstOrDefault()
+                    : null;
 
                 cart.Add(new CartItem
                 {
@@ -91,9 +112,9 @@ namespace ValiModern.Controllers
         {
             var cart = GetCart();
             var item = cart.FirstOrDefault(i =>
-            i.ProductId == productId &&
-      i.ColorId == colorId &&
-               i.SizeId == sizeId);
+                i.ProductId == productId &&
+                i.ColorId == colorId &&
+                i.SizeId == sizeId);
 
             if (item != null)
             {
@@ -117,9 +138,9 @@ namespace ValiModern.Controllers
         {
             var cart = GetCart();
             var item = cart.FirstOrDefault(i =>
-               i.ProductId == productId &&
-             i.ColorId == colorId &&
-        i.SizeId == sizeId);
+                i.ProductId == productId &&
+                i.ColorId == colorId &&
+                i.SizeId == sizeId);
 
             if (item != null)
             {

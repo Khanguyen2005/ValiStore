@@ -24,7 +24,8 @@ namespace ValiModern.Controllers
                 return RedirectToAction("Login");
             }
 
-            var user = _db.Users.Find(userId);
+            // Use AsNoTracking for read-only query
+            var user = _db.Users.AsNoTracking().FirstOrDefault(u => u.id == userId);
             if (user == null)
             {
                 TempData["Error"] = "User not found.";
@@ -158,7 +159,14 @@ namespace ValiModern.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
-            return View();
+            // Redirect to home and let them use the modal
+            if (Request.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            TempData["ShowRegisterModal"] = true;
+            return RedirectToAction("Index", "Home");
         }
 
         // POST: /Account/Register
@@ -171,7 +179,8 @@ namespace ValiModern.Controllers
 
             var email = (model.Email ?? string.Empty).Trim().ToLowerInvariant();
 
-            var existing = _db.Users.FirstOrDefault(u => u.email == email);
+            // Use AsNoTracking for read check
+            var existing = _db.Users.AsNoTracking().FirstOrDefault(u => u.email == email);
             if (existing != null)
             {
                 ModelState.AddModelError("", "Email is already in use.");
@@ -227,8 +236,25 @@ namespace ValiModern.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
-            ViewBag.ReturnUrl = returnUrl;
-            return View();
+            // If user tries to access /Account/Login directly,
+            // redirect to home and let them use the modal
+            if (Request.IsAuthenticated)
+            {
+                // Already logged in, redirect to returnUrl or home
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Store returnUrl in TempData so we can redirect after modal login
+            if (!string.IsNullOrEmpty(returnUrl))
+            {
+                TempData["ReturnUrl"] = returnUrl;
+                TempData["ShowLoginModal"] = true;
+            }
+
+            // Redirect to home page (modal will open via JavaScript)
+            return RedirectToAction("Index", "Home");
         }
 
         // POST: /Account/Login
@@ -241,7 +267,13 @@ namespace ValiModern.Controllers
 
             var email = (model.Email ?? string.Empty).Trim().ToLowerInvariant();
 
-            var user = _db.Users.FirstOrDefault(u => u.email == email && u.password == model.Password);
+            // Optimize: Select only needed fields for login check
+            var user = _db.Users
+                .AsNoTracking()
+                .Where(u => u.email == email && u.password == model.Password)
+                .Select(u => new { u.id, u.username, u.email, u.is_admin, u.role })
+                .FirstOrDefault();
+
             if (user == null)
             {
                 ModelState.AddModelError("", "Incorrect email or password.");
@@ -303,6 +335,169 @@ namespace ValiModern.Controllers
                 return Redirect(returnUrl);
 
             return RedirectToAction("Index", "Home");
+        }
+
+        // POST: /Account/LoginAjax - Ajax version for modal
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public JsonResult LoginAjax(string Email, string Password, string RememberMe, string ReturnUrl)
+        {
+            try
+            {
+                // Parse RememberMe checkbox (can be "on", "true", or null)
+                bool rememberMe = (RememberMe == "on" || RememberMe == "true");
+                
+                // Manual validation
+                if (string.IsNullOrWhiteSpace(Email) || string.IsNullOrWhiteSpace(Password))
+                {
+                    return Json(new { success = false, message = "Please fill in all fields correctly." });
+                }
+
+                var email = Email.Trim().ToLowerInvariant();
+
+                // Optimize: Select only needed fields and use AsNoTracking
+                var user = _db.Users
+                    .AsNoTracking()
+                    .Where(u => u.email == email && u.password == Password)
+                    .Select(u => new { u.id, u.username, u.email, u.is_admin, u.role })
+                    .FirstOrDefault();
+
+                if (user == null)
+                {
+                    return Json(new { success = false, message = "Incorrect email or password." });
+                }
+
+                // Determine role: admin > shipper > customer
+                string role = "customer";
+                if (user.is_admin)
+                {
+                    role = "admin";
+                }
+                else if (!string.IsNullOrEmpty(user.role) && user.role == "shipper")
+                {
+                    role = "shipper";
+                }
+
+                // Create authentication ticket
+                var ticket = new FormsAuthenticationTicket(
+                    1,
+                    user.id.ToString(),
+                    DateTime.Now,
+                    DateTime.Now.AddDays(rememberMe ? 14 : 1),
+                    rememberMe,
+                    role,
+                    FormsAuthentication.FormsCookiePath);
+
+                var enc = FormsAuthentication.Encrypt(ticket);
+                var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, enc)
+                {
+                    HttpOnly = true,
+                    Secure = FormsAuthentication.RequireSSL,
+                    Path = FormsAuthentication.FormsCookiePath
+                };
+                if (rememberMe)
+                {
+                    cookie.Expires = ticket.Expiration;
+                }
+                Response.Cookies.Add(cookie);
+
+                // Store in session for UI
+                Session["DisplayName"] = string.IsNullOrWhiteSpace(user.username) 
+                    ? (string.IsNullOrWhiteSpace(user.email) ? "User #" + user.id : user.email)
+                    : user.username;
+                Session["UserRole"] = role;
+                Session["UserId"] = user.id;
+
+                // Determine redirect URL
+                string redirectUrl = Url.Action("Index", "Home");
+                
+                // Priority: ReturnUrl > Role-based redirect > Home
+                if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
+                {
+                    redirectUrl = ReturnUrl;
+                }
+                else if (role == "admin")
+                {
+                    redirectUrl = Url.Action("Index", "Dashboard", new { area = "Admin" });
+                }
+                else if (role == "shipper")
+                {
+                    redirectUrl = Url.Action("Index", "Shipper");
+                }
+
+                return Json(new { success = true, redirectUrl = redirectUrl });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"[LoginAjax] Exception: {ex.Message}");
+                return Json(new { success = false, message = "An error occurred during login. Please try again." });
+            }
+        }
+
+        // POST: /Account/RegisterAjax - Ajax version for modal
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public JsonResult RegisterAjax(RegisterViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+                return Json(new { success = false, message = string.Join(". ", errors) });
+            }
+
+            var email = (model.Email ?? string.Empty).Trim().ToLowerInvariant();
+
+            // Use AsNoTracking for existence check
+            var existing = _db.Users.AsNoTracking().Any(u => u.email == email);
+            if (existing)
+            {
+                return Json(new { success = false, message = "Email is already in use." });
+            }
+
+            // Create user
+            var user = new User
+            {
+                username = email.Split('@')[0],
+                email = email,
+                password = model.Password,
+                phone = string.Empty,
+                is_admin = false,
+                address = string.Empty,
+                created_at = DateTime.UtcNow,
+                updated_at = DateTime.UtcNow
+            };
+
+            _db.Users.Add(user);
+            _db.SaveChanges();
+
+            // Auto-login after registration
+            var role = user.is_admin ? "admin" : "member";
+            var ticket = new FormsAuthenticationTicket(
+                1,
+                user.id.ToString(),
+                DateTime.Now,
+                DateTime.Now.AddMinutes(60),
+                false,
+                role,
+                FormsAuthentication.FormsCookiePath);
+
+            var enc = FormsAuthentication.Encrypt(ticket);
+            var cookie = new HttpCookie(FormsAuthentication.FormsCookieName, enc)
+            {
+                HttpOnly = true,
+                Secure = FormsAuthentication.RequireSSL,
+                Path = FormsAuthentication.FormsCookiePath
+            };
+            Response.Cookies.Add(cookie);
+
+            // Store in session
+            Session["DisplayName"] = string.IsNullOrWhiteSpace(user.username) ? user.email : user.username;
+            Session["UserId"] = user.id;
+            Session["UserRole"] = role;
+
+            return Json(new { success = true, redirectUrl = Url.Action("Index", "Home") });
         }
 
         // POST: /Account/Logout
@@ -386,6 +581,99 @@ namespace ValiModern.Controllers
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -192,15 +192,16 @@ namespace ValiModern.Controllers
                     return Json(new { success = false, message = "Unauthorized" }, JsonRequestBehavior.AllowGet);
                 }
 
-                // Verify shipper owns this order
-                var order = _db.Orders.Find(orderId);
-                if (order == null || order.shipper_id != shipper.id)
+                // OPTIMIZE: Lightweight check using Any()
+                var orderExists = _db.Orders.AsNoTracking().Any(o => o.id == orderId && o.shipper_id == shipper.id);
+                if (!orderExists)
                 {
                     return Json(new { success = false, message = "Order not found" }, JsonRequestBehavior.AllowGet);
                 }
 
-                // Get messages from database
+                // OPTIMIZE: Get messages with AsNoTracking
                 var dbMessages = _db.Messages
+                    .AsNoTracking()
                     .Where(m => m.order_id == orderId)
                     .OrderBy(m => m.created_at)
                     .ToList();
@@ -234,9 +235,14 @@ namespace ValiModern.Controllers
                     return Json(new { success = false, message = "Unauthorized" });
                 }
 
-                // Verify shipper owns this order
-                var order = _db.Orders.Find(orderId);
-                if (order == null || order.shipper_id != shipper.id)
+                // OPTIMIZE: Only select needed fields
+                var order = _db.Orders
+                    .AsNoTracking()
+                    .Where(o => o.id == orderId && o.shipper_id == shipper.id)
+                    .Select(o => new { o.id, o.user_id })
+                    .FirstOrDefault();
+                    
+                if (order == null)
                 {
                     return Json(new { success = false, message = "Order not found" });
                 }

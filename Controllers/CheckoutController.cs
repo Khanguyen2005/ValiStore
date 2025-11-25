@@ -60,7 +60,13 @@ namespace ValiModern.Controllers
                 int userId;
                 if (int.TryParse(User.Identity.Name, out userId))
                 {
-                    var user = _db.Users.Find(userId);
+                    // OPTIMIZE: Use AsNoTracking and select only needed fields
+                    var user = _db.Users
+                        .AsNoTracking()
+                        .Where(u => u.id == userId)
+                        .Select(u => new { u.username, u.phone, u.address, u.email })
+                        .FirstOrDefault();
+                        
                     if (user != null)
                     {
                         vm.FullName = user.username;
@@ -388,6 +394,7 @@ namespace ValiModern.Controllers
                 {
                     if (vnp_ResponseCode == "00" && vnp_TransactionStatus == "00")
                     {
+                        // OPTIMIZE: Don't use AsNoTracking here - we need to update the order
                         var itemOrder = _db.Orders.FirstOrDefault(x => x.id.ToString() == orderCode);
                         if (itemOrder != null)
                         {
@@ -426,23 +433,40 @@ namespace ValiModern.Controllers
         // GET: Checkout/Confirmation
         public ActionResult Confirmation(int orderId)
         {
-            var order = _db.Orders.Find(orderId);
-            if (order == null)
+            // OPTIMIZE: Use AsNoTracking and select only needed fields
+            var orderData = _db.Orders
+                .AsNoTracking()
+                .Where(o => o.id == orderId)
+                .Select(o => new
+                {
+                    o.id,
+                    o.order_date,
+                    o.status,
+                    o.total_amount
+                })
+                .FirstOrDefault();
+                
+            if (orderData == null)
             {
                 TempData["Error"] = "Order not found.";
                 return RedirectToAction("Index", "Home");
             }
 
-            var payment = _db.Payments.FirstOrDefault(p => p.order_id == orderId);
+            // OPTIMIZE: Use AsNoTracking for payment lookup
+            var payment = _db.Payments
+                .AsNoTracking()
+                .Where(p => p.order_id == orderId)
+                .Select(p => new { p.payment_method })
+                .FirstOrDefault();
 
             var vm = new OrderConfirmationVM
             {
-                OrderId = order.id,
-                OrderCode = "#" + order.id,  // Simple format: #70
-                TotalAmount = order.total_amount,
+                OrderId = orderData.id,
+                OrderCode = "#" + orderData.id,
+                TotalAmount = orderData.total_amount,
                 PaymentMethod = payment?.payment_method ?? "N/A",
-                Status = order.status,
-                OrderDate = order.order_date
+                Status = orderData.status,
+                OrderDate = orderData.order_date
             };
 
             return View(vm);

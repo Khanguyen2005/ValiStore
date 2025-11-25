@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
+using ValiModern.Helpers;
 using ValiModern.Models.EF;
 using ValiModern.Models.ViewModels;
 
@@ -13,18 +14,25 @@ namespace ValiModern.Controllers
         private readonly ValiModernDBEntities _db = new ValiModernDBEntities();
 
         // GET: Category
-        [OutputCache(Duration = 300, VaryByParam = "none")] // Cache 5 minutes
         public ActionResult Index()
         {
-            var categories = _db.Categories
-                .OrderBy(c => c.name)
-                .Select(c => new CategoryVM
-                {
-                    Id = c.id,
-                    Name = c.name,
-                    Slug = c.name.ToLower().Replace(" ", "-")
-                })
-                .ToList();
+            // OPTIMIZE: Use cache instead of output cache (more flexible)
+            var categories = CacheHelper.GetOrSet(
+                CacheHelper.KEY_CATEGORIES,
+                () => {
+                    return _db.Categories
+                        .AsNoTracking()
+                        .OrderBy(c => c.name)
+                        .Select(c => new CategoryVM
+                        {
+                            Id = c.id,
+                            Name = c.name,
+                            Slug = c.name.ToLower().Replace(" ", "-")
+                        })
+                        .ToList();
+                },
+                10 // Cache for 10 minutes
+            );
 
             return View(categories);
         }
@@ -32,7 +40,8 @@ namespace ValiModern.Controllers
         // GET: Category/Products/5
         public ActionResult Products(int id, string sort, int? minPrice, int? maxPrice, string colors, string sizes, int page = 1)
         {
-            var category = _db.Categories.Find(id);
+            // OPTIMIZE: Use AsNoTracking for category lookup
+            var category = _db.Categories.AsNoTracking().FirstOrDefault(c => c.id == id);
             if (category == null)
             {
                 TempData["Error"] = "Category not found.";
@@ -41,8 +50,9 @@ namespace ValiModern.Controllers
 
             int pageSize = 12;
             
-            // Start with base query - NO eager loading yet
+            // OPTIMIZE: Start with AsNoTracking - NO eager loading yet
             var products = _db.Products
+                .AsNoTracking()
                 .Where(p => p.is_active && p.category_id == id)
                 .AsQueryable();
 
@@ -124,8 +134,9 @@ namespace ValiModern.Controllers
             // Get distinct product IDs for filter options - more efficient
             var baseProductIds = products.Select(p => p.id).ToList();
 
-            // Get all available colors for this category (count distinct products, not color records)
+            // OPTIMIZE: Get all available colors for this category with AsNoTracking
             var availableColors = _db.Colors
+                .AsNoTracking()
                 .Where(c => baseProductIds.Contains(c.product_id))
                 .GroupBy(c => new { c.name, c.color_code })
                 .Select(g => new
@@ -144,8 +155,9 @@ namespace ValiModern.Controllers
                 })
                 .ToList();
 
-            // Get all available sizes for this category (count distinct products, not size records)
+            // OPTIMIZE: Get all available sizes for this category with AsNoTracking
             var availableSizes = _db.Sizes
+                .AsNoTracking()
                 .Where(s => baseProductIds.Contains(s.product_id))
                 .GroupBy(s => s.name)
                 .Select(g => new

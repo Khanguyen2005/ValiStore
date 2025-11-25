@@ -62,7 +62,13 @@
                 {
                     using (var db = new ValiModernDBEntities())
                     {
-                        var user = db.Users.Find(userId);
+                        // OPTIMIZE: Use AsNoTracking and select only needed fields
+                        var user = db.Users
+                            .AsNoTracking()
+                            .Where(u => u.id == userId)
+                            .Select(u => new { u.id, u.username, u.email, u.is_admin, u.role })
+                            .FirstOrDefault();
+                            
                         if (user != null)
                         {
                             displayName = string.IsNullOrWhiteSpace(user.username)
@@ -101,10 +107,11 @@
             () => {
                 using (var db = new ValiModernDBEntities())
                 {
-                    return db.Categories.OrderBy(c => c.name).ToList();
+                    // OPTIMIZE: AsNoTracking for read-only data
+                    return db.Categories.AsNoTracking().OrderBy(c => c.name).ToList();
                 }
             },
-            5 // Cache for 5 minutes
+            10 // Cache for 10 minutes (increased from 5)
         );
         if (categories == null)
         {
@@ -113,20 +120,34 @@
     }
     catch { }
 
-    // New: count delivered orders awaiting customer confirmation (status Shipped & delivered_at not null)
+    // OPTIMIZE: Cache delivered orders count instead of querying every request
     int deliveredAwaitingConfirm = 0;
     if (isAuthenticated)
     {
         try
         {
-            // User.Identity.Name now contains user ID
             int userId;
             if (int.TryParse(User.Identity.Name, out userId))
             {
-                using (var db = new ValiModernDBEntities())
-                {
-                    deliveredAwaitingConfirm = db.Orders.Count(o => o.user_id == userId && o.status == "Shipped" && o.delivered_at != null);
-                }
+                // Cache key specific to user
+                string cacheKey = "DeliveredOrders_User_" + userId;
+                
+                // Use GetOrSetValue for value types (int)
+                deliveredAwaitingConfirm = CacheHelper.GetOrSetValue(
+                    cacheKey,
+                    () => {
+                        using (var db = new ValiModernDBEntities())
+                        {
+                            // OPTIMIZE: AsNoTracking for count query
+                            return db.Orders
+                                .AsNoTracking()
+                                .Count(o => o.user_id == userId && 
+                                           o.status == "Shipped" && 
+                                           o.delivered_at != null);
+                        }
+                    },
+                    1 // Cache for 1 minute only (so it updates reasonably fast)
+                );
             }
         }
         catch { }
@@ -227,10 +248,14 @@
                     @if (!isAuthenticated)
                     {
                         <li class="nav-item">
-                            <a class="btn btn-outline-light btn-sm rounded-pill px-4 fw-bold" href="@Url.Action("Login", "Account")">Login</a>
+                            <button type="button" class="btn btn-outline-light btn-sm rounded-pill px-4 fw-bold" data-bs-toggle="modal" data-bs-target="#loginModal">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Login
+                            </button>
                         </li>
                         <li class="nav-item">
-                            <a class="btn btn-light btn-sm rounded-pill px-4 fw-bold text-primary" href="@Url.Action("Register", "Account")">Register</a>
+                            <button type="button" class="btn btn-light btn-sm rounded-pill px-4 fw-bold text-primary" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                <i class="bi bi-person-plus me-1"></i>Register
+                            </button>
                         </li>
                     }
                     else
@@ -331,9 +356,273 @@
         </footer>
     </div>
 
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-primary text-white border-0">
+                    <h5 class="modal-title" id="loginModalLabel">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Welcome Back
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="loginForm">
+                        @Html.AntiForgeryToken()
+                        
+                        @* Hidden field for return URL *@
+                        @if (TempData["ReturnUrl"] != null)
+                        {
+                            <input type="hidden" name="ReturnUrl" value="@TempData["ReturnUrl"]" />
+                        }
+                        
+                        <div id="loginError" class="alert alert-danger d-none" role="alert"></div>
+                        
+                        <div class="mb-3">
+                            <label for="loginEmail" class="form-label fw-semibold">
+                                <i class="bi bi-envelope me-1"></i>Email Address
+                            </label>
+                            <input type="email" class="form-control form-control-lg" id="loginEmail" name="Email" required placeholder="your@email.com" />
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="loginPassword" class="form-label fw-semibold">
+                                <i class="bi bi-lock me-1"></i>Password
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control form-control-lg" id="loginPassword" name="Password" required placeholder="Enter your password" />
+                                <button class="btn btn-outline-secondary" type="button" id="toggleLoginPassword">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="rememberMe" name="RememberMe" />
+                            <label class="form-check-label" for="rememberMe">
+                                Remember me for 14 days
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg w-100 mb-3" id="loginBtn">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Login
+                        </button>
+                        
+                        <div class="text-center">
+                            <p class="mb-0 text-muted">
+                                Don't have an account? 
+                                <a href="#" class="text-primary fw-semibold" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal">
+                                    Sign up now
+                                </a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div class="modal fade" id="registerModal" tabindex="-1" aria-labelledby="registerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header bg-success text-white border-0">
+                    <h5 class="modal-title" id="registerModalLabel">
+                        <i class="bi bi-person-plus me-2"></i>Create Account
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="registerForm">
+                        @Html.AntiForgeryToken()
+                        <div id="registerError" class="alert alert-danger d-none" role="alert"></div>
+                        
+                        <div class="mb-3">
+                            <label for="registerEmail" class="form-label fw-semibold">
+                                <i class="bi bi-envelope me-1"></i>Email Address
+                            </label>
+                            <input type="email" class="form-control form-control-lg" id="registerEmail" name="Email" required placeholder="your@email.com" />
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="registerPassword" class="form-label fw-semibold">
+                                <i class="bi bi-lock me-1"></i>Password
+                            </label>
+                            <div class="input-group">
+                                <input type="password" class="form-control form-control-lg" id="registerPassword" name="Password" required placeholder="Choose a strong password" />
+                                <button class="btn btn-outline-secondary" type="button" id="toggleRegisterPassword">
+                                    <i class="bi bi-eye"></i>
+                                </button>
+                            </div>
+                            <small class="text-muted">At least 6 characters</small>
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="registerConfirmPassword" class="form-label fw-semibold">
+                                <i class="bi bi-shield-check me-1"></i>Confirm Password
+                            </label>
+                            <input type="password" class="form-control form-control-lg" id="registerConfirmPassword" name="ConfirmPassword" required placeholder="Re-enter password" />
+                            <div class="invalid-feedback"></div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success btn-lg w-100 mb-3" id="registerBtn">
+                            <i class="bi bi-person-plus me-2"></i>Create Account
+                        </button>
+                        
+                        <div class="text-center">
+                            <p class="mb-0 text-muted">
+                                Already have an account? 
+                                <a href="#" class="text-success fw-semibold" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#loginModal">
+                                    Login here
+                                </a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- JS: jQuery first, then Bootstrap bundle -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+
+    <script>
+    // Auto-open modal if redirected from login/register
+    $(document).ready(function() {
+        @if (TempData["ShowLoginModal"] != null)
+        {
+            <text>
+            var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+            loginModal.show();
+            </text>
+        }
+        
+        @if (TempData["ShowRegisterModal"] != null)
+        {
+            <text>
+            var registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
+            registerModal.show();
+            </text>
+        }
+    });
+
+    // Toggle password visibility
+    $('#toggleLoginPassword').click(function() {
+        var input = $('#loginPassword');
+        var icon = $(this).find('i');
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+            icon.removeClass('bi-eye').addClass('bi-eye-slash');
+        } else {
+            input.attr('type', 'password');
+            icon.removeClass('bi-eye-slash').addClass('bi-eye');
+        }
+    });
+
+    $('#toggleRegisterPassword').click(function() {
+        var input = $('#registerPassword');
+        var icon = $(this).find('i');
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+            icon.removeClass('bi-eye').addClass('bi-eye-slash');
+        } else {
+            input.attr('type', 'password');
+            icon.removeClass('bi-eye-slash').addClass('bi-eye');
+        }
+    });
+
+    // Login Form Submit
+    $('#loginForm').submit(function(e) {
+        e.preventDefault();
+        
+        var btn = $('#loginBtn');
+        var errorDiv = $('#loginError');
+        var formData = $(this).serialize();
+        
+        console.log('[Login] Form submitted');
+        console.log('[Login] Form data:', formData);
+        
+        // Disable button
+        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Logging in...');
+        errorDiv.addClass('d-none');
+        
+        $.ajax({
+            url: '@Url.Action("LoginAjax", "Account")',
+            type: 'POST',
+            data: formData,
+            dataType: 'json',
+            success: function(response) {
+                console.log('[Login] Response:', response);
+                if (response.success) {
+                    console.log('[Login] Success! Redirecting to:', response.redirectUrl);
+                    // Success - redirect based on role
+                    window.location.href = response.redirectUrl || '@Url.Action("Index", "Home")';
+                } else {
+                    console.log('[Login] Failed:', response.message);
+                    // Show error
+                    errorDiv.html('<i class="bi bi-exclamation-triangle me-2"></i>' + (response.message || 'Login failed')).removeClass('d-none');
+                    btn.prop('disabled', false).html('<i class="bi bi-box-arrow-in-right me-2"></i>Login');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('[Login] Ajax error:', status, error);
+                console.error('[Login] Response:', xhr.responseText);
+                errorDiv.html('<i class="bi bi-exclamation-triangle me-2"></i>An error occurred. Please try again.').removeClass('d-none');
+                btn.prop('disabled', false).html('<i class="bi bi-box-arrow-in-right me-2"></i>Login');
+            }
+        });
+    });
+
+    // Register Form Submit
+    $('#registerForm').submit(function(e) {
+        e.preventDefault();
+        
+        var btn = $('#registerBtn');
+        var errorDiv = $('#registerError');
+        var password = $('#registerPassword').val();
+        var confirm = $('#registerConfirmPassword').val();
+        
+        // Client-side validation
+        if (password !== confirm) {
+            errorDiv.html('<i class="bi bi-exclamation-triangle me-2"></i>Passwords do not match').removeClass('d-none');
+            return;
+        }
+        
+        if (password.length < 6) {
+            errorDiv.html('<i class="bi bi-exclamation-triangle me-2"></i>Password must be at least 6 characters').removeClass('d-none');
+            return;
+        }
+        
+        // Disable button
+        btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2"></span>Creating account...');
+        errorDiv.addClass('d-none');
+        
+        $.ajax({
+            url: '@Url.Action("RegisterAjax", "Account")',
+            type: 'POST',
+            data: $(this).serialize(),
+            success: function(response) {
+                if (response.success) {
+                    // Success - redirect
+                    window.location.href = response.redirectUrl || '@Url.Action("Index", "Home")';
+                } else {
+                    // Show error
+                    errorDiv.html('<i class="bi bi-exclamation-triangle me-2"></i>' + (response.message || 'Registration failed')).removeClass('d-none');
+                    btn.prop('disabled', false).html('<i class="bi bi-person-plus me-2"></i>Create Account');
+                }
+            },
+            error: function() {
+                errorDiv.html('<i class="bi bi-exclamation-triangle me-2"></i>An error occurred. Please try again.').removeClass('d-none');
+                btn.prop('disabled', false).html('<i class="bi bi-person-plus me-2"></i>Create Account');
+            }
+        });
+    });
+    </script>
 
     @RenderSection("scripts", required: false)
 </body>

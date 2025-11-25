@@ -15,7 +15,7 @@ namespace ValiModern.Helpers
         public const string KEY_LAYOUT_CATEGORIES = "Cache_Layout_Categories";
 
         /// <summary>
-        /// Get item from cache or execute factory function and cache the result
+        /// Get item from cache or execute factory function and cache the result (for reference types)
         /// </summary>
         public static T GetOrSet<T>(string key, Func<T> factory, int durationMinutes = 10) where T : class
         {
@@ -42,6 +42,36 @@ namespace ValiModern.Helpers
                     null
                 );
             }
+
+            return data;
+        }
+
+        /// <summary>
+        /// Get value type from cache or execute factory function and cache the result (for value types like int, bool, etc.)
+        /// </summary>
+        public static T GetOrSetValue<T>(string key, Func<T> factory, int durationMinutes = 10) where T : struct
+        {
+            var cache = HttpRuntime.Cache;
+            var cached = cache[key];
+
+            if (cached != null && cached is T)
+            {
+                return (T)cached;
+            }
+
+            // Execute factory to get data
+            var data = factory();
+
+            // Cache the value (boxed)
+            cache.Insert(
+                key,
+                data,
+                null,
+                DateTime.Now.AddMinutes(durationMinutes),
+                Cache.NoSlidingExpiration,
+                CacheItemPriority.Normal,
+                null
+            );
 
             return data;
         }

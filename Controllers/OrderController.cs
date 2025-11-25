@@ -23,7 +23,9 @@ namespace ValiModern.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            // OPTIMIZE: Use AsNoTracking for read-only queries
             var ordersQuery = _db.Orders
+                .AsNoTracking()
                 .Include(o => o.Payments)
                 .Where(o => o.user_id == userId)
                 .AsQueryable();
@@ -66,13 +68,40 @@ namespace ValiModern.Controllers
                 TotalOrders = totalOrders
             };
 
-            // Count orders by status for filter buttons
-            ViewBag.AllCount = _db.Orders.Count(o => o.user_id == userId);
-            ViewBag.PendingCount = _db.Orders.Count(o => o.user_id == userId && o.status == "Pending");
-            ViewBag.ConfirmedCount = _db.Orders.Count(o => o.user_id == userId && o.status == "Confirmed");
-            ViewBag.ShippedCount = _db.Orders.Count(o => o.user_id == userId && o.status == "Shipped");
-            ViewBag.CompletedCount = _db.Orders.Count(o => o.user_id == userId && o.status == "Completed");
-            ViewBag.CancelledCount = _db.Orders.Count(o => o.user_id == userId && o.status == "Cancelled");
+            // OPTIMIZE: Count all statuses in one query using GroupBy
+            var statusCounts = _db.Orders
+                .AsNoTracking()
+                .Where(o => o.user_id == userId)
+                .GroupBy(o => 1) // Dummy group
+                .Select(g => new
+                {
+                    AllCount = g.Count(),
+                    PendingCount = g.Count(o => o.status == "Pending"),
+                    ConfirmedCount = g.Count(o => o.status == "Confirmed"),
+                    ShippedCount = g.Count(o => o.status == "Shipped"),
+                    CompletedCount = g.Count(o => o.status == "Completed"),
+                    CancelledCount = g.Count(o => o.status == "Cancelled")
+                })
+                .FirstOrDefault();
+
+            if (statusCounts != null)
+            {
+                ViewBag.AllCount = statusCounts.AllCount;
+                ViewBag.PendingCount = statusCounts.PendingCount;
+                ViewBag.ConfirmedCount = statusCounts.ConfirmedCount;
+                ViewBag.ShippedCount = statusCounts.ShippedCount;
+                ViewBag.CompletedCount = statusCounts.CompletedCount;
+                ViewBag.CancelledCount = statusCounts.CancelledCount;
+            }
+            else
+            {
+                ViewBag.AllCount = 0;
+                ViewBag.PendingCount = 0;
+                ViewBag.ConfirmedCount = 0;
+                ViewBag.ShippedCount = 0;
+                ViewBag.CompletedCount = 0;
+                ViewBag.CancelledCount = 0;
+            }
 
             return View(vm);
         }
@@ -88,7 +117,9 @@ namespace ValiModern.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            // OPTIMIZE: Use AsNoTracking for read-only data
             var order = _db.Orders
+                .AsNoTracking()
                 .Include(o => o.Order_Details.Select(od => od.Product))
                 .Include(o => o.Order_Details.Select(od => od.Color))
                 .Include(o => o.Order_Details.Select(od => od.Size))
@@ -184,6 +215,9 @@ namespace ValiModern.Controllers
                 {
                     product.stock += item.quantity;
                     product.sold -= item.quantity;
+                    
+                    // Prevent negative sold count
+                    if (product.sold < 0) product.sold = 0;
                 }
             }
 
@@ -233,6 +267,10 @@ namespace ValiModern.Controllers
             order.updated_at = DateTime.Now;
 
             _db.SaveChanges();
+            
+            // OPTIMIZE: Invalidate cache after order status change
+            var cacheKey = "DeliveredOrders_User_" + userId;
+            Helpers.CacheHelper.Remove(cacheKey);
 
             TempData["Success"] = "Thank you! Order has been confirmed as received successfully.";
             return RedirectToAction("Details", new { id = id });
@@ -252,15 +290,16 @@ namespace ValiModern.Controllers
                     return Json(new { success = false, message = "Unauthorized" }, JsonRequestBehavior.AllowGet);
                 }
 
-                // Verify customer owns this order
-                var order = _db.Orders.Find(orderId);
-                if (order == null || order.user_id != userId)
+                // Verify customer owns this order (lightweight check)
+                var orderExists = _db.Orders.AsNoTracking().Any(o => o.id == orderId && o.user_id == userId);
+                if (!orderExists)
                 {
                     return Json(new { success = false, message = "Order not found" }, JsonRequestBehavior.AllowGet);
                 }
 
-                // Get messages from database
+                // OPTIMIZE: Get messages with AsNoTracking
                 var dbMessages = _db.Messages
+                    .AsNoTracking()
                     .Where(m => m.order_id == orderId)
                     .OrderBy(m => m.created_at)
                     .ToList();
@@ -294,9 +333,14 @@ namespace ValiModern.Controllers
                     return Json(new { success = false, message = "Unauthorized" });
                 }
 
-                // Verify customer owns this order
-                var order = _db.Orders.Find(orderId);
-                if (order == null || order.user_id != userId)
+                // OPTIMIZE: Only select needed fields
+                var order = _db.Orders
+                    .AsNoTracking()
+                    .Where(o => o.id == orderId && o.user_id == userId)
+                    .Select(o => new { o.id, o.shipper_id })
+                    .FirstOrDefault();
+                    
+                if (order == null)
                 {
                     return Json(new { success = false, message = "Order not found" });
                 }

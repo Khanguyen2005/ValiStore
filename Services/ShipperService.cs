@@ -33,7 +33,8 @@ namespace ValiModern.Services
         /// </summary>
         public User GetShipperByUserId(int userId)
         {
-            return _db.Users.Find(userId);
+            // OPTIMIZE: Use AsNoTracking for read-only operation
+            return _db.Users.AsNoTracking().FirstOrDefault(u => u.id == userId);
         }
 
         /// <summary>
@@ -41,8 +42,8 @@ namespace ValiModern.Services
         /// </summary>
         public bool IsValidShipper(int userId)
         {
-            var user = GetShipperByUserId(userId);
-            return user != null && user.role == "shipper";
+            // OPTIMIZE: Use Any() instead of loading entire user object
+            return _db.Users.AsNoTracking().Any(u => u.id == userId && u.role == "shipper");
         }
 
         #endregion
@@ -55,11 +56,12 @@ namespace ValiModern.Services
         /// </summary>
         public int GetPendingDeliveriesCount(int shipperId)
         {
+            // OPTIMIZE: AsNoTracking for count-only query
             return _db.Orders
-                .Where(o => o.shipper_id == shipperId && 
+                .AsNoTracking()
+                .Count(o => o.shipper_id == shipperId && 
                            o.status == "Shipped" && 
-                           o.delivered_at == null)
-                .Count();
+                           o.delivered_at == null);
         }
 
         /// <summary>
@@ -71,40 +73,45 @@ namespace ValiModern.Services
             var today = now.Date;
             var thisMonth = new DateTime(now.Year, now.Month, 1);
 
-            // Query database directly to use DbFunctions
-            var totalPending = _db.Orders
-                .Count(o => o.shipper_id == shipperId && 
-                           o.status == "Shipped" && 
-                           o.delivered_at == null);
+            // OPTIMIZE: Single query to get all stats at once
+            var stats = _db.Orders
+                .AsNoTracking()
+                .Where(o => o.shipper_id == shipperId)
+                .GroupBy(o => 1) // Dummy grouping to aggregate all
+                .Select(g => new
+                {
+                    TotalPending = g.Count(o => o.status == "Shipped" && o.delivered_at == null),
+                    TotalDeliveredToday = g.Count(o => o.delivered_at.HasValue && 
+                                                      DbFunctions.TruncateTime(o.delivered_at) == today),
+                    TotalDeliveredThisMonth = g.Count(o => o.delivered_at.HasValue && 
+                                                          o.delivered_at >= thisMonth),
+                    TotalCompletedAllTime = g.Count(o => o.status == "Completed"),
+                    TotalEarningsThisMonth = g.Where(o => o.status == "Completed" && 
+                                                         o.delivered_at.HasValue &&
+                                                         o.delivered_at >= thisMonth)
+                                              .Sum(o => (long?)o.total_amount) ?? 0
+                })
+                .FirstOrDefault();
 
-            var totalDeliveredToday = _db.Orders
-                .Count(o => o.shipper_id == shipperId &&
-                           o.delivered_at.HasValue && 
-                           DbFunctions.TruncateTime(o.delivered_at) == today);
-
-            var totalDeliveredThisMonth = _db.Orders
-                .Count(o => o.shipper_id == shipperId &&
-                           o.delivered_at.HasValue && 
-                           o.delivered_at >= thisMonth);
-
-            var totalCompletedAllTime = _db.Orders
-                .Count(o => o.shipper_id == shipperId && 
-                           o.status == "Completed");
-
-            var totalEarningsThisMonth = _db.Orders
-                .Where(o => o.shipper_id == shipperId &&
-                           o.status == "Completed" && 
-                           o.delivered_at.HasValue &&
-                           o.delivered_at >= thisMonth)
-                .Sum(o => (long?)o.total_amount) ?? 0;
+            if (stats == null)
+            {
+                return new ShipperStatsVM
+                {
+                    TotalPending = 0,
+                    TotalDeliveredToday = 0,
+                    TotalDeliveredThisMonth = 0,
+                    TotalCompletedAllTime = 0,
+                    TotalEarningsThisMonth = 0
+                };
+            }
 
             return new ShipperStatsVM
             {
-                TotalPending = totalPending,
-                TotalDeliveredToday = totalDeliveredToday,
-                TotalDeliveredThisMonth = totalDeliveredThisMonth,
-                TotalCompletedAllTime = totalCompletedAllTime,
-                TotalEarningsThisMonth = totalEarningsThisMonth
+                TotalPending = stats.TotalPending,
+                TotalDeliveredToday = stats.TotalDeliveredToday,
+                TotalDeliveredThisMonth = stats.TotalDeliveredThisMonth,
+                TotalCompletedAllTime = stats.TotalCompletedAllTime,
+                TotalEarningsThisMonth = stats.TotalEarningsThisMonth
             };
         }
 
@@ -117,7 +124,9 @@ namespace ValiModern.Services
         /// </summary>
         public List<Order> GetShipperOrders(int shipperId, string filter = "")
         {
+            // OPTIMIZE: Use AsNoTracking for read-only data
             var query = _db.Orders
+                .AsNoTracking()
                 .Include(o => o.User)
                 .Include(o => o.Order_Details)
                 .Where(o => o.shipper_id == shipperId && o.status == "Shipped");
@@ -142,7 +151,9 @@ namespace ValiModern.Services
         /// </summary>
         public Order GetOrderDetails(int orderId, int shipperId)
         {
+            // OPTIMIZE: Use AsNoTracking since this is for display only
             return _db.Orders
+                .AsNoTracking()
                 .Include(o => o.User)
                 .Include(o => o.Order_Details.Select(od => od.Product))
                 .Include(o => o.Order_Details.Select(od => od.Color))
@@ -155,7 +166,9 @@ namespace ValiModern.Services
         /// </summary>
         public List<Order> GetDeliveryHistory(int shipperId, int page, int pageSize, out int totalCount)
         {
+            // OPTIMIZE: Use AsNoTracking for read-only data
             var query = _db.Orders
+                .AsNoTracking()
                 .Include(o => o.User)
                 .Include(o => o.Order_Details)
                 .Where(o => o.shipper_id == shipperId && 
@@ -176,7 +189,9 @@ namespace ValiModern.Services
         /// </summary>
         public List<Order> SearchOrders(int shipperId, string searchTerm, string filter = "")
         {
+            // OPTIMIZE: Use AsNoTracking for read-only data
             var query = _db.Orders
+                .AsNoTracking()
                 .Include(o => o.User)
                 .Include(o => o.Order_Details)
                 .Where(o => o.shipper_id == shipperId && o.status == "Shipped");
@@ -258,6 +273,10 @@ namespace ValiModern.Services
             try
             {
                 _db.SaveChanges();
+                
+                // OPTIMIZE: Invalidate cache for this user's delivered orders count
+                var cacheKey = "DeliveredOrders_User_" + order.user_id;
+                Helpers.CacheHelper.Remove(cacheKey);
                 
                 // Log successful delivery
                 System.Diagnostics.Debug.WriteLine($"[ShipperService] Order #{orderId} marked as delivered by shipper #{shipperId}");
