@@ -20,7 +20,7 @@
         var cart = Session["ShoppingCart"] as List<CartItem>;
         if (cart != null)
         {
-            cartCount = cart.Sum(i => i.Quantity);
+            cartCount = cart.Count;  // Count unique products, not total quantity
         }
     }
     catch { }
