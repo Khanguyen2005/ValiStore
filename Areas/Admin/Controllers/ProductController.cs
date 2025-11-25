@@ -35,7 +35,13 @@ namespace ValiModern.Areas.Admin.Controllers
         // GET: Admin/Product
         public ActionResult Index(string q, string sort)
         {
-            var products = _db.Products.Include(p => p.Category).Include(p => p.Brand).AsQueryable();
+            // OPTIMIZE: Use AsNoTracking for read-only listing
+            var products = _db.Products
+                .AsNoTracking()
+                .Include(p => p.Category)
+                .Include(p => p.Brand)
+                .AsQueryable();
+                
             if (!string.IsNullOrWhiteSpace(q))
             {
                 q = q.Trim().ToLower();
@@ -136,7 +142,14 @@ namespace ValiModern.Areas.Admin.Controllers
         public ActionResult Edit(int? id)
         {
             if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            var product = _db.Products.Include(p => p.Colors).Include(p => p.Sizes).FirstOrDefault(p => p.id == id);
+            
+            // OPTIMIZE: Use AsNoTracking for loading edit form
+            var product = _db.Products
+                .AsNoTracking()
+                .Include(p => p.Colors)
+                .Include(p => p.Sizes)
+                .FirstOrDefault(p => p.id == id);
+                
             if (product == null) return HttpNotFound();
             var vm = BuildFormVM(product);
             return View(vm);
@@ -151,6 +164,7 @@ namespace ValiModern.Areas.Admin.Controllers
             if (TryParseDecimal("Price", out var parsedPrice)) { vm.Price = (int)parsedPrice; }
             if (TryParseDecimal("OriginalPrice", out var parsedOriginal)) { vm.OriginalPrice = (int)parsedOriginal; }
 
+            // Load with tracking for update
             var product = _db.Products.Include(p => p.Colors).Include(p => p.Sizes).FirstOrDefault(p => p.id == id);
             if (product == null) return HttpNotFound();
             if (!ModelState.IsValid)
@@ -184,8 +198,14 @@ namespace ValiModern.Areas.Admin.Controllers
             product.brandId = vm.BrandId;
             product.is_active = vm.IsActive;
 
-            // Update colors: only remove those NOT referenced in Order_Details
-            var usedColorIds = _db.Order_Details.Where(od => od.color_id.HasValue && od.product_id == product.id).Select(od => od.color_id.Value).Distinct().ToList();
+            // OPTIMIZE: Update colors - check used colors with AsNoTracking
+            var usedColorIds = _db.Order_Details
+                .AsNoTracking()
+                .Where(od => od.color_id.HasValue && od.product_id == product.id)
+                .Select(od => od.color_id.Value)
+                .Distinct()
+                .ToList();
+                
             var colorsToRemove = product.Colors.Where(c => !usedColorIds.Contains(c.id)).ToList();
             foreach (var c in colorsToRemove) _db.Colors.Remove(c);
 
@@ -203,8 +223,14 @@ namespace ValiModern.Areas.Admin.Controllers
                 }
             }
 
-            // Update sizes: only remove those NOT referenced in Order_Details
-            var usedSizeIds = _db.Order_Details.Where(od => od.size_id.HasValue && od.product_id == product.id).Select(od => od.size_id.Value).Distinct().ToList();
+            // OPTIMIZE: Update sizes - check used sizes with AsNoTracking
+            var usedSizeIds = _db.Order_Details
+                .AsNoTracking()
+                .Where(od => od.size_id.HasValue && od.product_id == product.id)
+                .Select(od => od.size_id.Value)
+                .Distinct()
+                .ToList();
+                
             var sizesToRemove = product.Sizes.Where(s => !usedSizeIds.Contains(s.id)).ToList();
             foreach (var s in sizesToRemove) _db.Sizes.Remove(s);
 
@@ -257,8 +283,19 @@ namespace ValiModern.Areas.Admin.Controllers
             var vm = source ?? new ProductFormVM();
             vm.AllColors = PaletteService.GetColors();
             vm.AllSizes = PaletteService.GetSizes();
-            vm.Categories = _db.Categories.OrderBy(c => c.name).Select(c => new SelectListItem { Value = c.id.ToString(), Text = c.name }).ToList();
-            vm.Brands = _db.Brands.OrderBy(b => b.name).Select(b => new SelectListItem { Value = b.id.ToString(), Text = b.name }).ToList();
+            
+            // OPTIMIZE: Use AsNoTracking for dropdown lists
+            vm.Categories = _db.Categories
+                .AsNoTracking()
+                .OrderBy(c => c.name)
+                .Select(c => new SelectListItem { Value = c.id.ToString(), Text = c.name })
+                .ToList();
+                
+            vm.Brands = _db.Brands
+                .AsNoTracking()
+                .OrderBy(b => b.name)
+                .Select(b => new SelectListItem { Value = b.id.ToString(), Text = b.name })
+                .ToList();
 
             if (product != null)
             {

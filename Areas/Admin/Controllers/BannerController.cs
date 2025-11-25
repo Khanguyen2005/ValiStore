@@ -1,3 +1,4 @@
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -18,7 +19,9 @@ namespace ValiModern.Areas.Admin.Controllers
         // GET: Admin/Banner
         public ActionResult Index(string sort)
         {
-            var banners = _db.Banners.AsQueryable();
+            // OPTIMIZE: Use AsNoTracking for read-only listing
+            var banners = _db.Banners.AsNoTracking().AsQueryable();
+            
             switch (sort)
             {
                 case "id_desc":
@@ -67,6 +70,8 @@ namespace ValiModern.Areas.Admin.Controllers
         public ActionResult Edit(int? id)
         {
             if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            
+            // Use Find for edit (needs tracking)
             var banner = _db.Banners.Find(id);
             if (banner == null) return HttpNotFound();
             return View(banner);

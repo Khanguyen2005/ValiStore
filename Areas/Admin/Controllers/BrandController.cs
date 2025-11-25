@@ -1,3 +1,4 @@
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -19,7 +20,9 @@ namespace ValiModern.Areas.Admin.Controllers
         // GET: Admin/Brand
         public ActionResult Index(string q, string sort)
         {
-            var brands = _db.Brands.AsQueryable();
+            // OPTIMIZE: Use AsNoTracking for read-only listing
+            var brands = _db.Brands.AsNoTracking().AsQueryable();
+            
             if (!string.IsNullOrWhiteSpace(q))
             {
                 var k = q.Trim().ToLower();
@@ -51,7 +54,11 @@ namespace ValiModern.Areas.Admin.Controllers
         {
             var name = (model.name ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(name)) ModelState.AddModelError("name", "Name is required.");
-            if (_db.Brands.Any(b => b.name.ToLower() == name.ToLower())) ModelState.AddModelError("name", "Brand already exists.");
+            
+            // OPTIMIZE: Use AsNoTracking for duplicate check
+            if (_db.Brands.AsNoTracking().Any(b => b.name.ToLower() == name.ToLower())) 
+                ModelState.AddModelError("name", "Brand already exists.");
+                
             var relPath = SaveUpload(imageFile, out string error);
             if (relPath == null) ModelState.AddModelError("imageFile", error ?? "Image is required.");
             if (!ModelState.IsValid) return View(model);
@@ -70,6 +77,8 @@ namespace ValiModern.Areas.Admin.Controllers
         public ActionResult Edit(int? id)
         {
             if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            
+            // Use Find for edit (needs tracking)
             var brand = _db.Brands.Find(id);
             if (brand == null) return HttpNotFound();
             return View(brand);
@@ -84,7 +93,11 @@ namespace ValiModern.Areas.Admin.Controllers
             if (brand == null) return HttpNotFound();
             var name = (model.name ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(name)) ModelState.AddModelError("name", "Name is required.");
-            if (_db.Brands.Any(b => b.id != id && b.name.ToLower() == name.ToLower())) ModelState.AddModelError("name", "Brand already exists.");
+            
+            // OPTIMIZE: Use AsNoTracking for duplicate check
+            if (_db.Brands.AsNoTracking().Any(b => b.id != id && b.name.ToLower() == name.ToLower())) 
+                ModelState.AddModelError("name", "Brand already exists.");
+                
             string rel = brand.image_url;
             if (imageFile != null && imageFile.ContentLength > 0)
             {
@@ -114,7 +127,9 @@ namespace ValiModern.Areas.Admin.Controllers
         {
             var brand = _db.Brands.Find(id);
             if (brand == null) return HttpNotFound();
-            var inUse = _db.Products.Any(p => p.brandId == id);
+            
+            // OPTIMIZE: Use AsNoTracking for usage check
+            var inUse = _db.Products.AsNoTracking().Any(p => p.brandId == id);
             if (inUse)
             {
                 TempData["Error"] = "Cannot delete brand while products are using it.";

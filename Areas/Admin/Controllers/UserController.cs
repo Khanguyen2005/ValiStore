@@ -16,7 +16,9 @@ namespace ValiModern.Areas.Admin.Controllers
         // GET: Admin/User
         public ActionResult Index(string q, string sort)
         {
-            var users = _db.Users.AsQueryable();
+            // OPTIMIZE: Use AsNoTracking for read-only listing
+            var users = _db.Users.AsNoTracking().AsQueryable();
+            
             if (!string.IsNullOrWhiteSpace(q))
             {
                 q = q.Trim().ToLower();
@@ -62,7 +64,9 @@ namespace ValiModern.Areas.Admin.Controllers
                 return View(model);
 
             var email = (model.email ?? string.Empty).Trim().ToLowerInvariant();
-            if (_db.Users.Any(u => u.email == email))
+            
+            // OPTIMIZE: Use AsNoTracking for existence check
+            if (_db.Users.AsNoTracking().Any(u => u.email == email))
             {
                 ModelState.AddModelError("email", "Email already exists.");
                 return View(model);
@@ -84,6 +88,8 @@ namespace ValiModern.Areas.Admin.Controllers
         public ActionResult Edit(int? id)
         {
             if (id == null) return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            
+            // Use Find for edit (needs tracking)
             var user = _db.Users.Find(id);
             if (user == null) return HttpNotFound();
             return View(user);
@@ -101,7 +107,9 @@ namespace ValiModern.Areas.Admin.Controllers
                 return View(user);
 
             var email = (model.email ?? string.Empty).Trim().ToLowerInvariant();
-            if (_db.Users.Any(u => u.email == email && u.id != id))
+            
+            // OPTIMIZE: Use AsNoTracking for duplicate email check
+            if (_db.Users.AsNoTracking().Any(u => u.email == email && u.id != id))
             {
                 ModelState.AddModelError("email", "Email already exists.");
                 return View(user);

@@ -365,6 +365,7 @@
     <Content Include="Docs\PERFORMANCE_OPTIMIZATION.md" />
     <Content Include="Docs\OPTIMIZATION_COMPLETE.md" />
     <Content Include="Docs\QUICK_START_OPTIMIZATION.md" />
+    <Content Include="Docs\ADMIN_OPTIMIZATION_COMPLETE.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\category-products.js" />
     <Content Include="Scripts\chat-signalr.js" />
