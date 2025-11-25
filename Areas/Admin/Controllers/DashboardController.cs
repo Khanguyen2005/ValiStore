@@ -69,28 +69,34 @@ namespace ValiModern.Areas.Admin.Controllers
                         OrderDate = o.order_date
                     }).ToList(),
 
-                // Top products by revenue - FIX: Simplified query without nested AsNoTracking
-                TopProducts = _db.Products
+                // Top products by QUANTITY SOLD (not revenue) - only from COMPLETED orders
+                TopProducts = _db.Order_Details
                     .AsNoTracking()
-                    .Where(p => p.is_active)
-                    .Select(p => new
+                    .Where(od => od.Order.status == "Completed") // Only count completed orders
+                    .GroupBy(od => new
                     {
-                        Product = p,
-                        Revenue = _db.Order_Details
-                            .Where(od => od.product_id == p.id && od.Order.status == "Confirmed")
-                            .Sum(od => (long?)od.quantity * od.price) ?? 0
+                        ProductId = od.product_id,
+                        ProductName = od.Product.name,
+                        ProductImage = od.Product.image_url
                     })
-                    .Where(x => x.Revenue > 0)
-                    .OrderByDescending(x => x.Revenue)
+                    .Select(g => new
+                    {
+                        ProductId = g.Key.ProductId,
+                        ProductName = g.Key.ProductName,
+                        ProductImage = g.Key.ProductImage,
+                        TotalQuantitySold = g.Sum(od => od.quantity),
+                        TotalRevenue = g.Sum(od => (long)od.quantity * od.price)
+                    })
+                    .OrderByDescending(x => x.TotalQuantitySold) // Sort by quantity sold
                     .Take(5)
-                    .AsEnumerable() // Switch to client-side evaluation
+                    .AsEnumerable()
                     .Select(x => new TopProductVM
                     {
-                        Id = x.Product.id,
-                        Name = x.Product.name,
-                        ImageUrl = x.Product.image_url,
-                        Sold = x.Product.sold,
-                        Revenue = (decimal)x.Revenue
+                        Id = x.ProductId,
+                        Name = x.ProductName ?? "Unknown Product",
+                        ImageUrl = x.ProductImage,
+                        Sold = x.TotalQuantitySold,
+                        Revenue = (decimal)x.TotalRevenue
                     })
                     .ToList()
             };

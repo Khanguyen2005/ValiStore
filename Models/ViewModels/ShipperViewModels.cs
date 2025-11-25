@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ValiModern.Models.ViewModels
 {
@@ -12,7 +13,6 @@ namespace ValiModern.Models.ViewModels
         public int TotalCount { get; set; }        // All orders
         public int AssignedCount { get; set; }     // Pending deliveries (not delivered yet)
         public int DeliveredCount { get; set; }    // Completed deliveries
-        
         public string FilterStatus { get; set; }   // "assigned", "delivered", "" (all)
         
         // Backwards compatibility
@@ -31,7 +31,11 @@ namespace ValiModern.Models.ViewModels
         public string Phone { get; set; }
         public string ShippingAddress { get; set; }
         public string Status { get; set; }
-        public int ItemCount { get; set; }
+        public int ItemCount { get; set; } // total quantity (legacy)
+        
+        // New explicit counts for clarity
+        public int TotalQuantity { get; set; } // T?ng s? l??ng (units)
+        public int ProductCount { get; set; } // S? s?n ph?m khác nhau (lines)
         public bool IsDelivered => DeliveredAt.HasValue;
         public string CustomerName { get; set; }
     }
@@ -59,6 +63,10 @@ namespace ValiModern.Models.ViewModels
         public List<ShipperOrderItemDetailVM> Items { get; set; } = new List<ShipperOrderItemDetailVM>();
         
         public bool IsDelivered => DeliveredAt.HasValue;
+        
+        // New derived properties for consistency
+        public int ProductCount => Items?.Count ?? 0;
+        public int TotalQuantity => Items?.Sum(i => i.Quantity) ?? 0;
     }
 
     public class ShipperOrderItemDetailVM

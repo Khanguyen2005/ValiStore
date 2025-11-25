@@ -31,7 +31,6 @@ namespace ValiModern.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
-            // L?y danh sách ??n hàng ???c gán cho shipper này
             var ordersQuery = _db.Orders
                 .Include(o => o.User)
                 .Include(o => o.Order_Details)
@@ -65,7 +64,11 @@ namespace ValiModern.Controllers
                     Phone = o.phone,
                     ShippingAddress = o.shipping_address,
                     Status = o.status,
+                    // Legacy total quantity
                     ItemCount = o.Order_Details.Sum(od => od.quantity),
+                    // New explicit counts
+                    TotalQuantity = o.Order_Details.Sum(od => od.quantity),
+                    ProductCount = o.Order_Details.Select(od => od.product_id).Distinct().Count(),
                     CustomerName = o.User?.username ?? "N/A"
                 }).ToList(),
                 TotalCount = totalCount,
@@ -235,7 +238,11 @@ namespace ValiModern.Controllers
                     Phone = o.phone,
                     ShippingAddress = o.shipping_address,
                     Status = o.status,
+                    // Legacy total quantity
                     ItemCount = o.Order_Details.Sum(od => od.quantity),
+                    // New explicit counts
+                    TotalQuantity = o.Order_Details.Sum(od => od.quantity),
+                    ProductCount = o.Order_Details.Select(od => od.product_id).Distinct().Count(),
                     CustomerName = o.User?.username ?? "N/A"
                 }).ToList(),
                 CurrentPage = page,
