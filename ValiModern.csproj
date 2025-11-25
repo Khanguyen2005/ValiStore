@@ -318,6 +318,7 @@
     <Content Include="DOCS_PERFORMANCE_OPTIMIZATION.md" />
     <Content Include="DOCS_CUSTOMER_DESIGN_SYSTEM.md" />
     <Content Include="DOCS_FIX_PARSER_ERROR_GLOBAL_ASAX.md" />
+    <Content Include="DOCS_PERFORMANCE_OPTIMIZATION_PLAN.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\category-products.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
