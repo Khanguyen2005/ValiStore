@@ -406,6 +406,10 @@
     <Content Include="SUMMARY_VIETNAMESE_TO_ENGLISH_TRANSLATION.md" />
     <Content Include="SUMMARY_PRODUCT_DETAILS_REDESIGN.md" />
     <Content Include="SUMMARY_PRODUCT_DETAILS_BLUE_BUTTON_SOLD_FIX.md" />
+    <Content Include="SUMMARY_PRODUCT_DETAILS_BUTTON_CENTER_FIX.md" />
+    <Content Include="SUMMARY_FIX_BREADCRUMB_AND_CONTINUE_SHOPPING_ICON.md" />
+    <Content Include="SUMMARY_BREADCRUMB_STYLE_SYNC_AND_NOTIFICATION_BADGE_FIX.md" />
+    <Content Include="SUMMARY_PRODUCT_CARD_HOVER_FIX.md" />
     <None Include="Web.config.AWS_BACKUP" />
     <None Include="Web.config.Debug.AWS_BACKUP">
       <DependentUpon>Web.config.AWS_BACKUP</DependentUpon>

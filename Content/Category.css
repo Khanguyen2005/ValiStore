@@ -34,10 +34,12 @@
     color: white !important;
 }
 
-/* Category Products Page */
+/* Category Products Page - Product Card */
 .product-card {
+    position: relative; /* Add position relative for absolute children */
     transition: transform var(--transition-base, 0.3s ease), box-shadow var(--transition-base, 0.3s ease);
     border-radius: var(--radius-lg, 14px);
+    overflow: hidden; /* Prevent image overflow */
 }
 
 .product-card:hover {
@@ -46,10 +48,42 @@
     border-color: var(--primary, #0d6efd);
 }
 
+/* Product Image Container - Contain the scaling effect */
+.product-card > a {
+    position: relative;
+    display: block;
+    overflow: hidden; /* Clip scaled image */
+}
+
 .product-image {
     height: 250px;
-    object-fit: cover;
+    object-fit: contain;
     width: 100%;
+    padding: 10px;
+    transition: transform 0.4s ease;
+    transform-origin: center; /* Scale from center */
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.08); /* Slight zoom on hover */
+}
+
+/* Discount Badge - Always on top */
+.product-card .badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 10; /* Above image */
+    font-weight: 700;
+    font-size: 0.875rem;
+    padding: 6px 12px;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    pointer-events: none; /* Don't block clicks */
+}
+
+.product-card .badge.bg-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333) !important;
 }
 
 /* FIX: Button consistency */

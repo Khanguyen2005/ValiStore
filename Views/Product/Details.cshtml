@@ -175,13 +175,14 @@
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg" @(product.stock <= 0 ? "disabled" : "")>
+                        <div class="d-flex flex-column gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg d-flex align-items-center justify-content-center" @(product.stock <= 0 ? "disabled" : "")>
                                 <i class="bi bi-cart-plus me-2"></i>
                                 @(product.stock > 0 ? "Add to Cart" : "Out of Stock")
                             </button>
-                            <a href="@Url.Action("Index", "Product")" class="btn btn-outline-secondary">
-                                <i class="bi bi-arrow-left me-2"></i>Continue Shopping
+                            <a href="@Url.Action("Index", "Product")" class="btn btn-outline-secondary d-flex align-items-center justify-content-center">
+                                <i class="bi bi-chevron-left me-2"></i>
+                                Continue Shopping
                             </a>
                         </div>
                     }
