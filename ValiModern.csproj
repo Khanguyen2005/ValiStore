@@ -334,6 +334,12 @@
     <Content Include="Areas\Admin\Views\Order\ShipperDeliveries.cshtml" />
     <Content Include="Areas\Admin\Views\ShipperManagement\Index.cshtml" />
     <Content Include="RestoreSignalR.ps1" />
+    <Content Include="Docs\DeliveryProgressAnimation.md" />
+    <Content Include="Docs\ShipperNewFeatures.md" />
+    <Content Include="Docs\ShipperQuickSetup.md" />
+    <Content Include="Docs\ShipperBackendGuide.md" />
+    <Content Include="Docs\ShipperBackendUpgrade.md" />
+    <Content Include="Docs\FEATURE_Product_Carousel.md" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\category-products.js" />
     <Content Include="Scripts\chat-signalr.js" />
