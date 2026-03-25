@@ -2,6 +2,22 @@
 
 **Dự án cá nhân** | ASP.NET MVC · SQL Server · SignalR · PayPal · VNPay
 
+---
+
+## 📋 CV Entry (copy-paste ready)
+
+**ValiStore – Ứng dụng thương mại điện tử**  
+*Dự án cá nhân | ASP.NET MVC 5 · Entity Framework 6 · SQL Server · SignalR · PayPal API · VNPay · Bootstrap 5*
+
+- Xây dựng nền tảng thương mại điện tử đầy đủ tính năng với 3 vai trò: **Khách hàng**, **Shipper**, **Admin**
+- Tích hợp thanh toán **PayPal** (OAuth 2.0) và **VNPay** (HMAC-SHA512); quản lý giỏ hàng dựa trên Session
+- Triển khai tính năng **chat real-time** giữa khách hàng và shipper theo từng đơn hàng sử dụng **SignalR 2.4.3**
+- Xây dựng module giao hàng: shipper nhận đơn, cập nhật trạng thái, ghi chú giao hàng
+- Phát triển **Admin panel**: quản lý sản phẩm (CRUD + ảnh + variant), đơn hàng, tài khoản, dashboard thống kê
+- Áp dụng **Role-based Authorization** (Claims Identity) và **Database-First Entity Framework** với SQL Server trên AWS RDS
+
+---
+
 ## Mô tả
 
 Nền tảng thương mại điện tử bán lẻ thời trang được xây dựng trên ASP.NET MVC 5, hỗ trợ ba vai trò: **Khách hàng**, **Shipper** và **Admin**. Ứng dụng cho phép mua sắm trực tuyến, thanh toán đa phương thức, theo dõi đơn hàng và nhắn tin thời gian thực giữa khách hàng và shipper thông qua SignalR.
