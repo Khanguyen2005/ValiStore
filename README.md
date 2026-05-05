@@ -1,48 +1,70 @@
 # ValiStore - E-commerce Website for Luggage
 
-ValiStore là đồ án xây dựng nền tảng bán vali trực tuyến theo mô hình nhiều vai trò: **Admin**, **Customer** và **Shipper**.  
-Hệ thống tập trung vào trải nghiệm mua hàng thực tế, quản trị vận hành và xử lý đơn giao hàng xuyên suốt.
+<p align="center">
+  <img src="https://img.shields.io/badge/.NET_Framework_4.8.1-512BD4?logo=dotnet&logoColor=white&style=flat" />
+  <img src="https://img.shields.io/badge/ASP.NET_MVC-512BD4?logo=dotnet&logoColor=white&style=flat" />
+  <img src="https://img.shields.io/badge/SQL_Server-CC2927?logo=microsoftsqlserver&logoColor=white&style=flat" />
+  <img src="https://img.shields.io/badge/SignalR-5E5E5E?logo=signalr&logoColor=white&style=flat" />
+  <img src="https://img.shields.io/badge/Bootstrap-7952B3?logo=bootstrap&logoColor=white&style=flat" />
+  <img src="https://img.shields.io/badge/jQuery-0769AD?logo=jquery&logoColor=white&style=flat" />
+</p>
 
-## Tổng quan chức năng
+## Introduction
 
-- Quản lý sản phẩm, danh mục, thương hiệu và banner ở trang quản trị.
-- Mua hàng với giỏ hàng và quy trình checkout đầy đủ.
-- Tích hợp thanh toán trực tuyến qua **VNPay** và **PayPal**.
-- Quản lý đơn hàng, trạng thái giao nhận và cập nhật theo từng vai trò.
-- Chat realtime giữa **Customer** và **Shipper** bằng **SignalR**.
+ValiStore is an online e-commerce platform dedicated to luggage retail. The system is designed around three distinct roles: **Admin**, **Customer**, and **Shipper**, each with tailored workflows for management, purchasing, and delivery operations.
 
-## Công nghệ sử dụng
+> **Note:** The project was previously deployed on AWS for real-world usage, but the hosting environment is no longer maintained and the current setup is local-only.
 
-- **ASP.NET MVC 5** (.NET Framework 4.8.1)
-- **Entity Framework 6**
-- **SQL Server**
-- **SignalR**
-- **OWIN**
-- **Bootstrap 5**
-- **jQuery / jQuery Validation**
+## Tech Stack
 
-## ERD (Entity Relationship Diagram)
+| Layer | Technologies |
+| --- | --- |
+| Framework/Runtime | ASP.NET MVC 5 (.NET Framework 4.8.1) |
+| ORM / Database | Entity Framework 6, SQL Server |
+| Real-time & Middleware | SignalR, OWIN |
+| Frontend | Bootstrap 5, jQuery, jQuery Validation |
+
+## ERD
 
 <img src="https://github.com/user-attachments/assets/2f354c61-72e8-484c-9d73-4cd4527037aa" alt="ValiStore ERD" width="100%" />
 
-## Phân công vai trò thành viên
+## Getting Started
 
-### Nguyễn Đàm Khá
-- Thành viên đóng góp chính và nhiều nhất của dự án.
-- Thiết kế **Database** và mô hình dữ liệu.
-- Phát triển phần **Admin**.
-- Tích hợp thanh toán **VNPay** và **PayPal** cho phần **Customer**.
-- Xây dựng chat realtime bằng **SignalR** giữa **Shipper** và **Customer**.
-- Tổng quan: các tính năng khó và phức tạp chủ yếu do Khá đảm nhiệm.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Khanguyen2005/ValiStore.git
+   cd ValiStore
+   ```
+2. Restore NuGet packages:
+   - In Visual Studio: right-click the solution and choose **Restore NuGet Packages**.
+   - Or run `nuget restore` from the solution directory if NuGet CLI is available.
+3. Configure the `ConnectionString` in `Web.config` to point to your local SQL Server instance.
+4. Initialize the database:
+   - If using Code First, run `Update-Database` in the Package Manager Console.
+   - If a SQL script is provided, execute it against your local database.
+5. Start the project with Visual Studio using **IIS Express**.
 
-### Đinh Lê Thảo Vy
-- Phụ trách phần giao diện (**UI**) của **Customer**.
+## Key Features
 
-### Trần Phan Khải
-- Phụ trách **Backend Customer**.
-- Phụ trách toàn bộ phần **Shipper**.
+### Customer
 
-## Triển khai
+- Shopping cart and end-to-end checkout flow.
+- Online payments via **VNPay** and **PayPal**.
+- Real-time chat with Shipper.
 
-- Dự án đã từng được triển khai lên **AWS** trong giai đoạn vận hành.
-- Hiện tại môi trường AWS cũ không còn được duy trì.
+### Admin
+
+- Manage products, categories, brands, and banners.
+- Manage operational status.
+
+### Shipper
+
+- Receive assigned orders.
+- Update delivery and order status.
+- Real-time chat with Customer.
+
+## Contributors
+
+- Nguyễn Đàm Khá
+- Đinh Lê Thảo Vy
+- Trần Phan Khải
