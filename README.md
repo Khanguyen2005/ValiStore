@@ -44,6 +44,16 @@ ValiStore is an online e-commerce platform dedicated to luggage retail. The syst
    - If a SQL script is provided, execute it against your local database.
 5. Start the project with Visual Studio using **IIS Express**.
 
+## Local Configuration / Secrets
+
+- Real credentials are not committed to the repository.
+- Copy the example files and fill in your local values:
+  - `Web.AppSettings.Secrets.example.config` -> `Web.AppSettings.Secrets.config`
+  - `Web.ConnectionStrings.Secrets.example.config` -> `Web.ConnectionStrings.Secrets.config`
+- Update VNPay sandbox keys, PayPal sandbox keys, and the database connection string in the copied files.
+- Do not commit real credentials. The `*.Secrets.config` files are ignored by Git.
+- The app expects these secret files at runtime; if they are missing, payment and database configuration will fail.
+
 ## Key Features
 
 ### Customer
