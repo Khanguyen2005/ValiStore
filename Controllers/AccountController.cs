@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using ValiModern.Helpers;
 using ValiModern.Models.EF;
 using ValiModern.Models.ViewModels;
 
@@ -131,14 +132,14 @@ namespace ValiModern.Controllers
             }
 
             // Verify current password
-            if (user.password != model.CurrentPassword)
+            if (!PasswordHasher.VerifyPassword(model.CurrentPassword, user.password))
             {
                 ModelState.AddModelError("CurrentPassword", "Current password is incorrect.");
                 return View(model);
             }
 
             // Update password
-            user.password = model.NewPassword;
+            user.password = PasswordHasher.HashPassword(model.NewPassword);
             user.updated_at = DateTime.Now;
 
             try
@@ -187,12 +188,12 @@ namespace ValiModern.Controllers
                 return View(model);
             }
 
-            // Create user with plain password (no hashing, as requested)
+            // Create user with hashed password
             var user = new User
             {
                 username = email.Split('@')[0],
                 email = email,
-                password = model.Password, // no hashing
+                password = PasswordHasher.HashPassword(model.Password),
                 phone = string.Empty,
                 is_admin = false,
                 address = string.Empty,
@@ -204,7 +205,7 @@ namespace ValiModern.Controllers
             _db.SaveChanges();
 
             // FIX: Store user.id in ticket.Name instead of email
-            var role = user.is_admin ? "admin" : "member";
+            var role = user.is_admin ? "admin" : "customer";
             var ticket = new FormsAuthenticationTicket(
                 1,
                 user.id.ToString(), // CHANGED: Store ID instead of email
@@ -267,17 +268,19 @@ namespace ValiModern.Controllers
 
             var email = (model.Email ?? string.Empty).Trim().ToLowerInvariant();
 
-            // Optimize: Select only needed fields for login check
-            var user = _db.Users
-                .AsNoTracking()
-                .Where(u => u.email == email && u.password == model.Password)
-                .Select(u => new { u.id, u.username, u.email, u.is_admin, u.role })
-                .FirstOrDefault();
+            var user = _db.Users.FirstOrDefault(u => u.email == email);
 
-            if (user == null)
+            if (user == null || !PasswordHasher.VerifyPassword(model.Password, user.password))
             {
                 ModelState.AddModelError("", "Incorrect email or password.");
                 return View(model);
+            }
+
+            if (!PasswordHasher.IsHashedPassword(user.password))
+            {
+                user.password = PasswordHasher.HashPassword(model.Password);
+                user.updated_at = DateTime.UtcNow;
+                _db.SaveChanges();
             }
 
             // Determine role: admin > shipper > customer
@@ -357,15 +360,18 @@ namespace ValiModern.Controllers
                 var email = Email.Trim().ToLowerInvariant();
 
                 // Optimize: Select only needed fields and use AsNoTracking
-                var user = _db.Users
-                    .AsNoTracking()
-                    .Where(u => u.email == email && u.password == Password)
-                    .Select(u => new { u.id, u.username, u.email, u.is_admin, u.role })
-                    .FirstOrDefault();
+                var user = _db.Users.FirstOrDefault(u => u.email == email);
 
-                if (user == null)
+                if (user == null || !PasswordHasher.VerifyPassword(Password, user.password))
                 {
                     return Json(new { success = false, message = "Incorrect email or password." });
+                }
+
+                if (!PasswordHasher.IsHashedPassword(user.password))
+                {
+                    user.password = PasswordHasher.HashPassword(Password);
+                    user.updated_at = DateTime.UtcNow;
+                    _db.SaveChanges();
                 }
 
                 // Determine role: admin > shipper > customer
@@ -461,7 +467,7 @@ namespace ValiModern.Controllers
             {
                 username = email.Split('@')[0],
                 email = email,
-                password = model.Password,
+                password = PasswordHasher.HashPassword(model.Password),
                 phone = string.Empty,
                 is_admin = false,
                 address = string.Empty,
@@ -473,7 +479,7 @@ namespace ValiModern.Controllers
             _db.SaveChanges();
 
             // Auto-login after registration
-            var role = user.is_admin ? "admin" : "member";
+            var role = user.is_admin ? "admin" : "customer";
             var ticket = new FormsAuthenticationTicket(
                 1,
                 user.id.ToString(),

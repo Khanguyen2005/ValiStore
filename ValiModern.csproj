@@ -176,6 +176,7 @@
     </Compile>
     <Compile Include="Helpers\CacheHelper.cs" />
     <Compile Include="Helpers\PayPalClient.cs" />
+    <Compile Include="Helpers\PasswordHasher.cs" />
     <Compile Include="Helpers\VnPayLibrary.cs" />
     <Compile Include="Hubs\ChatHub.cs" />
     <Compile Include="Models\EF\Banner.cs">
@@ -483,3 +484,4 @@
   <Target Name="AfterBuild">
   </Target> -->
 </Project>
+

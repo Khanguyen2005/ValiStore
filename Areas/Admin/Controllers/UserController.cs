@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using ValiModern.Filters;
+using ValiModern.Helpers;
 using ValiModern.Models.EF;
 
 namespace ValiModern.Areas.Admin.Controllers
@@ -76,7 +77,13 @@ namespace ValiModern.Areas.Admin.Controllers
             model.username = string.IsNullOrWhiteSpace(model.username) ? email.Split('@')[0] : model.username.Trim();
             model.created_at = DateTime.UtcNow;
             model.updated_at = DateTime.UtcNow;
-            // password saved as plain text as per requirement
+            if (string.IsNullOrWhiteSpace(model.password))
+            {
+                ModelState.AddModelError("password", "Password is required.");
+                return View(model);
+            }
+
+            model.password = PasswordHasher.HashPassword(model.password);
 
             _db.Users.Add(model);
             _db.SaveChanges();
@@ -122,7 +129,7 @@ namespace ValiModern.Areas.Admin.Controllers
             user.is_admin = model.is_admin;
             if (!string.IsNullOrWhiteSpace(newPassword))
             {
-                user.password = newPassword; // plain text as requested
+                user.password = PasswordHasher.HashPassword(newPassword);
             }
             user.updated_at = DateTime.UtcNow;
 
