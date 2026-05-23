@@ -4,412 +4,412 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="ValiModernDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
-        <EntityType Name="Banners">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="name" Type="nvarchar" MaxLength="200" Nullable="false" />
-          <Property Name="image_url" Type="nvarchar" MaxLength="255" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Brands">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="name" Type="nvarchar" MaxLength="150" Nullable="false" />
-          <Property Name="image_url" Type="nvarchar" MaxLength="255" />
-        </EntityType>
-        <EntityType Name="Categories">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="name" Type="nvarchar" MaxLength="150" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Colors">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="product_id" Type="int" Nullable="false" />
-          <Property Name="name" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="color_code" Type="nvarchar" MaxLength="20" />
-        </EntityType>
-        <EntityType Name="Messages">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="order_id" Type="int" Nullable="false" />
-          <Property Name="sender_id" Type="int" Nullable="false" />
-          <Property Name="receiver_id" Type="int" Nullable="false" />
-          <Property Name="message" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="is_read" Type="bit" />
-          <Property Name="created_at" Type="datetime" />
-        </EntityType>
-        <EntityType Name="Order_Details">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="order_id" Type="int" Nullable="false" />
-          <Property Name="product_id" Type="int" Nullable="false" />
-          <Property Name="quantity" Type="int" Nullable="false" />
-          <Property Name="price" Type="int" Nullable="false" />
-          <Property Name="color_id" Type="int" />
-          <Property Name="size_id" Type="int" />
-          <Property Name="created_at" Type="datetime2" Precision="0" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Orders">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="user_id" Type="int" Nullable="false" />
-          <Property Name="order_date" Type="datetime2" Precision="0" Nullable="false" />
-          <Property Name="status" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="total_amount" Type="bigint" Nullable="false" />
-          <Property Name="phone" Type="nvarchar" MaxLength="20" />
-          <Property Name="shipping_address" Type="nvarchar" MaxLength="500" />
-          <Property Name="created_at" Type="datetime2" Precision="0" Nullable="false" />
-          <Property Name="updated_at" Type="datetime2" Precision="0" Nullable="false" />
-          <Property Name="shipper_id" Type="int" />
-          <Property Name="assigned_at" Type="datetime2" Precision="0" />
-          <Property Name="delivered_at" Type="datetime2" Precision="0" />
-          <Property Name="delivery_note" Type="nvarchar" MaxLength="500" />
-          <Property Name="shipper_unread_messages" Type="int" />
-          <Property Name="customer_unread_messages" Type="int" />
-        </EntityType>
-        <EntityType Name="Payments">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="order_id" Type="int" Nullable="false" />
-          <Property Name="amount" Type="bigint" Nullable="false" />
-          <Property Name="payment_method" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="status" Type="nvarchar" MaxLength="20" Nullable="false" />
-          <Property Name="transaction_id" Type="nvarchar" MaxLength="200" />
-          <Property Name="payment_date" Type="datetime2" Precision="0" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Product_Images">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="product_id" Type="int" Nullable="false" />
-          <Property Name="image_url" Type="nvarchar" MaxLength="255" Nullable="false" />
-          <Property Name="is_main" Type="bit" Nullable="false" />
-          <Property Name="sort_order" Type="int" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Products">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="name" Type="nvarchar" MaxLength="255" Nullable="false" />
-          <Property Name="description" Type="nvarchar(max)" />
-          <Property Name="image_url" Type="nvarchar" MaxLength="255" />
-          <Property Name="original_price" Type="int" Nullable="false" />
-          <Property Name="price" Type="int" Nullable="false" />
-          <Property Name="stock" Type="int" Nullable="false" />
-          <Property Name="sold" Type="int" Nullable="false" />
-          <Property Name="category_id" Type="int" Nullable="false" />
-          <Property Name="brandId" Type="int" Nullable="false" />
-          <Property Name="is_active" Type="bit" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Sizes">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="product_id" Type="int" Nullable="false" />
-          <Property Name="name" Type="nvarchar" MaxLength="20" Nullable="false" />
-        </EntityType>
-        <EntityType Name="Users">
-          <Key>
-            <PropertyRef Name="id" />
-          </Key>
-          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="username" Type="nvarchar" MaxLength="100" />
-          <Property Name="email" Type="nvarchar" MaxLength="255" Nullable="false" />
-          <Property Name="phone" Type="nvarchar" MaxLength="20" />
-          <Property Name="password" Type="nvarchar" MaxLength="255" Nullable="false" />
-          <Property Name="is_admin" Type="bit" Nullable="false" />
-          <Property Name="address" Type="nvarchar" MaxLength="500" />
-          <Property Name="created_at" Type="datetime2" Precision="0" Nullable="false" />
-          <Property Name="updated_at" Type="datetime2" Precision="0" Nullable="false" />
-          <Property Name="role" Type="nvarchar" MaxLength="20" />
-        </EntityType>
-        <Association Name="FK_Colors_Products">
-          <End Role="Products" Type="Self.Products" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Colors" Type="Self.Colors" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Products">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Colors">
-              <PropertyRef Name="product_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Messages_Order">
-          <End Role="Orders" Type="Self.Orders" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Orders">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Messages">
-              <PropertyRef Name="order_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Messages_Receiver">
-          <End Role="Users" Type="Self.Users" Multiplicity="1" />
-          <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Users">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Messages">
-              <PropertyRef Name="receiver_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Messages_Sender">
-          <End Role="Users" Type="Self.Users" Multiplicity="1" />
-          <End Role="Messages" Type="Self.Messages" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Users">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Messages">
-              <PropertyRef Name="sender_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_OD_Colors">
-          <End Role="Colors" Type="Self.Colors" Multiplicity="0..1" />
-          <End Role="Order_Details" Type="Self.Order_Details" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Colors">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Order_Details">
-              <PropertyRef Name="color_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_OD_Orders">
-          <End Role="Orders" Type="Self.Orders" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Order_Details" Type="Self.Order_Details" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Orders">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Order_Details">
-              <PropertyRef Name="order_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_OD_Products">
-          <End Role="Products" Type="Self.Products" Multiplicity="1" />
-          <End Role="Order_Details" Type="Self.Order_Details" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Products">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Order_Details">
-              <PropertyRef Name="product_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_OD_Sizes">
-          <End Role="Sizes" Type="Self.Sizes" Multiplicity="0..1" />
-          <End Role="Order_Details" Type="Self.Order_Details" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Sizes">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Order_Details">
-              <PropertyRef Name="size_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Orders_Shipper">
-          <End Role="Users" Type="Self.Users" Multiplicity="0..1" />
-          <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Users">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Orders">
-              <PropertyRef Name="shipper_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Orders_Users">
-          <End Role="Users" Type="Self.Users" Multiplicity="1" />
-          <End Role="Orders" Type="Self.Orders" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Users">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Orders">
-              <PropertyRef Name="user_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Payments_Orders">
-          <End Role="Orders" Type="Self.Orders" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Payments" Type="Self.Payments" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Orders">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Payments">
-              <PropertyRef Name="order_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_PImages_Products">
-          <End Role="Products" Type="Self.Products" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Product_Images" Type="Self.Product_Images" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Products">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Product_Images">
-              <PropertyRef Name="product_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Products_Brands">
-          <End Role="Brands" Type="Self.Brands" Multiplicity="1" />
-          <End Role="Products" Type="Self.Products" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Brands">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Products">
-              <PropertyRef Name="brandId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Products_Categories">
-          <End Role="Categories" Type="Self.Categories" Multiplicity="1" />
-          <End Role="Products" Type="Self.Products" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Categories">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Products">
-              <PropertyRef Name="category_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Sizes_Products">
-          <End Role="Products" Type="Self.Products" Multiplicity="1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Sizes" Type="Self.Sizes" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Products">
-              <PropertyRef Name="id" />
-            </Principal>
-            <Dependent Role="Sizes">
-              <PropertyRef Name="product_id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityContainer Name="ValiModernDBModelStoreContainer">
-          <EntitySet Name="Banners" EntityType="Self.Banners" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Brands" EntityType="Self.Brands" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Categories" EntityType="Self.Categories" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Colors" EntityType="Self.Colors" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Messages" EntityType="Self.Messages" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Order_Details" EntityType="Self.Order_Details" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Orders" EntityType="Self.Orders" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Payments" EntityType="Self.Payments" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Product_Images" EntityType="Self.Product_Images" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Products" EntityType="Self.Products" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Sizes" EntityType="Self.Sizes" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK_Colors_Products" Association="Self.FK_Colors_Products">
-            <End Role="Products" EntitySet="Products" />
-            <End Role="Colors" EntitySet="Colors" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Messages_Order" Association="Self.FK_Messages_Order">
-            <End Role="Orders" EntitySet="Orders" />
-            <End Role="Messages" EntitySet="Messages" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Messages_Receiver" Association="Self.FK_Messages_Receiver">
-            <End Role="Users" EntitySet="Users" />
-            <End Role="Messages" EntitySet="Messages" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Messages_Sender" Association="Self.FK_Messages_Sender">
-            <End Role="Users" EntitySet="Users" />
-            <End Role="Messages" EntitySet="Messages" />
-          </AssociationSet>
-          <AssociationSet Name="FK_OD_Colors" Association="Self.FK_OD_Colors">
-            <End Role="Colors" EntitySet="Colors" />
-            <End Role="Order_Details" EntitySet="Order_Details" />
-          </AssociationSet>
-          <AssociationSet Name="FK_OD_Orders" Association="Self.FK_OD_Orders">
-            <End Role="Orders" EntitySet="Orders" />
-            <End Role="Order_Details" EntitySet="Order_Details" />
-          </AssociationSet>
-          <AssociationSet Name="FK_OD_Products" Association="Self.FK_OD_Products">
-            <End Role="Products" EntitySet="Products" />
-            <End Role="Order_Details" EntitySet="Order_Details" />
-          </AssociationSet>
-          <AssociationSet Name="FK_OD_Sizes" Association="Self.FK_OD_Sizes">
-            <End Role="Sizes" EntitySet="Sizes" />
-            <End Role="Order_Details" EntitySet="Order_Details" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Orders_Shipper" Association="Self.FK_Orders_Shipper">
-            <End Role="Users" EntitySet="Users" />
-            <End Role="Orders" EntitySet="Orders" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Orders_Users" Association="Self.FK_Orders_Users">
-            <End Role="Users" EntitySet="Users" />
-            <End Role="Orders" EntitySet="Orders" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Payments_Orders" Association="Self.FK_Payments_Orders">
-            <End Role="Orders" EntitySet="Orders" />
-            <End Role="Payments" EntitySet="Payments" />
-          </AssociationSet>
-          <AssociationSet Name="FK_PImages_Products" Association="Self.FK_PImages_Products">
-            <End Role="Products" EntitySet="Products" />
-            <End Role="Product_Images" EntitySet="Product_Images" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Products_Brands" Association="Self.FK_Products_Brands">
-            <End Role="Brands" EntitySet="Brands" />
-            <End Role="Products" EntitySet="Products" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Products_Categories" Association="Self.FK_Products_Categories">
-            <End Role="Categories" EntitySet="Categories" />
-            <End Role="Products" EntitySet="Products" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Sizes_Products" Association="Self.FK_Sizes_Products">
-            <End Role="Products" EntitySet="Products" />
-            <End Role="Sizes" EntitySet="Sizes" />
-          </AssociationSet>
-        </EntityContainer>
-      </Schema></edmx:StorageModels>
+    <Schema Namespace="ValiModernDBModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2012" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+  <EntityContainer Name="ValiModernDBModelStoreContainer">
+    <EntitySet Name="Banners" EntityType="ValiModernDBModel.Store.Banners" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Brands" EntityType="ValiModernDBModel.Store.Brands" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Categories" EntityType="ValiModernDBModel.Store.Categories" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Colors" EntityType="ValiModernDBModel.Store.Colors" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Order_Details" EntityType="ValiModernDBModel.Store.Order_Details" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Orders" EntityType="ValiModernDBModel.Store.Orders" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Payments" EntityType="ValiModernDBModel.Store.Payments" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Product_Images" EntityType="ValiModernDBModel.Store.Product_Images" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Products" EntityType="ValiModernDBModel.Store.Products" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Sizes" EntityType="ValiModernDBModel.Store.Sizes" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Users" EntityType="ValiModernDBModel.Store.Users" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="Messages" EntityType="ValiModernDBModel.Store.Messages" store:Type="Tables" Schema="dbo" />
+    <AssociationSet Name="FK_Products_Brands" Association="ValiModernDBModel.Store.FK_Products_Brands">
+      <End Role="Brands" EntitySet="Brands" />
+      <End Role="Products" EntitySet="Products" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Products_Categories" Association="ValiModernDBModel.Store.FK_Products_Categories">
+      <End Role="Categories" EntitySet="Categories" />
+      <End Role="Products" EntitySet="Products" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Colors_Products" Association="ValiModernDBModel.Store.FK_Colors_Products">
+      <End Role="Products" EntitySet="Products" />
+      <End Role="Colors" EntitySet="Colors" />
+    </AssociationSet>
+    <AssociationSet Name="FK_OD_Colors" Association="ValiModernDBModel.Store.FK_OD_Colors">
+      <End Role="Colors" EntitySet="Colors" />
+      <End Role="Order_Details" EntitySet="Order_Details" />
+    </AssociationSet>
+    <AssociationSet Name="FK_OD_Orders" Association="ValiModernDBModel.Store.FK_OD_Orders">
+      <End Role="Orders" EntitySet="Orders" />
+      <End Role="Order_Details" EntitySet="Order_Details" />
+    </AssociationSet>
+    <AssociationSet Name="FK_OD_Products" Association="ValiModernDBModel.Store.FK_OD_Products">
+      <End Role="Products" EntitySet="Products" />
+      <End Role="Order_Details" EntitySet="Order_Details" />
+    </AssociationSet>
+    <AssociationSet Name="FK_OD_Sizes" Association="ValiModernDBModel.Store.FK_OD_Sizes">
+      <End Role="Sizes" EntitySet="Sizes" />
+      <End Role="Order_Details" EntitySet="Order_Details" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Orders_Users" Association="ValiModernDBModel.Store.FK_Orders_Users">
+      <End Role="Users" EntitySet="Users" />
+      <End Role="Orders" EntitySet="Orders" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Payments_Orders" Association="ValiModernDBModel.Store.FK_Payments_Orders">
+      <End Role="Orders" EntitySet="Orders" />
+      <End Role="Payments" EntitySet="Payments" />
+    </AssociationSet>
+    <AssociationSet Name="FK_PImages_Products" Association="ValiModernDBModel.Store.FK_PImages_Products">
+      <End Role="Products" EntitySet="Products" />
+      <End Role="Product_Images" EntitySet="Product_Images" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Sizes_Products" Association="ValiModernDBModel.Store.FK_Sizes_Products">
+      <End Role="Products" EntitySet="Products" />
+      <End Role="Sizes" EntitySet="Sizes" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Orders_Shipper" Association="ValiModernDBModel.Store.FK_Orders_Shipper">
+      <End Role="User" EntitySet="Users" />
+      <End Role="Order" EntitySet="Orders" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Messages_Order" Association="ValiModernDBModel.Store.FK_Messages_Order">
+      <End Role="Order" EntitySet="Orders" />
+      <End Role="Message" EntitySet="Messages" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Messages_Receiver" Association="ValiModernDBModel.Store.FK_Messages_Receiver">
+      <End Role="User" EntitySet="Users" />
+      <End Role="Message" EntitySet="Messages" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Messages_Sender" Association="ValiModernDBModel.Store.FK_Messages_Sender">
+      <End Role="User" EntitySet="Users" />
+      <End Role="Message" EntitySet="Messages" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Banners">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="name" Type="nvarchar" Nullable="false" MaxLength="200" />
+    <Property Name="image_url" Type="nvarchar" Nullable="false" MaxLength="255" />
+  </EntityType>
+  <EntityType Name="Brands">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="name" Type="nvarchar" Nullable="false" MaxLength="150" />
+    <Property Name="image_url" Type="nvarchar" Nullable="true" MaxLength="255" />
+  </EntityType>
+  <EntityType Name="Categories">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="name" Type="nvarchar" Nullable="false" MaxLength="150" />
+  </EntityType>
+  <EntityType Name="Colors">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="product_id" Type="int" Nullable="false" />
+    <Property Name="name" Type="nvarchar" Nullable="false" MaxLength="50" />
+    <Property Name="color_code" Type="nvarchar" Nullable="true" MaxLength="20" />
+  </EntityType>
+  <EntityType Name="Order_Details">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="order_id" Type="int" Nullable="false" />
+    <Property Name="product_id" Type="int" Nullable="false" />
+    <Property Name="quantity" Type="int" Nullable="false" />
+    <Property Name="price" Type="int" Nullable="false" />
+    <Property Name="color_id" Type="int" Nullable="true" />
+    <Property Name="size_id" Type="int" Nullable="true" />
+    <Property Name="created_at" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Orders">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="user_id" Type="int" Nullable="false" />
+    <Property Name="order_date" Type="datetime" Nullable="false" />
+    <Property Name="status" Type="nvarchar" Nullable="false" MaxLength="20" />
+    <Property Name="total_amount" Type="bigint" Nullable="false" />
+    <Property Name="phone" Type="nvarchar" Nullable="true" MaxLength="20" />
+    <Property Name="shipping_address" Type="nvarchar" Nullable="true" MaxLength="500" />
+    <Property Name="created_at" Type="datetime" Nullable="false" />
+    <Property Name="updated_at" Type="datetime" Nullable="false" />
+    <Property Name="shipper_id" Type="int" Nullable="true" />
+    <Property Name="assigned_at" Type="datetime" Nullable="true" />
+    <Property Name="delivered_at" Type="datetime" Nullable="true" />
+    <Property Name="delivery_note" Type="nvarchar" Nullable="true" MaxLength="500" />
+    <Property Name="shipper_unread_messages" Type="int" Nullable="true" />
+    <Property Name="customer_unread_messages" Type="int" Nullable="true" />
+  </EntityType>
+  <EntityType Name="Payments">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="order_id" Type="int" Nullable="false" />
+    <Property Name="amount" Type="bigint" Nullable="false" />
+    <Property Name="payment_method" Type="nvarchar" Nullable="false" MaxLength="20" />
+    <Property Name="status" Type="nvarchar" Nullable="false" MaxLength="20" />
+    <Property Name="transaction_id" Type="nvarchar" Nullable="true" MaxLength="200" />
+    <Property Name="payment_date" Type="datetime" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Product_Images">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="product_id" Type="int" Nullable="false" />
+    <Property Name="image_url" Type="nvarchar" Nullable="false" MaxLength="255" />
+    <Property Name="is_main" Type="bit" Nullable="false" />
+    <Property Name="sort_order" Type="int" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Products">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="name" Type="nvarchar" Nullable="false" MaxLength="255" />
+    <Property Name="description" Type="nvarchar(max)" Nullable="true" />
+    <Property Name="image_url" Type="nvarchar" Nullable="true" MaxLength="255" />
+    <Property Name="original_price" Type="int" Nullable="false" />
+    <Property Name="price" Type="int" Nullable="false" />
+    <Property Name="stock" Type="int" Nullable="false" />
+    <Property Name="sold" Type="int" Nullable="false" />
+    <Property Name="category_id" Type="int" Nullable="false" />
+    <Property Name="brandId" Type="int" Nullable="false" />
+    <Property Name="is_active" Type="bit" Nullable="false" />
+  </EntityType>
+  <EntityType Name="Sizes">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="product_id" Type="int" Nullable="false" />
+    <Property Name="name" Type="nvarchar" Nullable="false" MaxLength="20" />
+  </EntityType>
+  <EntityType Name="Users">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="username" Type="nvarchar" Nullable="true" MaxLength="100" />
+    <Property Name="email" Type="nvarchar" Nullable="false" MaxLength="255" />
+    <Property Name="phone" Type="nvarchar" Nullable="true" MaxLength="20" />
+    <Property Name="is_admin" Type="bit" Nullable="false" />
+    <Property Name="address" Type="nvarchar" Nullable="true" MaxLength="500" />
+    <Property Name="created_at" Type="datetime" Nullable="false" />
+    <Property Name="updated_at" Type="datetime" Nullable="false" />
+    <Property Name="password" Type="nvarchar" Nullable="false" MaxLength="255" />
+    <Property Name="role" Type="nvarchar" Nullable="true" MaxLength="20" />
+  </EntityType>
+  <EntityType Name="Messages">
+    <Key>
+      <PropertyRef Name="id" />
+    </Key>
+    <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+    <Property Name="order_id" Type="int" Nullable="false" />
+    <Property Name="sender_id" Type="int" Nullable="false" />
+    <Property Name="receiver_id" Type="int" Nullable="false" />
+    <Property Name="message1" Type="nvarchar(max)" Nullable="false" />
+    <Property Name="is_read" Type="bit" Nullable="true" />
+    <Property Name="created_at" Type="datetime" Nullable="true" />
+  </EntityType>
+  <Association Name="FK_Products_Brands">
+    <End Role="Brands" Type="ValiModernDBModel.Store.Brands" Multiplicity="1" />
+    <End Role="Products" Type="ValiModernDBModel.Store.Products" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Brands">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Products">
+        <PropertyRef Name="brandId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Products_Categories">
+    <End Role="Categories" Type="ValiModernDBModel.Store.Categories" Multiplicity="1" />
+    <End Role="Products" Type="ValiModernDBModel.Store.Products" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Categories">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Products">
+        <PropertyRef Name="category_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Colors_Products">
+    <End Role="Products" Type="ValiModernDBModel.Store.Products" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Colors" Type="ValiModernDBModel.Store.Colors" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Products">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Colors">
+        <PropertyRef Name="product_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_OD_Colors">
+    <End Role="Colors" Type="ValiModernDBModel.Store.Colors" Multiplicity="0..1" />
+    <End Role="Order_Details" Type="ValiModernDBModel.Store.Order_Details" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Colors">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Order_Details">
+        <PropertyRef Name="color_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_OD_Orders">
+    <End Role="Orders" Type="ValiModernDBModel.Store.Orders" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Order_Details" Type="ValiModernDBModel.Store.Order_Details" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Orders">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Order_Details">
+        <PropertyRef Name="order_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_OD_Products">
+    <End Role="Products" Type="ValiModernDBModel.Store.Products" Multiplicity="1" />
+    <End Role="Order_Details" Type="ValiModernDBModel.Store.Order_Details" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Products">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Order_Details">
+        <PropertyRef Name="product_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_OD_Sizes">
+    <End Role="Sizes" Type="ValiModernDBModel.Store.Sizes" Multiplicity="0..1" />
+    <End Role="Order_Details" Type="ValiModernDBModel.Store.Order_Details" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Sizes">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Order_Details">
+        <PropertyRef Name="size_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Orders_Users">
+    <End Role="Users" Type="ValiModernDBModel.Store.Users" Multiplicity="1" />
+    <End Role="Orders" Type="ValiModernDBModel.Store.Orders" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Users">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Orders">
+        <PropertyRef Name="user_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Payments_Orders">
+    <End Role="Orders" Type="ValiModernDBModel.Store.Orders" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Payments" Type="ValiModernDBModel.Store.Payments" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Orders">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Payments">
+        <PropertyRef Name="order_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_PImages_Products">
+    <End Role="Products" Type="ValiModernDBModel.Store.Products" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Product_Images" Type="ValiModernDBModel.Store.Product_Images" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Products">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Product_Images">
+        <PropertyRef Name="product_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Sizes_Products">
+    <End Role="Products" Type="ValiModernDBModel.Store.Products" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Sizes" Type="ValiModernDBModel.Store.Sizes" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Products">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Sizes">
+        <PropertyRef Name="product_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Orders_Shipper">
+    <End Role="User" Type="ValiModernDBModel.Store.Users" Multiplicity="0..1" />
+    <End Role="Order" Type="ValiModernDBModel.Store.Orders" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Order">
+        <PropertyRef Name="shipper_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Messages_Order">
+    <End Role="Order" Type="ValiModernDBModel.Store.Orders" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Message" Type="ValiModernDBModel.Store.Messages" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Order">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Message">
+        <PropertyRef Name="order_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Messages_Receiver">
+    <End Role="User" Type="ValiModernDBModel.Store.Users" Multiplicity="1" />
+    <End Role="Message" Type="ValiModernDBModel.Store.Messages" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Message">
+        <PropertyRef Name="receiver_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Messages_Sender">
+    <End Role="User" Type="ValiModernDBModel.Store.Users" Multiplicity="1" />
+    <End Role="Message" Type="ValiModernDBModel.Store.Messages" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="User">
+        <PropertyRef Name="id" />
+      </Principal>
+      <Dependent Role="Message">
+        <PropertyRef Name="sender_id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="ValiModernDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -851,161 +851,160 @@
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
-      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="ValiModernDBModelStoreContainer" CdmEntityContainer="ValiModernDBEntities">
-          <EntitySetMapping Name="Banners">
-            <EntityTypeMapping TypeName="ValiModernDBModel.Banner">
-              <MappingFragment StoreEntitySet="Banners">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="image_url" ColumnName="image_url" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Brands">
-            <EntityTypeMapping TypeName="ValiModernDBModel.Brand">
-              <MappingFragment StoreEntitySet="Brands">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="image_url" ColumnName="image_url" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Categories">
-            <EntityTypeMapping TypeName="ValiModernDBModel.Category">
-              <MappingFragment StoreEntitySet="Categories">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Colors">
-            <EntityTypeMapping TypeName="ValiModernDBModel.Color">
-              <MappingFragment StoreEntitySet="Colors">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="product_id" ColumnName="product_id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="color_code" ColumnName="color_code" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Order_Details">
-            <EntityTypeMapping TypeName="ValiModernDBModel.Order_Details">
-              <MappingFragment StoreEntitySet="Order_Details">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="order_id" ColumnName="order_id" />
-                <ScalarProperty Name="product_id" ColumnName="product_id" />
-                <ScalarProperty Name="quantity" ColumnName="quantity" />
-                <ScalarProperty Name="price" ColumnName="price" />
-                <ScalarProperty Name="color_id" ColumnName="color_id" />
-                <ScalarProperty Name="size_id" ColumnName="size_id" />
-                <ScalarProperty Name="created_at" ColumnName="created_at" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Orders">
-            <EntityTypeMapping TypeName="ValiModernDBModel.Order">
-              <MappingFragment StoreEntitySet="Orders">
-                <ScalarProperty Name="customer_unread_messages" ColumnName="customer_unread_messages" />
-                <ScalarProperty Name="shipper_unread_messages" ColumnName="shipper_unread_messages" />
-                <ScalarProperty Name="delivery_note" ColumnName="delivery_note" />
-                <ScalarProperty Name="delivered_at" ColumnName="delivered_at" />
-                <ScalarProperty Name="assigned_at" ColumnName="assigned_at" />
-                <ScalarProperty Name="shipper_id" ColumnName="shipper_id" />
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="user_id" ColumnName="user_id" />
-                <ScalarProperty Name="order_date" ColumnName="order_date" />
-                <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="total_amount" ColumnName="total_amount" />
-                <ScalarProperty Name="phone" ColumnName="phone" />
-                <ScalarProperty Name="shipping_address" ColumnName="shipping_address" />
-                <ScalarProperty Name="created_at" ColumnName="created_at" />
-                <ScalarProperty Name="updated_at" ColumnName="updated_at" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Payments">
-            <EntityTypeMapping TypeName="ValiModernDBModel.Payment">
-              <MappingFragment StoreEntitySet="Payments">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="order_id" ColumnName="order_id" />
-                <ScalarProperty Name="amount" ColumnName="amount" />
-                <ScalarProperty Name="payment_method" ColumnName="payment_method" />
-                <ScalarProperty Name="status" ColumnName="status" />
-                <ScalarProperty Name="transaction_id" ColumnName="transaction_id" />
-                <ScalarProperty Name="payment_date" ColumnName="payment_date" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Product_Images">
-            <EntityTypeMapping TypeName="ValiModernDBModel.Product_Images">
-              <MappingFragment StoreEntitySet="Product_Images">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="product_id" ColumnName="product_id" />
-                <ScalarProperty Name="image_url" ColumnName="image_url" />
-                <ScalarProperty Name="is_main" ColumnName="is_main" />
-                <ScalarProperty Name="sort_order" ColumnName="sort_order" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Products">
-            <EntityTypeMapping TypeName="ValiModernDBModel.Product">
-              <MappingFragment StoreEntitySet="Products">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-                <ScalarProperty Name="description" ColumnName="description" />
-                <ScalarProperty Name="image_url" ColumnName="image_url" />
-                <ScalarProperty Name="original_price" ColumnName="original_price" />
-                <ScalarProperty Name="price" ColumnName="price" />
-                <ScalarProperty Name="stock" ColumnName="stock" />
-                <ScalarProperty Name="sold" ColumnName="sold" />
-                <ScalarProperty Name="category_id" ColumnName="category_id" />
-                <ScalarProperty Name="brandId" ColumnName="brandId" />
-                <ScalarProperty Name="is_active" ColumnName="is_active" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Sizes">
-            <EntityTypeMapping TypeName="ValiModernDBModel.Size">
-              <MappingFragment StoreEntitySet="Sizes">
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="product_id" ColumnName="product_id" />
-                <ScalarProperty Name="name" ColumnName="name" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Users">
-            <EntityTypeMapping TypeName="ValiModernDBModel.User">
-              <MappingFragment StoreEntitySet="Users">
-                <ScalarProperty Name="role" ColumnName="role" />
-                <ScalarProperty Name="password" ColumnName="password" />
-                <ScalarProperty Name="id" ColumnName="id" />
-                <ScalarProperty Name="username" ColumnName="username" />
-                <ScalarProperty Name="email" ColumnName="email" />
-                <ScalarProperty Name="phone" ColumnName="phone" />
-                <ScalarProperty Name="is_admin" ColumnName="is_admin" />
-                <ScalarProperty Name="address" ColumnName="address" />
-                <ScalarProperty Name="created_at" ColumnName="created_at" />
-                <ScalarProperty Name="updated_at" ColumnName="updated_at" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Messages">
-            <EntityTypeMapping TypeName="ValiModernDBModel.Message">
-              <MappingFragment StoreEntitySet="Messages">
-                <ScalarProperty Name="created_at" ColumnName="created_at" />
-                <ScalarProperty Name="is_read" ColumnName="is_read" />
-                <ScalarProperty Name="message1" ColumnName="message" />
-                <ScalarProperty Name="receiver_id" ColumnName="receiver_id" />
-                <ScalarProperty Name="sender_id" ColumnName="sender_id" />
-                <ScalarProperty Name="order_id" ColumnName="order_id" />
-                <ScalarProperty Name="id" ColumnName="id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-        </EntityContainerMapping>
-      </Mapping>
-    </edmx:Mappings>
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="ValiModernDBModelStoreContainer" CdmEntityContainer="ValiModernDBEntities">
+    <EntitySetMapping Name="Banners">
+      <EntityTypeMapping TypeName="IsTypeOf(ValiModernDBModel.Banner)">
+        <MappingFragment StoreEntitySet="Banners">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="image_url" ColumnName="image_url" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Brands">
+      <EntityTypeMapping TypeName="IsTypeOf(ValiModernDBModel.Brand)">
+        <MappingFragment StoreEntitySet="Brands">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="image_url" ColumnName="image_url" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Categories">
+      <EntityTypeMapping TypeName="IsTypeOf(ValiModernDBModel.Category)">
+        <MappingFragment StoreEntitySet="Categories">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="name" ColumnName="name" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Colors">
+      <EntityTypeMapping TypeName="IsTypeOf(ValiModernDBModel.Color)">
+        <MappingFragment StoreEntitySet="Colors">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="product_id" ColumnName="product_id" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="color_code" ColumnName="color_code" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Order_Details">
+      <EntityTypeMapping TypeName="IsTypeOf(ValiModernDBModel.Order_Details)">
+        <MappingFragment StoreEntitySet="Order_Details">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="order_id" ColumnName="order_id" />
+          <ScalarProperty Name="product_id" ColumnName="product_id" />
+          <ScalarProperty Name="quantity" ColumnName="quantity" />
+          <ScalarProperty Name="price" ColumnName="price" />
+          <ScalarProperty Name="color_id" ColumnName="color_id" />
+          <ScalarProperty Name="size_id" ColumnName="size_id" />
+          <ScalarProperty Name="created_at" ColumnName="created_at" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Orders">
+      <EntityTypeMapping TypeName="IsTypeOf(ValiModernDBModel.Order)">
+        <MappingFragment StoreEntitySet="Orders">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="user_id" ColumnName="user_id" />
+          <ScalarProperty Name="order_date" ColumnName="order_date" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="total_amount" ColumnName="total_amount" />
+          <ScalarProperty Name="phone" ColumnName="phone" />
+          <ScalarProperty Name="shipping_address" ColumnName="shipping_address" />
+          <ScalarProperty Name="created_at" ColumnName="created_at" />
+          <ScalarProperty Name="updated_at" ColumnName="updated_at" />
+          <ScalarProperty Name="shipper_id" ColumnName="shipper_id" />
+          <ScalarProperty Name="assigned_at" ColumnName="assigned_at" />
+          <ScalarProperty Name="delivered_at" ColumnName="delivered_at" />
+          <ScalarProperty Name="delivery_note" ColumnName="delivery_note" />
+          <ScalarProperty Name="shipper_unread_messages" ColumnName="shipper_unread_messages" />
+          <ScalarProperty Name="customer_unread_messages" ColumnName="customer_unread_messages" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Payments">
+      <EntityTypeMapping TypeName="IsTypeOf(ValiModernDBModel.Payment)">
+        <MappingFragment StoreEntitySet="Payments">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="order_id" ColumnName="order_id" />
+          <ScalarProperty Name="amount" ColumnName="amount" />
+          <ScalarProperty Name="payment_method" ColumnName="payment_method" />
+          <ScalarProperty Name="status" ColumnName="status" />
+          <ScalarProperty Name="transaction_id" ColumnName="transaction_id" />
+          <ScalarProperty Name="payment_date" ColumnName="payment_date" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Product_Images">
+      <EntityTypeMapping TypeName="IsTypeOf(ValiModernDBModel.Product_Images)">
+        <MappingFragment StoreEntitySet="Product_Images">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="product_id" ColumnName="product_id" />
+          <ScalarProperty Name="image_url" ColumnName="image_url" />
+          <ScalarProperty Name="is_main" ColumnName="is_main" />
+          <ScalarProperty Name="sort_order" ColumnName="sort_order" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Products">
+      <EntityTypeMapping TypeName="IsTypeOf(ValiModernDBModel.Product)">
+        <MappingFragment StoreEntitySet="Products">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="name" ColumnName="name" />
+          <ScalarProperty Name="description" ColumnName="description" />
+          <ScalarProperty Name="image_url" ColumnName="image_url" />
+          <ScalarProperty Name="original_price" ColumnName="original_price" />
+          <ScalarProperty Name="price" ColumnName="price" />
+          <ScalarProperty Name="stock" ColumnName="stock" />
+          <ScalarProperty Name="sold" ColumnName="sold" />
+          <ScalarProperty Name="category_id" ColumnName="category_id" />
+          <ScalarProperty Name="brandId" ColumnName="brandId" />
+          <ScalarProperty Name="is_active" ColumnName="is_active" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Sizes">
+      <EntityTypeMapping TypeName="IsTypeOf(ValiModernDBModel.Size)">
+        <MappingFragment StoreEntitySet="Sizes">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="product_id" ColumnName="product_id" />
+          <ScalarProperty Name="name" ColumnName="name" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Users">
+      <EntityTypeMapping TypeName="IsTypeOf(ValiModernDBModel.User)">
+        <MappingFragment StoreEntitySet="Users">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="username" ColumnName="username" />
+          <ScalarProperty Name="email" ColumnName="email" />
+          <ScalarProperty Name="phone" ColumnName="phone" />
+          <ScalarProperty Name="is_admin" ColumnName="is_admin" />
+          <ScalarProperty Name="address" ColumnName="address" />
+          <ScalarProperty Name="created_at" ColumnName="created_at" />
+          <ScalarProperty Name="updated_at" ColumnName="updated_at" />
+          <ScalarProperty Name="password" ColumnName="password" />
+          <ScalarProperty Name="role" ColumnName="role" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Messages">
+      <EntityTypeMapping TypeName="IsTypeOf(ValiModernDBModel.Message)">
+        <MappingFragment StoreEntitySet="Messages">
+          <ScalarProperty Name="id" ColumnName="id" />
+          <ScalarProperty Name="order_id" ColumnName="order_id" />
+          <ScalarProperty Name="sender_id" ColumnName="sender_id" />
+          <ScalarProperty Name="receiver_id" ColumnName="receiver_id" />
+          <ScalarProperty Name="message1" ColumnName="message1" />
+          <ScalarProperty Name="is_read" ColumnName="is_read" />
+          <ScalarProperty Name="created_at" ColumnName="created_at" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+  </EntityContainerMapping>
+</Mapping></edmx:Mappings>
   </edmx:Runtime>
   <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
   <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
@@ -1019,7 +1018,7 @@
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
         <DesignerProperty Name="EnablePluralization" Value="true" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
-        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="UseLegacyProvider" Value="False" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
       </DesignerInfoPropertySet>
     </Options>

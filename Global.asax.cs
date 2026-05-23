@@ -29,9 +29,6 @@ namespace ValiModern
             
             // OPTIMIZE: Pre-warm Entity Framework to reduce cold start
             PreWarmEntityFramework();
-            
-            // OPTIMIZE: Configure Entity Framework settings
-            ConfigureEntityFramework();
         }
 
         protected void Application_PostAuthenticateRequest(object sender, EventArgs e)
@@ -96,18 +93,6 @@ namespace ValiModern
                     System.Diagnostics.Debug.WriteLine($"[WARMUP] ⚠️ Error: {ex.Message}");
                 }
             });
-        }
-
-        /// <summary>
-        /// OPTIMIZE: Configure Entity Framework settings for better performance
-        /// </summary>
-        private void ConfigureEntityFramework()
-        {
-            // Disable database initializer (we don't want EF to create/modify schema)
-            Database.SetInitializer<ValiModernDBEntities>(null);
-            
-            // Note: Lazy loading is controlled per DbContext instance
-            // We use AsNoTracking() explicitly in queries for read-only operations
         }
     }
 }
