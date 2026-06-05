@@ -15,6 +15,9 @@ ValiStore is an online e-commerce platform dedicated to luggage retail. The syst
 
 > **Note:** The project was previously deployed on AWS for real-world usage, but the hosting environment is no longer maintained and the current setup is local-only.
 
+> **🚀 Modernization Notice (ValiNova):** 
+> Recognizing the architectural limitations of this monolithic system, I am currently re-architecting the platform from the ground up into a modern, decoupled 3-tier RESTful API using **.NET 10**. You can track the ongoing development of this next-generation backend at the new repository: **[ValiNova API](https://github.com/Khanguyen2005/valinova-api)** *(Status: Work In Progress - Expected completion by July)*.
+
 ## Tech Stack
 
 | Layer | Technologies |
@@ -31,50 +34,60 @@ ValiStore is an online e-commerce platform dedicated to luggage retail. The syst
 ## Getting Started
 
 1. Clone the repository:
-   ```bash
-   git clone https://github.com/Khanguyen2005/ValiStore.git
+```bash
+   git clone [https://github.com/Khanguyen2005/ValiStore.git](https://github.com/Khanguyen2005/ValiStore.git)
    cd ValiStore
-   ```
+
+```
+
 2. Restore NuGet packages:
-   - In Visual Studio: right-click the solution and choose **Restore NuGet Packages**.
-   - Or run `nuget restore` from the solution directory if NuGet CLI is available.
+* In Visual Studio: right-click the solution and choose **Restore NuGet Packages**.
+* Or run `nuget restore` from the solution directory if NuGet CLI is available.
+
+
 3. Configure the `ConnectionString` in `Web.config` to point to your local SQL Server instance.
 4. Initialize the database:
-   - If using Code First, run `Update-Database` in the Package Manager Console.
-   - If a SQL script is provided, execute it against your local database.
+* If using Code First, run `Update-Database` in the Package Manager Console.
+* If a SQL script is provided, execute it against your local database.
+
+
 5. Start the project with Visual Studio using **IIS Express**.
 
 ## Local Configuration / Secrets
 
-- Real credentials are not committed to the repository.
-- Copy the example files and fill in your local values:
-  - `Web.AppSettings.Secrets.example.config` -> `Web.AppSettings.Secrets.config`
-  - `Web.ConnectionStrings.Secrets.example.config` -> `Web.ConnectionStrings.Secrets.config`
-- Update VNPay sandbox keys, PayPal sandbox keys, and the database connection string in the copied files.
-- Do not commit real credentials. The `*.Secrets.config` files are ignored by Git.
-- The app expects these secret files at runtime; if they are missing, payment and database configuration will fail.
+* Real credentials are not committed to the repository.
+* Copy the example files and fill in your local values:
+* `Web.AppSettings.Secrets.example.config` -> `Web.AppSettings.Secrets.config`
+* `Web.ConnectionStrings.Secrets.example.config` -> `Web.ConnectionStrings.Secrets.config`
+
+
+* Update VNPay sandbox keys, PayPal sandbox keys, and the database connection string in the copied files.
+* Do not commit real credentials. The `*.Secrets.config` files are ignored by Git.
+* The app expects these secret files at runtime; if they are missing, payment and database configuration will fail.
 
 ## Key Features
 
 ### Customer
 
-- Shopping cart and end-to-end checkout flow.
-- Online payments via **VNPay** and **PayPal**.
-- Real-time chat with Shipper.
+* Shopping cart and end-to-end checkout flow.
+* Online payments via **VNPay** and **PayPal**.
+* Real-time chat with Shipper.
 
 ### Admin
 
-- Manage products, categories, brands, and banners.
-- Manage operational status.
+* Manage products, categories, brands, and banners.
+* Manage operational status.
 
 ### Shipper
 
-- Receive assigned orders.
-- Update delivery and order status.
-- Real-time chat with Customer.
+* Receive assigned orders.
+* Update delivery and order status.
+* Real-time chat with Customer.
 
 ## Contributors
 
-- Nguyễn Đàm Khá
-- Đinh Lê Thảo Vy
-- Trần Phan Khải
+* Nguyễn Đàm Khá (Solo Developer)
+
+```
+
+```
