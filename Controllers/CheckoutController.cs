@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -509,7 +509,7 @@ namespace ValiModern.Controllers
 
         [Authorize]
         [HttpPost]
-        public async Task<JsonResult> CapturePayPalOrder(string orderId)
+        public async Task<JsonResult> CapturePayPalOrder(string orderId, string fullName, string phone, string address)
         {
             try
             {
@@ -547,8 +547,8 @@ namespace ValiModern.Controllers
                     order_date = DateTime.Now,
                     status = "Confirmed",
                     total_amount = totalAmount,
-                    phone = user.phone ?? "N/A",
-                    shipping_address = user.address ?? "N/A",
+                    phone = !string.IsNullOrWhiteSpace(phone) ? phone : (user.phone ?? "N/A"),
+                    shipping_address = !string.IsNullOrWhiteSpace(address) ? address : (user.address ?? "N/A"),
                     created_at = DateTime.Now,
                     updated_at = DateTime.Now
                 };
@@ -590,7 +590,7 @@ namespace ValiModern.Controllers
                     amount = totalAmount,
                     payment_method = "PayPal",
                     status = "Completed",
-                    transaction_id = response.id,
+                    transaction_id = response.purchase_units.FirstOrDefault()?.payments?.captures.FirstOrDefault()?.id ?? response.id,
                     payment_date = DateTime.Now
                 };
                 _db.Payments.Add(payment);
@@ -658,3 +658,5 @@ namespace ValiModern.Controllers
         }
     }
 }
+
+
