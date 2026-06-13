@@ -15,11 +15,16 @@ namespace ValiModern.Controllers
     public class ShipperController : Controller
     {
         private readonly ValiModernDBEntities _db = new ValiModernDBEntities();
-        private readonly ShipperService _shipperService;
+        private readonly IShipperService _shipperService;
 
         public ShipperController()
         {
             _shipperService = new ShipperService(_db);
+        }
+
+        public ShipperController(IShipperService shipperService)
+        {
+            _shipperService = shipperService;
         }
 
         #region Helper Methods
