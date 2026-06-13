@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -59,7 +59,7 @@ namespace ValiModern.Areas.Admin.Controllers
         // POST: Admin/User/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "username,email,phone,address,is_admin,password")] User model)
+        public ActionResult Create([Bind(Include = "username,email,phone,address,is_admin,password,role")] User model)
         {
             if (!ModelState.IsValid)
                 return View(model);
@@ -159,3 +159,5 @@ namespace ValiModern.Areas.Admin.Controllers
         }
     }
 }
+
+
