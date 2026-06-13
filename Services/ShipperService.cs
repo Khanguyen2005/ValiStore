@@ -11,19 +11,15 @@ namespace ValiModern.Services
     /// Service layer for Shipper operations
     /// Separates business logic from controller
     /// </summary>
-    public class ShipperService : IDisposable
+    public class ShipperService : BaseService, IShipperService
     {
-        private readonly ValiModernDBEntities _db;
-        private bool _disposed = false;
 
-        public ShipperService()
+        public ShipperService() : base()
         {
-            _db = new ValiModernDBEntities();
         }
 
-        public ShipperService(ValiModernDBEntities db)
+        public ShipperService(ValiModernDBEntities db) : base(db)
         {
-            _db = db;
         }
 
         #region Shipper Info
@@ -353,27 +349,7 @@ namespace ValiModern.Services
 
         #endregion
 
-        #region Dispose
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!_disposed)
-            {
-                if (disposing)
-                {
-                    _db?.Dispose();
-                }
-                _disposed = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        #endregion
     }
 
     #region Helper Classes
